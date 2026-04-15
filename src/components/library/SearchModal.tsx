@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { I18n } from '@/i18n';
 import type { GroupTemplateModel } from '@/types';
 import { normalizeVietnamese } from '@/lib/marketing-dashboard.utils';
-import { CDN_URL } from '@/lib/api.config';
+import SearchResultCard from './SearchResultCard';
 
 interface SearchModalProps {
   folders: { templates: GroupTemplateModel[] }[];
@@ -110,41 +109,14 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
           {results.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 pb-8">
               {results.map((item) => (
-                <button
+                <SearchResultCard
                   key={item.id}
+                  item={item}
                   onClick={() => {
                     onSelect(item);
                     handleClose();
                   }}
-                  className="text-left bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 cursor-pointer hover:bg-white/20 hover:border-orange-500/50 transition-all hover:-translate-y-1 group flex flex-col h-full shadow-lg"
-                >
-                  <div className="aspect-3/4 bg-linear-to-br from-slate-700 to-slate-800 rounded-xl mb-3 overflow-hidden relative">
-                    {item.imageLink ? (
-                      <Image
-                        src={`${CDN_URL}${item.imageLink}`}
-                        alt={item.name}
-                        fill
-                        className="group-hover:scale-105 transition-transform duration-300"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-10 h-10 text-slate-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                    {item.labels?.[0] && (
-                      <div className="absolute top-2 left-2 bg-linear-to-r from-orange-500 to-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md">
-                        {item.labels[0].value}
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="text-white font-medium text-sm line-clamp-2 mt-auto group-hover:text-orange-300 transition-colors">
-                    {item.name}
-                  </h3>
-                </button>
+                />
               ))}
             </div>
           ) : (

@@ -134,14 +134,14 @@ export default function LibraryPage() {
         )}
 
         {/* Filter & Sort + Search */}
-        <section className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+        <section className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10 overflow-visible">
           <div className="flex items-center gap-4 w-full md:w-auto">
             <h2 className="text-xl font-bold text-white">
               {I18n.marketingDashboard.folderTitle}
             </h2>
           </div>
-          <div className="flex gap-3 w-full md:w-auto items-center">
-            <div className="w-[48%] md:w-40">
+          <div className="flex flex-wrap gap-3 w-full md:w-auto items-end">
+            <div className="w-full md:w-50">
               <Dropdown
                 options={LIST_FILTER.map((f) => ({
                   ...f,
@@ -151,7 +151,7 @@ export default function LibraryPage() {
                 label={I18n.filterBy}
               />
             </div>
-            <div className="w-[48%] md:w-40">
+            <div className="w-full md:w-40">
               <Dropdown
                 options={LIST_SORT.map((s) => ({
                   ...s,
@@ -163,7 +163,7 @@ export default function LibraryPage() {
             </div>
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center justify-center p-2 px-4 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors"
+              className="flex items-center justify-center p-1.5 px-4 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface DropdownOption {
   id: string;
@@ -18,11 +19,24 @@ interface DropdownProps {
 export default function Dropdown({ options, onSelect, label, className = '' }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 0 });
   const selected = options.find((o) => o.isSelected) || options[0];
+
+  const updatePosition = useCallback(() => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setMenuPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      if (
+        ref.current && !ref.current.contains(e.target as Node) &&
+        menuRef.current && !menuRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -30,10 +44,24 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    updatePosition();
+    const handleScroll = () => setIsOpen(false);
+    const scrollParent = ref.current?.closest('.overflow-y-auto');
+    scrollParent?.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      scrollParent?.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [isOpen, updatePosition]);
+
   return (
     <div ref={ref} className={`relative ${className}`}>
       {label && <label className="block text-sm font-medium text-slate-300 mb-1">{label}</label>}
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-3 py-2 text-sm border border-white/10 rounded-lg bg-black/20 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-orange-400/50 backdrop-blur-sm"
@@ -44,8 +72,12 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
         </svg>
       </button>
 
-      {isOpen && (
-        <div className="absolute z-10 mt-1 w-full bg-slate-800/90 backdrop-blur-md border border-white/10 rounded-lg shadow-lg">
+      {isOpen && createPortal(
+        <div
+          ref={menuRef}
+          style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, width: menuPos.width }}
+          className="z-[9999] bg-slate-800/90 backdrop-blur-md border border-white/10 rounded-lg shadow-lg"
+        >
           {options.map((option) => (
             <button
               key={option.id}
@@ -61,7 +93,8 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
               {option.title}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

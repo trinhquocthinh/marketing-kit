@@ -62,7 +62,7 @@ const vi = {
     oneYear: '12 tháng',
 
     // Library
-    topUsedPosters: 'Dùng nhiều nhất ✨',
+    topUsedPosters: '✨ Dùng nhiều nhất',
     featuredEvents: '🔥 Sự kiện nổi bật',
     publicFolders: '📁 Thư mục chung',
     folderTitle: 'Mẫu thiết kế',

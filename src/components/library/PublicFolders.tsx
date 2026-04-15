@@ -15,13 +15,13 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
 
   return (
     <div className="space-y-3">
-      {/* Title – SmallNext(13) SemiBold */}
-      <h4 className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif]">
-        {I18n.marketingDashboard.publicFolders}
-      </h4>
+      {/* Title */}
+      <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        📁 {I18n.marketingDashboard.publicFolders}
+      </h2>
 
-      {/* 2-column grid – matches RN columnGap/rowGap ~1.3% screen width */}
-      <div className="grid grid-cols-2 gap-[1.3vw]">
+      {/* Responsive grid – 2/3/4 columns */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {data.map((item, index) => {
           const marqueeLabel = item.labels?.find((l) => l.type === LabelEnum.MARQUEE)?.value || '';
           const hasHot = item.labels?.some((l) => l.type === LabelEnum.HOT);

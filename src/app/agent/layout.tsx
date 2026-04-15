@@ -149,7 +149,7 @@ export default function AgentLayout({ children }: { children: ReactNode }) {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-1xl mx-auto">
             {children}
           </div>
         </div>

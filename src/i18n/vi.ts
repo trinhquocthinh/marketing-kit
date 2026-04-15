@@ -43,6 +43,7 @@ const vi = {
 
   // Marketing Dashboard
   marketingDashboard: {
+    marquee: 'Poster bắt mắt, mã QR sẵn sàng, mỗi một cú quét là lead bay thẳng về tay để bạn chăm sóc!',
     title: 'Marketing Kit',
     boostSales: 'Tăng trưởng doanh số',
     teamDevelopment: 'Phát triển đội nhóm',

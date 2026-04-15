@@ -1,12 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import { CDN_URL } from '@/lib/api.config';
 import { I18n } from '@/i18n';
 import { LabelEnum } from '@/types/enums';
 import type { GroupTemplateModel } from '@/types';
 import Marquee from '@/components/animations/Marquee';
+import BannerWithFooter from '../posters/BannerWithFooter';
+
+const GAP = 16; // px – matches gap-4
+const CARD_PADDING = 32; // p-4 = 16px each side
 
 interface ImageSliderProps {
   mostUsedImages: GroupTemplateModel[];
@@ -15,17 +18,44 @@ interface ImageSliderProps {
 
 export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Start with 1 (mobile default) to match SSR output and avoid hydration mismatch
+  const [itemsPerView, setItemsPerView] = useState(1);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const count = mostUsedImages.length;
+  const maxIndex = Math.max(0, count - itemsPerView);
 
-  // ── Auto-play every 2 seconds (matches RN autoPlayInterval: 2000) ──
+  // Measure viewport pixel width for BannerWithFooter containerWidth
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const obs = new ResizeObserver((entries) => {
+      setViewportWidth(entries[0].contentRect.width);
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Update items-per-view based on screen width
+  useEffect(() => {
+    const update = () => {
+      if (window.innerWidth >= 1024) setItemsPerView(4);
+      else if (window.innerWidth >= 768) setItemsPerView(3);
+      else setItemsPerView(1);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
   const startAutoPlay = useCallback(() => {
-    if (count <= 1) return;
+    if (count <= itemsPerView) return;
     intervalRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % count);
-    }, 2000);
-  }, [count]);
+      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 5000);
+  }, [count, itemsPerView, maxIndex]);
 
   const stopAutoPlay = useCallback(() => {
     if (intervalRef.current) {
@@ -43,27 +73,46 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
 
   const goTo = (index: number) => {
     stopAutoPlay();
-    setCurrentIndex(index);
+    setCurrentIndex(Math.min(index, maxIndex));
     startAutoPlay();
   };
 
+  // Derive a safe index without mutating state in an effect
+  const displayIndex = Math.min(currentIndex, maxIndex);
+
+  // Each item CSS width: fills container evenly with gaps
+  const itemWidthStyle = `calc(${100 / itemsPerView}% - ${(GAP * (itemsPerView - 1)) / itemsPerView}px)`;
+
+  // Per-item pixel width → content width inside card (subtract p-4 padding)
+  const itemPixelWidth = viewportWidth > 0
+    ? (viewportWidth - GAP * (itemsPerView - 1)) / itemsPerView
+    : 0;
+  const contentPixelWidth = Math.max(0, itemPixelWidth - CARD_PADDING);
+  // Fixed aspect ratio (≈ 380:547 matching original poster + footer proportions)
+  const contentPixelHeight = contentPixelWidth > 0 ? Math.round(contentPixelWidth * 1.44) : 0;
+
+  // Translation per step
+  const translatePct = (displayIndex * 100) / itemsPerView;
+  const translatePx = (displayIndex * GAP) / itemsPerView;
+
   return (
     <div className="py-6 space-y-4">
-      {/* Section title – matches RN label style: fontSize Normal(16), fontWeight SemiBold */}
-      <h3 className="text-base font-semibold text-white px-[15px] font-[Montserrat,sans-serif]">
+      {/* Section title */}
+      <h2 className="text-xl font-bold text-white px-4 flex items-center gap-2">
         {I18n.marketingDashboard.topUsedPosters}
-      </h3>
+      </h2>
 
       {/* Carousel viewport */}
       <div
+        ref={viewportRef}
         className="relative w-full overflow-hidden"
         onMouseEnter={stopAutoPlay}
         onMouseLeave={startAutoPlay}
       >
-        {/* Slides track – CSS transition for smooth sliding */}
+        {/* Slides track */}
         <div
-          className="flex transition-transform duration-500 ease-in-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          className="flex gap-4 transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(calc(-${translatePct}% - ${translatePx}px))` }}
         >
           {mostUsedImages.map((item, index) => {
             const marqueeText = item.labels?.find((l) => l.type === LabelEnum.MARQUEE)?.value || '';
@@ -71,29 +120,34 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
             return (
               <div
                 key={item.id ?? index}
-                className="w-full flex-shrink-0 px-4 cursor-pointer"
+                style={{ width: itemWidthStyle }}
+                className="shrink-0 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 cursor-pointer hover:bg-white/20 transition-all group"
                 onClick={() => onSelect(item)}
               >
-                {/* Image card – aspect ratio 4:3, matching RN height: SCREEN_WIDTH * 0.75 */}
-                <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20">
-                  <Image
-                    src={`${CDN_URL}${item.imageLink}`}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
+                {/* Poster: image on top, agent footer at bottom – fixed height for uniform cards */}
+                <div
+                  className="overflow-hidden mb-3 flex items-start justify-center"
+                  style={{ height: contentPixelHeight > 0 ? contentPixelHeight : undefined }}
+                >
+                  {contentPixelWidth > 0 && (
+                    <BannerWithFooter
+                      url={`${CDN_URL}${item.imageLink}`}
+                      containerWidth={contentPixelWidth}
+                      containerHeight={contentPixelHeight}
+                    />
+                  )}
                 </div>
-                {/* Title + marquee below image */}
-                <div className="mt-2 space-y-0.5">
+
+                {/* Title + marquee below card */}
+                <div className="mt-4 space-y-0.5">
                   {marqueeText && (
                     <Marquee
                       text={marqueeText}
-                      className="h-[14px]"
+                      className="h-3.5"
                       textClassName="text-xs leading-[14px] text-red-500"
                     />
                   )}
-                  <p className="text-sm font-medium text-white truncate">{item.name}</p>
+                  <h3 className="text-white text-center font-medium truncate">{item.name}</h3>
                 </div>
               </div>
             );
@@ -101,15 +155,15 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
         </div>
       </div>
 
-      {/* Pagination dots – matches RN dotStyle / activeDotStyle */}
-      {count > 1 && (
+      {/* Pagination dots */}
+      {count > itemsPerView && (
         <div className="flex justify-center gap-2">
-          {mostUsedImages.map((_, i) => (
+          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
               className={`w-2 h-2 rounded-full transition-colors ${
-                i === currentIndex ? 'bg-orange-400' : 'bg-white/20'
+                i === displayIndex ? 'bg-orange-400' : 'bg-white/20'
               }`}
             />
           ))}
@@ -118,3 +172,4 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
     </div>
   );
 }
+

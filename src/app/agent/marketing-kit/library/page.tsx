@@ -74,7 +74,10 @@ export default function LibraryPage() {
   };
 
   const handleNavigatePoster = (item: GroupTemplateModel) => {
-    router.push(`/agent/marketing-kit/library/${item.id}`);
+    const parentFolder = folders.find((f) => f.templates.some((t) => t.id === item.id));
+    if (parentFolder) {
+      router.push(`/agent/marketing-kit/library/${parentFolder.id}/poster/${item.id}`);
+    }
   };
 
   const handleFilter = (value: string) => {
@@ -112,39 +115,33 @@ export default function LibraryPage() {
   return (
     <>
       {/* Main container */}
-      <div className="min-h-screen">
-        {/* Top Used Image Carousel */}
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* Marquee effect for Marketing Kit label (from BRD rule 3.2.1) */}
+        <div className="mb-6 overflow-hidden bg-white/5 border border-white/10 rounded-lg p-2 flex items-center backdrop-blur-sm">
+          <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded mr-3 whitespace-nowrap">THÔNG BÁO</span>
+          <div className="marquee flex-1 overflow-hidden">
+            <p className="animate-pulse text-sm text-slate-300 font-medium whitespace-nowrap">
+              {I18n.marketingDashboard.marquee}
+            </p>
+          </div>
+        </div>
+
+        {/* Top Used Image Carousel – "Dùng nhiều nhất" */}
         {topUsed.length > 0 && (
-          <>
+          <section>
             <ImageSlider mostUsedImages={topUsed} onSelect={handleNavigatePoster} />
-            {/* Divider line */}
-            <div className="w-full h-px bg-white/10" />
-          </>
+          </section>
         )}
 
-        {/* Folders section – matches RN FoldersComponent: mt-23, px-15, pb-20 */}
-        <div className="mt-[23px] px-[15px] pb-5 space-y-0">
-          {/* Header row: title + search button */}
-          <div className="flex items-center justify-between mb-[23px]">
-            <h3 className="text-base font-semibold text-white font-[Montserrat,sans-serif]">
+        {/* Filter & Sort + Search */}
+        <section className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <h2 className="text-xl font-bold text-white">
               {I18n.marketingDashboard.folderTitle}
-            </h3>
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-1 hover:opacity-80 transition-opacity"
-            >
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span className="text-[11px] font-semibold text-white font-[Montserrat,sans-serif]">
-                {I18n.search}
-              </span>
-            </button>
+            </h2>
           </div>
-
-          {/* Filter & Sort – 2 columns, 48% each (matches RN sortContainer) */}
-          <div className="flex justify-between mb-6 bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
-            <div className="w-[48%]">
+          <div className="flex gap-3 w-full md:w-auto items-center">
+            <div className="w-[48%] md:w-40">
               <Dropdown
                 options={LIST_FILTER.map((f) => ({
                   ...f,
@@ -154,7 +151,7 @@ export default function LibraryPage() {
                 label={I18n.filterBy}
               />
             </div>
-            <div className="w-[48%]">
+            <div className="w-[48%] md:w-40">
               <Dropdown
                 options={LIST_SORT.map((s) => ({
                   ...s,
@@ -164,20 +161,29 @@ export default function LibraryPage() {
                 label={I18n.arrangeBy}
               />
             </div>
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center justify-center p-2 px-4 bg-white/10 border border-white/20 rounded-lg text-white hover:bg-white/20 transition-colors"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {I18n.search}
+            </button>
           </div>
+        </section>
 
-          {/* Featured Events section – mt-24 matches RN */}
-          {featuredEvents.length > 0 && (
-            <div className="mt-6">
-              <FeaturedEvents data={featuredEvents} onPress={handleNavigateFolder} />
-            </div>
-          )}
+        {/* Featured Events – "Sự kiện nổi bật" */}
+        {featuredEvents.length > 0 && (
+          <section>
+            <FeaturedEvents data={featuredEvents} onPress={handleNavigateFolder} />
+          </section>
+        )}
 
-          {/* Public Folders grid – mt-16 matches RN */}
-          <div className="mt-4">
-            <PublicFolders data={generalFolders} onPress={handleNavigateFolder} />
-          </div>
-        </div>
+        {/* Public Folders – "Thư mục chung" */}
+        <section>
+          <PublicFolders data={generalFolders} onPress={handleNavigateFolder} />
+        </section>
       </div>
 
       {/* Search Modal */}

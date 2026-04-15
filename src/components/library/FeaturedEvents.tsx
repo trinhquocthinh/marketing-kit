@@ -6,6 +6,7 @@ import type { FolderModel } from '@/types';
 import Marquee from '@/components/animations/Marquee';
 import { format } from 'date-fns';
 import { getLastExpiredDate } from '@/lib/marketing-dashboard.utils';
+import LabelHot from './LabelHot';
 
 interface FeaturedEventsProps {
   data: FolderModel[];
@@ -19,10 +20,10 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
     <div className="space-y-3">
       {/* Title */}
       <h2 className="text-xl font-bold text-white flex items-center gap-2">
-        🔥 {I18n.marketingDashboard.featuredEvents}
+        {I18n.marketingDashboard.featuredEvents}
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 2xl:grid-cols-5 gap-4">
         {data.map((item, index) => {
           const marqueeLabel = item.labels?.find((l) => l.type === LabelEnum.MARQUEE)?.value || '';
           const hasHot = item.labels?.some((l) => l.type === LabelEnum.HOT);
@@ -40,20 +41,18 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
                 {marqueeLabel && (
                   <Marquee
                     text={marqueeLabel}
-                    className="h-[14px]"
-                    textClassName="text-[8px] leading-[14px] text-red-500"
+                    className="h-4 leading-2 bg-rose-500/20 px-2 py-0.5 rounded w-fit mb-2"
+                    textClassName="text-[10px] font-bold text-rose-400"
                   />
                 )}
 
                 {/* Title + HOT badge */}
-                <div className="flex items-start gap-[5px]">
+                <div className="flex items-start gap-1.25">
                   <span className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif] line-clamp-2">
                     {item.name}
                   </span>
                   {hasHot && (
-                    <span className="flex-shrink-0 px-2 py-0.5 bg-orange-500 text-white text-[8px] rounded flex items-center justify-center font-bold">
-                      MỚI NHẤT
-                    </span>
+                    <LabelHot />
                   )}
                 </div>
 
@@ -66,7 +65,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
 
                 {/* Type – ExtraSmallNext(9), HalloweenOrangeBold(#ED5E28) or NewCar(#295ACB) */}
                 <p
-                  className={`text-[9px] font-semibold font-[Montserrat,sans-serif] ${item.type === TypeEnum.RECRUIT ? 'text-[#295ACB]' : 'text-[#ED5E28]'
+                  className={`text-[10px] font-semibold font-[Montserrat,sans-serif] ${item.type === TypeEnum.RECRUIT ? 'text-blue-300' : 'text-orange-300'
                     }`}
                 >
                   {item.type === TypeEnum.SALE

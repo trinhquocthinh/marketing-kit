@@ -4,6 +4,7 @@ import { I18n } from '@/i18n';
 import { LabelEnum, TypeEnum } from '@/types/enums';
 import type { FolderModel } from '@/types';
 import Marquee from '@/components/animations/Marquee';
+import LabelHot from './LabelHot';
 
 interface PublicFoldersProps {
   data: FolderModel[];
@@ -17,11 +18,11 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
     <div className="space-y-3">
       {/* Title */}
       <h2 className="text-xl font-bold text-white flex items-center gap-2">
-        📁 {I18n.marketingDashboard.publicFolders}
+        {I18n.marketingDashboard.publicFolders}
       </h2>
 
       {/* Responsive grid – 2/3/4 columns */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-7 gap-4">
         {data.map((item, index) => {
           const marqueeLabel = item.labels?.find((l) => l.type === LabelEnum.MARQUEE)?.value || '';
           const hasHot = item.labels?.some((l) => l.type === LabelEnum.HOT);
@@ -32,25 +33,23 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
               onClick={() => onPress(item)}
               className="rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 py-5 px-4 flex items-center justify-between text-left hover:bg-white/10 transition-all hover:-translate-y-1 relative group"
             >
+              <div className='absolute top-0 right-8 w-16 h-3 bg-white/10 rounded-b-lg' />
               {/* Left content – 80% width matching RN */}
               <div className="flex-1 min-w-0 space-y-1 w-[80%]">
                 {/* Topic label row + marquee + HOT */}
-                <div className="flex items-center gap-[5px]">
-                  <span className="text-[9px] text-slate-400 font-[Montserrat,sans-serif]">
+                <div className="flex items-center gap-1.25">
+                  <span className="min-w-7.5 text-[9px] text-slate-400 font-[Montserrat,sans-serif]">
                     {I18n.marketingDashboard.topic}
                   </span>
                   {marqueeLabel && (
                     <Marquee
                       text={marqueeLabel}
-                      className="max-w-[60px]"
-                      textClassName="text-[8px] text-red-500"
+                      className="max-w-15 h-4 leading-2 bg-rose-500/20 px-2 py-0.5 rounded w-fit"
+                      textClassName="text-[10px] font-bold text-rose-400"
                     />
                   )}
                   {hasHot && (
-                    <span className="flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-rose-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
-                    </span>
+                    <LabelHot />
                   )}
                 </div>
 
@@ -61,9 +60,8 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
 
                 {/* Type badge – ExtraSmallNext(9), HalloweenOrangeBold or NewCar */}
                 <p
-                  className={`text-[9px] font-semibold font-[Montserrat,sans-serif] ${
-                    item.type === TypeEnum.RECRUIT ? 'text-[#295ACB]' : 'text-[#ED5E28]'
-                  }`}
+                  className={`text-[9px] font-semibold font-[Montserrat,sans-serif] ${item.type === TypeEnum.RECRUIT ? 'text-blue-300' : 'text-orange-300'
+                    }`}
                 >
                   {item.type === TypeEnum.SALE
                     ? I18n.marketingDashboard.boostSales

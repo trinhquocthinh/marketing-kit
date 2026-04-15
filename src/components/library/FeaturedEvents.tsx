@@ -41,7 +41,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
                 {marqueeLabel && (
                   <Marquee
                     text={marqueeLabel}
-                    className="h-4 leading-2 bg-rose-500/20 px-2 py-0.5 rounded w-fit mb-2"
+                    className="h-4 max-w-18 leading-2 bg-rose-500/20 px-2 py-0.5 rounded w-fit mb-2"
                     textClassName="text-[10px] font-bold text-rose-400"
                   />
                 )}

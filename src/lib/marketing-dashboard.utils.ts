@@ -20,6 +20,10 @@ import type {
   Periods,
 } from '@/types';
 
+export const numberWithCommasDot = (num: number): string => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
 export const listTopUsed = (data: FolderModel[]): GroupTemplateModel[] =>
   data
     .flatMap(

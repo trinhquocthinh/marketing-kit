@@ -6,9 +6,24 @@ const vi = {
   sortOldest: 'Cũ nhất',
   sortFromAToZ: 'Từ A đến Z',
   sortFromZToA: 'Từ Z đến A',
+  filterBy: 'Lọc theo',
+  arrangeBy: 'Sắp xếp theo',
   login: 'Đăng nhập',
   email: 'Email',
   password: 'Mật khẩu',
+  phoneNumber: 'Số điện thoại',
+  phoneNumberHolder: 'Nhập số điện thoại',
+  phoneNumberIsRequired: 'Vui lòng nhập số điện thoại',
+  phoneNumberIsInvalid: 'Số điện thoại không hợp lệ',
+  passwordHolder: 'Nhập mật khẩu',
+  forgotPassword: 'Quên mật khẩu?',
+  registerIconText: 'Đăng ký',
+  agreeTo: 'Tôi đồng ý với',
+  termsAndCondition: 'Điều khoản và Điều kiện',
+  yourAccountIsPending: 'Tài khoản đang chờ xử lý',
+  izionWillCheckInformationAndContactSoon: 'Izion sẽ kiểm tra thông tin và liên hệ bạn sớm nhất có thể.',
+  gotItAndTurnBack: 'Đã hiểu, quay lại',
+  logIn: 'Đăng nhập',
   submit: 'Gửi',
   cancel: 'Hủy',
   confirm: 'Xác nhận',
@@ -21,6 +36,9 @@ const vi = {
   noData: 'Không có dữ liệu',
   scanQr: 'Quét mã QR ngay!',
   fieldIsRequired: 'Trường này là bắt buộc',
+  fullName: 'Họ và tên',
+  phone: 'Số điện thoại',
+  review: 'Xem trước',
 
   // Marketing Dashboard
   marketingDashboard: {
@@ -42,9 +60,15 @@ const vi = {
     oneYear: '12 tháng',
 
     // Library
-    topUsedPosters: 'Mẫu được dùng nhiều nhất',
-    featuredEvents: 'Sự kiện nổi bật',
-    publicFolders: 'Thư mục chung',
+    topUsedPosters: 'Dùng nhiều nhất ✨',
+    featuredEvents: '🔥 Sự kiện nổi bật',
+    publicFolders: '📁 Thư mục chung',
+    folderTitle: 'Mẫu thiết kế',
+    topic: 'Chủ đề',
+    searchPlaceholder: 'Nhập tên mẫu thiết kế',
+    resultText: 'Kết quả',
+    resultEmpty: 'Không có kết quả phù hợp.\nVui lòng thử lại với từ khóa khác.',
+    libraryEmpty: 'Hiện tại chưa có dữ liệu.',
     gridView: 'Dạng lưới',
     listView: 'Dạng danh sách',
 
@@ -56,6 +80,24 @@ const vi = {
     updateAlias: 'Cập nhật bản sao',
     selectAvatar: 'Chọn ảnh đại diện',
     changeAvatar: 'Đổi ảnh đại diện',
+    missingAliasInfo: 'Vui lòng điền đầy đủ thông tin để tiếp tục.',
+    aliasNameDesc: 'Tùy chỉnh "Tên hình" để phân biệt tại mục "Hình của tôi".',
+    review: 'Xem trước',
+    posterFooterPlaceholder: {
+      name: 'Tên của bạn',
+      phone: 'Số điện thoại',
+    },
+    generateAlias: {
+      success: {
+        title: 'Đã lưu',
+      },
+      failure: {
+        title: 'Đã xảy ra lỗi!',
+      },
+      missingData: {
+        title: 'Hình ảnh không hợp lệ.',
+      },
+    },
 
     // Avatar management
     avatarManagement: 'Quản lý ảnh đại diện',
@@ -76,13 +118,15 @@ const vi = {
     download: 'Tải xuống',
     copyLink: 'Sao chép liên kết',
     share: 'Chia sẻ',
-    expired: 'Đã hết hạn',
+    expired: 'Hết hạn',
     linkCopied: 'Đã sao chép liên kết!',
 
     // Performance
     interactions: 'Lượt tương tác',
+    eSignCompletions: 'Lượt hoàn tất E-sign',
     esignCompleted: 'Hoàn tất E-sign',
     insurancePremium: 'Phí bảo hiểm',
+    insuranceFee: 'Phí BH',
     leadAllocated: 'Lead đã phân bổ',
     leadSubmitted: 'Hồ sơ đã gửi',
     leadPaid: 'Hồ sơ đã thanh toán',
@@ -90,6 +134,34 @@ const vi = {
     agentEsigned: 'Đại lý đã E-sign',
     clicked: 'Lượt click',
     paidCases: 'Hồ sơ đã thanh toán',
+    textHeaderPerformanceTip: 'Số liệu này không dùng để đánh giá kết quả kinh doanh.',
+    overviewOfActivities: 'Tổng quan hoạt động',
+    from: 'Từ',
+    to: 'đến',
+    imageCatalog: 'Danh mục hình',
+    imagePerformance: 'Hiệu suất hình',
+    performances: {
+      clickOrScan: 'Lượt click/scan',
+      allocate: 'Lượt phân bổ',
+      submited: 'Hồ sơ đã nộp',
+      register: 'Đã tạo tài khoản',
+      esign: 'Hoàn tất eSign',
+      statistics: 'Thống kê số liệu',
+      recruit: {
+        title: 'Số lượng CTV đã hoàn tất eSign theo thời gian',
+        unitOfTotal: 'CTV đã hoàn tất eSign',
+        chartNote: {
+          text: '🔹 Lưu ý: Số lượng CTV Hoàn tất eSign trong biểu đồ này được ghi nhận theo ngày hoàn tất eSign thực tế.',
+        },
+      },
+      sale: {
+        title: 'Số lượng HS đã thanh toán theo thời gian',
+        unitOfTotal: 'HS đã thanh toán',
+        chartNote: {
+          text: '🔹 Lưu ý: Số lượng hồ sơ Hoàn tất thanh toán trong biểu đồ này được ghi nhận theo ngày thanh toán thực tế.',
+        },
+      },
+    },
 
     // Tutorial
     tutorialTitle: 'Chào mừng bạn đến với Marketing Kit',

@@ -166,7 +166,7 @@ export default function PortalPostersPage() {
                   )}
                 </div>
                 <div className="p-3">
-                  <Marquee text={poster.name} maxChars={20} className="text-sm font-medium text-gray-900" />
+                  <Marquee text={poster.name} minChars={20} className="text-sm font-medium text-gray-900" />
                   <p className="text-xs text-gray-500 mt-1">{poster.folderName}</p>
                 </div>
               </div>

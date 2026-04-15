@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_BASE_URL } from './api.config';
+import { store } from './store';
 
 export interface HttpResult<T> {
   isSuccess: boolean;
@@ -19,6 +20,16 @@ class HttpService {
         'Content-Type': 'application/json',
         ...headers,
       },
+    });
+
+    this.client.interceptors.request.use((config) => {
+      if (!config.headers['Authorization']) {
+        const token = store.getState().authentication.token;
+        if (token) {
+          config.headers['Authorization'] = `Bearer ${token}`;
+        }
+      }
+      return config;
     });
 
     this.client.interceptors.response.use(

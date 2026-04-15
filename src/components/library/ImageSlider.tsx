@@ -15,15 +15,17 @@ interface ImageSliderProps {
 
 export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const count = mostUsedImages.length;
+
+  // ── Auto-play every 2 seconds (matches RN autoPlayInterval: 2000) ──
   const startAutoPlay = useCallback(() => {
-    if (mostUsedImages.length <= 1) return;
+    if (count <= 1) return;
     intervalRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % mostUsedImages.length);
+      setCurrentIndex((prev) => (prev + 1) % count);
     }, 2000);
-  }, [mostUsedImages.length]);
+  }, [count]);
 
   const stopAutoPlay = useCallback(() => {
     if (intervalRef.current) {
@@ -37,62 +39,77 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
     return stopAutoPlay;
   }, [startAutoPlay, stopAutoPlay]);
 
-  useEffect(() => {
-    if (containerRef.current) {
-      const scrollLeft = currentIndex * containerRef.current.offsetWidth;
-      containerRef.current.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-    }
-  }, [currentIndex]);
+  if (count === 0) return null;
 
-  if (mostUsedImages.length === 0) return null;
+  const goTo = (index: number) => {
+    stopAutoPlay();
+    setCurrentIndex(index);
+    startAutoPlay();
+  };
 
   return (
-    <div className="py-6">
-      <h3 className="text-sm font-semibold text-gray-900 mb-4 px-4">
+    <div className="py-6 space-y-4">
+      {/* Section title – matches RN label style: fontSize Normal(16), fontWeight SemiBold */}
+      <h3 className="text-base font-semibold text-black px-[15px] font-[Montserrat,sans-serif]">
         {I18n.marketingDashboard.topUsedPosters}
       </h3>
+
+      {/* Carousel viewport */}
       <div
-        ref={containerRef}
-        className="flex overflow-x-hidden snap-x snap-mandatory scroll-smooth"
+        className="relative w-full overflow-hidden"
         onMouseEnter={stopAutoPlay}
         onMouseLeave={startAutoPlay}
       >
-        {mostUsedImages.map((item, index) => {
-          const marqueeText = item.labels?.find((l) => l.type === LabelEnum.MARQUEE)?.value || '';
-          return (
-            <div
-              key={item.id ?? index}
-              className="w-full flex-shrink-0 snap-center px-4 cursor-pointer"
-              onClick={() => onSelect(item)}
-            >
-              <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-                <Image
-                  src={`${CDN_URL}${item.imageLink}`}
-                  alt={item.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                {marqueeText && (
-                  <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded">
-                    <Marquee text={marqueeText} />
-                  </div>
-                )}
+        {/* Slides track – CSS transition for smooth sliding */}
+        <div
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {mostUsedImages.map((item, index) => {
+            const marqueeText = item.labels?.find((l) => l.type === LabelEnum.MARQUEE)?.value || '';
+
+            return (
+              <div
+                key={item.id ?? index}
+                className="w-full flex-shrink-0 px-4 cursor-pointer"
+                onClick={() => onSelect(item)}
+              >
+                {/* Image card – aspect ratio 4:3, matching RN height: SCREEN_WIDTH * 0.75 */}
+                <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
+                  <Image
+                    src={`${CDN_URL}${item.imageLink}`}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
+                {/* Title + marquee below image */}
+                <div className="mt-2 space-y-0.5">
+                  {marqueeText && (
+                    <Marquee
+                      text={marqueeText}
+                      className="h-[14px]"
+                      textClassName="text-xs leading-[14px] text-red-500"
+                    />
+                  )}
+                  <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
+                </div>
               </div>
-              <p className="mt-2 text-sm font-medium text-gray-800 truncate">{item.name}</p>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-      {/* Pagination dots */}
-      {mostUsedImages.length > 1 && (
-        <div className="flex justify-center gap-2 mt-3">
+
+      {/* Pagination dots – matches RN dotStyle / activeDotStyle */}
+      {count > 1 && (
+        <div className="flex justify-center gap-2">
           {mostUsedImages.map((_, i) => (
             <button
               key={i}
-              onClick={() => setCurrentIndex(i)}
+              onClick={() => goTo(i)}
               className={`w-2 h-2 rounded-full transition-colors ${
-                i === currentIndex ? 'bg-[#FA875B]' : 'bg-gray-300'
+                i === currentIndex ? 'bg-[#FF8050]' : 'bg-[#C9C9C9]'
               }`}
             />
           ))}

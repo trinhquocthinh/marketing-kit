@@ -7,6 +7,7 @@ import { SortEnum, StatusEnum, TypeEnum } from '@/types/enums';
 import type { PerformanceModel } from '@/types';
 import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
 import { LIST_FILTER, LIST_PERFORMANCE_SORT } from '@/lib/constants';
+import { numberWithCommasDot } from '@/lib/marketing-dashboard.utils';
 import Dropdown from '@/components/ui/Dropdown';
 import Skeleton from '@/components/ui/Skeleton';
 import NoData from '@/components/ui/NoData';
@@ -25,11 +26,6 @@ export default function PerformancePage() {
 
   const sortedData = useMemo(() => {
     let data = [...performances];
-
-    // Filter
-    if (filter !== StatusEnum.ALL) {
-      data = data.filter((item) => item.type === filter);
-    }
 
     // Sort
     switch (sort) {
@@ -56,6 +52,11 @@ export default function PerformancePage() {
         break;
     }
 
+    // Filter
+    if (filter !== StatusEnum.ALL) {
+      data = data.filter((item) => item.type === filter);
+    }
+
     return data;
   }, [performances, filter, sort]);
 
@@ -75,13 +76,13 @@ export default function PerformancePage() {
 
   if (isLoading && performances.length === 0) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 p-4">
         <div className="flex gap-3">
           <Skeleton className="h-10 flex-1 rounded-lg" />
           <Skeleton className="h-10 flex-1 rounded-lg" />
         </div>
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 rounded-lg" />
+          <Skeleton key={i} className="h-28 rounded-lg" />
         ))}
       </div>
     );
@@ -92,30 +93,35 @@ export default function PerformancePage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Filter & Sort */}
-      <div className="flex gap-3">
-        <div className="flex-1">
+    <div className="min-h-full bg-[#F5F5F5]">
+      {/* Filter & Sort – two side-by-side dropdowns (48% each) */}
+      <div className="flex gap-3 px-4 py-3 bg-white">
+        <div className="w-[48%]">
           <Dropdown
             options={LIST_FILTER.map((f) => ({ ...f, isSelected: f.id === filter }))}
             onSelect={(opt) => handleFilter(opt.id)}
-            label={I18n.all}
+            label={I18n.filterBy}
           />
         </div>
-        <div className="flex-1">
+        <div className="w-[48%]">
           <Dropdown
             options={sortOptions.map((s) => ({ ...s, isSelected: s.id === sort }))}
             onSelect={(opt) => setSort(opt.id as SortEnum)}
-            label={I18n.default}
+            label={I18n.arrangeBy}
           />
         </div>
       </div>
 
-      {/* Performance list */}
-      <div className="space-y-3">
-        {sortedData.map((item) => (
+      {/* Section title */}
+      <p className="px-5 pt-5 pb-2 text-sm font-semibold text-black font-[Montserrat,sans-serif]">
+        {I18n.marketingDashboard.tutorialTitle2}
+      </p>
+
+      {/* Performance item list */}
+      <div className="flex flex-col gap-3 px-4 pb-6">
+        {sortedData.map((item, index) => (
           <PerformanceCard
-            key={item.id}
+            key={item.id ?? index}
             item={item}
             onClick={() => router.push(`/agent/marketing-kit/performance/${item.id}`)}
           />
@@ -125,30 +131,75 @@ export default function PerformancePage() {
   );
 }
 
+/* ── Performance Item Card – matches RN sectionTop + sectionBottom ── */
 function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: () => void }) {
   const isSale = item.type === TypeEnum.SALE || item.type === StatusEnum.SALE;
 
   return (
     <button
       onClick={onClick}
-      className="w-full bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between text-left hover:shadow-md transition-shadow"
+      className="w-full rounded-lg bg-white overflow-hidden text-left"
+      style={{
+        border: '0.5px solid #9E9E9E',
+        boxShadow: '0px 1px 1px 0px rgba(0,0,0,0.3)',
+      }}
     >
-      <div className="flex-1 min-w-0 space-y-1">
-        <p className="text-sm font-semibold text-gray-900 truncate">{item.name}</p>
-        <p className={`text-xs font-semibold ${isSale ? 'text-[#FA875B]' : 'text-blue-600'}`}>
-          {isSale ? I18n.marketingDashboard.boostSales : I18n.marketingDashboard.teamDevelopment}
-        </p>
-        <div className="flex gap-4 text-xs text-gray-500">
-          <span>{I18n.marketingDashboard.clicked}: <strong className="text-gray-900">{item.count}</strong></span>
-          <span>
-            {isSale ? I18n.marketingDashboard.insurancePremium : I18n.marketingDashboard.esignCompleted}:{' '}
-            <strong className="text-gray-900">{item.sum}</strong>
+      {/* Section top: name + type + arrow */}
+      <div className="flex items-center justify-between px-5 pt-3 pb-4">
+        <div className="flex-[0.7] min-w-0">
+          <p className="text-sm font-semibold text-black font-[Montserrat,sans-serif] line-clamp-2">
+            {item.name}
+          </p>
+          <p
+            className="text-xs font-semibold font-[Montserrat,sans-serif] mt-1"
+            style={{ color: isSale ? '#ED5E28' : '#295ACB' }}
+          >
+            {isSale
+              ? I18n.marketingDashboard.boostSales
+              : I18n.marketingDashboard.teamDevelopment}
+          </p>
+        </div>
+        {/* Orange circle arrow icon */}
+        <div className="w-6 h-6 rounded-full bg-[#ED5E28] flex items-center justify-center flex-shrink-0">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Section bottom: two stat blocks with vertical divider */}
+      <div
+        className="flex items-center"
+        style={{
+          backgroundColor: '#F5F5F5',
+          borderTop: '0.5px solid #C0C0C0',
+          borderBottomLeftRadius: 8,
+          borderBottomRightRadius: 8,
+          paddingTop: 8,
+          paddingBottom: 14,
+        }}
+      >
+        <div className="flex-1 flex flex-col items-center gap-0.5 px-4">
+          <span className="text-base font-semibold text-[#FF8050] font-[Montserrat,sans-serif]">
+            {numberWithCommasDot(item.count)}
+          </span>
+          <span className="text-xs font-semibold text-[#666] font-[Montserrat,sans-serif]">
+            {I18n.marketingDashboard.interactions}
+          </span>
+        </div>
+        {/* Vertical divider */}
+        <div className="w-px self-stretch bg-[#C0C0C0]" />
+        <div className="flex-1 flex flex-col items-center gap-0.5 px-4">
+          <span className="text-base font-semibold text-[#FF8050] font-[Montserrat,sans-serif]">
+            {numberWithCommasDot(item.sum)}
+          </span>
+          <span className="text-xs font-semibold text-[#666] font-[Montserrat,sans-serif]">
+            {isSale
+              ? I18n.marketingDashboard.insuranceFee
+              : I18n.marketingDashboard.eSignCompletions}
           </span>
         </div>
       </div>
-      <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-      </svg>
     </button>
   );
 }

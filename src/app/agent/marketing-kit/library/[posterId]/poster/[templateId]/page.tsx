@@ -7,11 +7,19 @@ import { CDN_URL } from '@/lib/api.config';
 import { LabelEnum } from '@/types/enums';
 import type { AliasData, AvatarData, GroupTemplateModel } from '@/types';
 import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
-import { generateMktLink, generateUniqueAliasName } from '@/lib/marketing-dashboard.utils';
-import PosterCanvas, { exportPosterAsBlob } from '@/components/posters/PosterCanvas';
-import Button from '@/components/ui/Button';
+import {
+  generateMktLink,
+  generateUniqueAliasName,
+} from '@/lib/marketing-dashboard.utils';
+import PosterCanvas, {
+  exportPosterAsBlob,
+} from '@/components/posters/PosterCanvas';
 import Input from '@/components/ui/Input';
 import Skeleton from '@/components/ui/Skeleton';
+
+const ZOOM_MIN = 1;
+const ZOOM_MAX = 3;
+const ZOOM_STEP = 0.25;
 
 export default function PosterDetailPage() {
   const router = useRouter();
@@ -21,22 +29,30 @@ export default function PosterDetailPage() {
 
   const {
     folders,
-    isLoading,
     createAlias,
     updateAlias,
     uploadAliasImage,
     getAlias,
     getAvatar,
-    setLoading,
   } = useMarketingDashboard();
 
+  // Refs
   const canvasRef = useRef<HTMLDivElement>(null);
+  const canvasExportRef = useRef<HTMLDivElement>(null);
+
+  // Form state
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [aliasName, setAliasName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('/default-avatar.png');
   const [qrUrl, setQrUrl] = useState('');
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // UI state
+  const [zoom, setZoom] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [reviewZoom, setReviewZoom] = useState(1);
 
   const folder = folders.find((f) => f.id === folderId);
   const template: GroupTemplateModel | undefined = folder?.templates.find(
@@ -44,7 +60,7 @@ export default function PosterDetailPage() {
   );
 
   const bannerUrl = template ? `${CDN_URL}${template.imageLink}` : '';
-  const isFilled = name && phone && aliasName;
+  const isFilled = !!(name && phone && aliasName);
 
   // Load defaults
   useEffect(() => {
@@ -56,7 +72,9 @@ export default function PosterDetailPage() {
   useEffect(() => {
     getAvatar().then((res) => {
       if (res?.data) {
-        const defaultAvatar = (res.data as AvatarData[]).find((a) => a.isDefault);
+        const defaultAvatar = (res.data as AvatarData[]).find(
+          (a) => a.isDefault,
+        );
         if (defaultAvatar?.imageLink) {
           setAvatarUrl(`${CDN_URL}${defaultAvatar.imageLink}`);
         }
@@ -64,6 +82,17 @@ export default function PosterDetailPage() {
     });
   }, [getAvatar]);
 
+  // ── Review handler ──
+  const handleReview = useCallback(() => {
+    if (!isFilled) {
+      alert(I18n.marketingDashboard.missingAliasInfo);
+      return;
+    }
+    setReviewZoom(1);
+    setIsReviewing(true);
+  }, [isFilled]);
+
+  // ── Save handler (alias creation pipeline) ──
   const handleSave = useCallback(async () => {
     if (!isFilled || !template || !folder) return;
 
@@ -72,10 +101,14 @@ export default function PosterDetailPage() {
       // 1. Get existing aliases to generate unique name
       const aliasRes = await getAlias();
       const aliasList: AliasData[] = aliasRes?.data || [];
-      const uniqueName = generateUniqueAliasName(aliasName, aliasList, template.name);
+      const uniqueName = generateUniqueAliasName(
+        aliasName,
+        aliasList,
+        template.name,
+      );
 
       if (!uniqueName) {
-        alert(I18n.marketingDashboard.createAlias + ' - name conflict');
+        alert(I18n.marketingDashboard.generateAlias.failure.title);
         setIsSaving(false);
         return;
       }
@@ -94,40 +127,52 @@ export default function PosterDetailPage() {
       const aliasData = createRes?.data;
       if (!aliasData?.id) throw new Error('Failed to create alias');
 
-      // 3. Set QR URL for canvas
+      // 3. Generate QR link and set for export canvas
       const mktLink = generateMktLink(aliasData);
       setQrUrl(mktLink);
 
-      // Wait for QR to render
-      await new Promise((r) => setTimeout(r, 1500));
+      // Wait for QR to render on the export canvas
+      await new Promise((r) => setTimeout(r, 2000));
 
       // 4. Export canvas to blob
-      if (!canvasRef.current) throw new Error('Canvas not ready');
-      const blob = await exportPosterAsBlob(canvasRef.current);
+      if (!canvasExportRef.current) throw new Error('Canvas not ready');
+      const blob = await exportPosterAsBlob(canvasExportRef.current);
 
       // 5. Upload image
-      const file = new File([blob], `${template.id}_${Date.now()}.jpg`, { type: 'image/jpeg' });
+      const file = new File([blob], `${template.id}_${Date.now()}.jpg`, {
+        type: 'image/jpeg',
+      });
       const uploadRes = await uploadAliasImage({ file, fileName: file.name });
       const uploadedLink = uploadRes?.data;
       if (!uploadedLink) throw new Error('Upload failed');
 
-      // 6. Update alias with image link
-      const updateRes = await updateAlias(aliasData.id, {
+      // 6. Update alias with uploaded image link
+      await updateAlias(aliasData.id, {
         ...aliasData,
         imageLink: uploadedLink,
       });
-
-      if (!updateRes?.data) throw new Error('Update failed');
 
       // Navigate to my images
       router.push('/agent/marketing-kit/my-images');
     } catch (err) {
       console.error('Save poster error:', err);
-      alert('Có lỗi xảy ra, vui lòng thử lại.');
+      alert(I18n.marketingDashboard.generateAlias.missingData.title);
     } finally {
       setIsSaving(false);
     }
-  }, [isFilled, template, folder, aliasName, name, phone, getAlias, createAlias, updateAlias, uploadAliasImage, router]);
+  }, [
+    isFilled,
+    template,
+    folder,
+    aliasName,
+    name,
+    phone,
+    getAlias,
+    createAlias,
+    updateAlias,
+    uploadAliasImage,
+    router,
+  ]);
 
   if (!template || !folder) {
     return (
@@ -138,108 +183,311 @@ export default function PosterDetailPage() {
     );
   }
 
+  // ── Review overlay (pinch-zoom equivalent) ──
+  if (isReviewing) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col bg-black">
+        {/* Review header */}
+        <div className="flex items-center justify-between px-4 py-3 bg-black/80">
+          <button
+            onClick={() => setIsReviewing(false)}
+            className="text-white text-sm font-medium"
+          >
+            {I18n.close}
+          </button>
+          <span className="text-white text-sm font-semibold">
+            {I18n.marketingDashboard.review}
+          </span>
+          <span className="text-white/60 text-xs">
+            {Math.round(reviewZoom * 100)}%
+          </span>
+        </div>
+
+        {/* Zoomable poster preview */}
+        <div className="flex-1 overflow-auto flex items-start justify-center p-4">
+          <PosterCanvas
+            imageUrl={bannerUrl}
+            avatarUrl={avatarUrl}
+            qrData="https://example.com"
+            name={name}
+            phone={phone}
+            imageMeta={template.imageMeta || {}}
+            showQrPlaceholder
+            zoom={reviewZoom}
+          />
+        </div>
+
+        {/* Zoom controls */}
+        <div className="flex items-center justify-center gap-4 px-4 py-3 bg-black/80">
+          <button
+            onClick={() =>
+              setReviewZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))
+            }
+            disabled={reviewZoom <= ZOOM_MIN}
+            className="w-9 h-9 rounded-full bg-white/20 text-white flex items-center justify-center text-lg disabled:opacity-30"
+          >
+            −
+          </button>
+          <input
+            type="range"
+            min={ZOOM_MIN}
+            max={ZOOM_MAX}
+            step={ZOOM_STEP}
+            value={reviewZoom}
+            onChange={(e) => setReviewZoom(Number(e.target.value))}
+            className="w-40 accent-[#FA875B]"
+          />
+          <button
+            onClick={() =>
+              setReviewZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))
+            }
+            disabled={reviewZoom >= ZOOM_MAX}
+            className="w-9 h-9 rounded-full bg-white/20 text-white flex items-center justify-center text-lg disabled:opacity-30"
+          >
+            +
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] bg-white">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 px-[15px] py-3 border-b border-gray-100">
         <button
           onClick={() => router.back()}
           className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
         >
-          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-5 h-5 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
-        <h2 className="text-base font-semibold text-gray-900 truncate">{template.name}</h2>
+        <h2 className="text-base font-semibold text-gray-900 truncate flex-1">
+          {template.name}
+        </h2>
+        <button
+          onClick={() => router.back()}
+          className="text-sm text-gray-500 hover:text-gray-700"
+        >
+          {I18n.close}
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Preview */}
-        <div className="space-y-4">
-          <div ref={canvasRef} className="max-w-md mx-auto rounded-lg overflow-hidden shadow-lg">
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto px-[15px] py-6">
+        {/* Poster preview with zoom */}
+        <div className="flex flex-col items-center">
+          <div className="overflow-auto max-w-full">
             <PosterCanvas
+              ref={canvasRef}
               imageUrl={bannerUrl}
               avatarUrl={avatarUrl}
-              qrData={qrUrl || 'https://placeholder.qr'}
-              name={name || I18n.marketingDashboard.displayName}
-              phone={phone || I18n.marketingDashboard.phoneNumber}
+              qrData="https://example.com"
+              name={name || I18n.marketingDashboard.posterFooterPlaceholder.name}
+              phone={
+                phone ||
+                I18n.marketingDashboard.posterFooterPlaceholder.phone
+              }
               imageMeta={template.imageMeta || {}}
-              showQrPlaceholder={!qrUrl}
+              showQrPlaceholder
+              zoom={zoom}
             />
+          </div>
+
+          {/* Zoom controls */}
+          <div className="flex items-center gap-3 mt-3">
+            <button
+              onClick={() =>
+                setZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))
+              }
+              disabled={zoom <= ZOOM_MIN}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 disabled:opacity-30"
+            >
+              −
+            </button>
+            <span className="text-xs text-gray-500 min-w-[3rem] text-center">
+              {Math.round(zoom * 100)}%
+            </span>
+            <button
+              onClick={() =>
+                setZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))
+              }
+              disabled={zoom >= ZOOM_MAX}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 disabled:opacity-30"
+            >
+              +
+            </button>
           </div>
         </div>
 
-        {/* Form */}
-        <div className="space-y-4">
-          {/* Avatar section */}
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              </div>
-              <button
-                onClick={() => router.push('/agent/marketing-kit/avatar')}
-                className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#FA875B] rounded-full flex items-center justify-center"
-              >
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
+        {/* Avatar section */}
+        <div className="flex flex-col items-center mt-6 mb-4">
+          <button
+            onClick={() => router.push('/agent/marketing-kit/avatar')}
+            className="flex flex-col items-center"
+          >
+            <div className="w-20 h-20 rounded-full overflow-hidden border border-black/15">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarUrl}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+                onLoad={() => setImageLoaded(true)}
+              />
             </div>
-            <button
-              onClick={() => router.push('/agent/marketing-kit/avatar')}
-              className="text-sm text-[#FA875B] font-medium hover:underline"
-            >
-              {I18n.marketingDashboard.changeAvatar}
-            </button>
-          </div>
+            {/* Camera icon */}
+            <div className="-mt-3">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="text-[#FA875B]"
+              >
+                <circle cx="12" cy="12" r="12" fill="currentColor" />
+                <path
+                  d="M8.5 9.5A1 1 0 019.5 8.5h.65a1 1 0 00.83-.45l.4-.6A1 1 0 0112.21 7h1.58a1 1 0 01.83.45l.4.6a1 1 0 00.83.45h.65a1 1 0 011 1v5a1 1 0 01-1 1h-7a1 1 0 01-1-1v-5z"
+                  stroke="white"
+                  strokeWidth="1"
+                />
+                <circle
+                  cx="13"
+                  cy="12"
+                  r="1.8"
+                  stroke="white"
+                  strokeWidth="1"
+                />
+              </svg>
+            </div>
+          </button>
+        </div>
 
+        {/* Form fields */}
+        <div className="space-y-4">
           <Input
-            label={I18n.marketingDashboard.displayName}
+            label={I18n.fullName}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={I18n.marketingDashboard.displayName}
+            placeholder={I18n.fullName}
             readOnly={template.editable === false}
           />
           <Input
-            label={I18n.marketingDashboard.phoneNumber}
+            label={I18n.phone}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder={I18n.marketingDashboard.phoneNumber}
+            placeholder={I18n.phone}
             readOnly={template.editable === false}
           />
-          <Input
-            label={I18n.marketingDashboard.aliasName}
-            value={aliasName}
-            onChange={(e) => setAliasName(e.target.value)}
-            placeholder={I18n.marketingDashboard.aliasName}
-          />
-
-          <div className="flex gap-3 pt-2">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              disabled={!isFilled || isSaving}
-              onClick={() => {
-                /* Preview: just scroll to canvas */
-                canvasRef.current?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              {I18n.marketingDashboard.gridView}
-            </Button>
-            <Button
-              variant="primary"
-              className="flex-1"
-              disabled={!isFilled || isSaving}
-              loading={isSaving}
-              onClick={handleSave}
-            >
-              {I18n.save}
-            </Button>
+          <div>
+            <Input
+              label={I18n.marketingDashboard.aliasName}
+              value={aliasName}
+              onChange={(e) => setAliasName(e.target.value)}
+              placeholder={I18n.marketingDashboard.aliasName}
+            />
+            <p className="mt-1 text-[11px] text-gray-500 font-[Montserrat,sans-serif]">
+              {I18n.marketingDashboard.aliasNameDesc}
+            </p>
           </div>
         </div>
       </div>
+
+      {/* Bottom action bar – matches RN: shadow, two 48% buttons */}
+      <div className="flex items-center justify-between gap-3 px-[15px] py-2 bg-white shadow-[0px_-4px_60px_0px_rgba(176,143,130,0.4)]">
+        <button
+          disabled={isSaving || !imageLoaded}
+          onClick={handleReview}
+          className="flex-1 h-11 rounded-full border border-[#FF8050] text-[#FF8050] text-[13px] font-semibold font-[Montserrat,sans-serif] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {I18n.marketingDashboard.review}
+        </button>
+        <button
+          disabled={isSaving || !imageLoaded}
+          onClick={handleSave}
+          className="flex-1 h-11 rounded-full bg-[#FF8050] text-white text-[13px] font-semibold font-[Montserrat,sans-serif] shadow-[0_1.5px_2px_rgba(192,68,19,1)] disabled:bg-[#D1D1D1] disabled:shadow-none disabled:cursor-not-allowed transition-colors"
+        >
+          {isSaving ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              {I18n.loading}
+            </span>
+          ) : (
+            I18n.save
+          )}
+        </button>
+      </div>
+
+      {/* Off-screen export canvas (with real QR when saving) */}
+      {qrUrl && (
+        <div className="fixed" style={{ top: '200vh', left: 0 }}>
+          <PosterCanvas
+            ref={canvasExportRef}
+            imageUrl={bannerUrl}
+            avatarUrl={avatarUrl}
+            qrData={qrUrl}
+            name={name}
+            phone={phone}
+            imageMeta={template.imageMeta || {}}
+          />
+        </div>
+      )}
+
+      {/* Full-screen loading overlay */}
+      {isSaving && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl p-6 flex flex-col items-center gap-3">
+            <svg
+              className="animate-spin h-8 w-8 text-[#FA875B]"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
+            <p className="text-sm text-gray-700">{I18n.loading}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -28,6 +28,7 @@ export default function LibraryPage() {
     getFolders();
   }, [getFolders]);
 
+  // ── Sort + Filter logic (matches RN handleSortAndFilter) ──
   const sortedAndFiltered = useMemo(() => {
     let result = [...folders];
 
@@ -44,8 +45,10 @@ export default function LibraryPage() {
     return result;
   }, [folders, sort, filter]);
 
+  // ── Top used posters (matches RN listTopUsed) ──
   const topUsed = useMemo(() => listTopUsed(folders), [folders]);
 
+  // ── Featured events – folders with FEATURED label + templates ──
   const featuredEvents = useMemo(
     () =>
       sortedAndFiltered.filter(
@@ -55,6 +58,7 @@ export default function LibraryPage() {
     [sortedAndFiltered],
   );
 
+  // ── General folders – non-FEATURED, with templates ──
   const generalFolders = useMemo(
     () =>
       sortedAndFiltered.filter(
@@ -81,9 +85,10 @@ export default function LibraryPage() {
     setSort(value as SortEnum);
   };
 
+  // ── Loading skeleton ──
   if (isLoading && folders.length === 0) {
     return (
-      <div className="space-y-4">
+      <div className="bg-[#F5F5F5] min-h-screen p-4 space-y-4">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full rounded-lg" />
         <div className="grid grid-cols-2 gap-3">
@@ -95,70 +100,83 @@ export default function LibraryPage() {
     );
   }
 
+  // ── Empty state ──
   if (folders.length === 0 && !isLoading) {
-    return <NoData message={I18n.noData} />;
+    return (
+      <div className="bg-[#F5F5F5] min-h-screen flex items-center justify-center">
+        <NoData message={I18n.marketingDashboard.libraryEmpty} />
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="space-y-0">
-        {/* Top Used Carousel */}
+      {/* Main container – WildSand bg, matches RN styles.container */}
+      <div className="bg-[#F5F5F5] min-h-screen">
+        {/* Top Used Image Carousel */}
         {topUsed.length > 0 && (
           <>
             <ImageSlider mostUsedImages={topUsed} onSelect={handleNavigatePoster} />
-            <div className="h-2 bg-gray-200" />
+            {/* Divider line – matches RN AmericanSilver, 8px height */}
+            <div className="w-full h-2 bg-[#D1D1D1]" />
           </>
         )}
 
-        {/* Folders Section */}
-        <div className="px-0 pt-6 space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-900">
-              {I18n.marketingDashboard.publicFolders}
+        {/* Folders section – matches RN FoldersComponent: mt-23, px-15, pb-20 */}
+        <div className="mt-[23px] px-[15px] pb-5 space-y-0">
+          {/* Header row: title + search button */}
+          <div className="flex items-center justify-between mb-[23px]">
+            <h3 className="text-base font-semibold text-black font-[Montserrat,sans-serif]">
+              {I18n.marketingDashboard.folderTitle}
             </h3>
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-1 text-sm font-semibold text-gray-900 hover:text-[#FA875B] transition-colors"
+              className="flex items-center gap-1 hover:opacity-80 transition-opacity"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              {I18n.search}
+              <span className="text-[11px] font-semibold text-black font-[Montserrat,sans-serif]">
+                {I18n.search}
+              </span>
             </button>
           </div>
 
-          {/* Filter & Sort */}
-          <div className="flex gap-3">
-            <div className="flex-1">
+          {/* Filter & Sort – 2 columns, 48% each (matches RN sortContainer) */}
+          <div className="flex justify-between mb-6">
+            <div className="w-[48%]">
               <Dropdown
                 options={LIST_FILTER.map((f) => ({
                   ...f,
                   isSelected: f.id === filter,
                 }))}
                 onSelect={(opt) => handleFilter(opt.id)}
-                label={I18n.all}
+                label={I18n.filterBy}
               />
             </div>
-            <div className="flex-1">
+            <div className="w-[48%]">
               <Dropdown
                 options={LIST_SORT.map((s) => ({
                   ...s,
                   isSelected: s.id === sort,
                 }))}
                 onSelect={(opt) => handleSort(opt.id)}
-                label={I18n.default}
+                label={I18n.arrangeBy}
               />
             </div>
           </div>
 
-          {/* Featured Events */}
+          {/* Featured Events section – mt-24 matches RN */}
           {featuredEvents.length > 0 && (
-            <FeaturedEvents data={featuredEvents} onPress={handleNavigateFolder} />
+            <div className="mt-6">
+              <FeaturedEvents data={featuredEvents} onPress={handleNavigateFolder} />
+            </div>
           )}
 
-          {/* Public Folders */}
-          <PublicFolders data={generalFolders} onPress={handleNavigateFolder} />
+          {/* Public Folders grid – mt-16 matches RN */}
+          <div className="mt-4">
+            <PublicFolders data={generalFolders} onPress={handleNavigateFolder} />
+          </div>
         </div>
       </div>
 
@@ -169,6 +187,19 @@ export default function LibraryPage() {
         onClose={() => setIsSearchOpen(false)}
         onSelect={handleNavigatePoster}
       />
+
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 shadow-xl flex items-center gap-3">
+            <svg className="animate-spin h-6 w-6 text-[#FA875B]" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <span className="text-sm text-gray-700">{I18n.loading}</span>
+          </div>
+        </div>
+      )}
     </>
   );
 }

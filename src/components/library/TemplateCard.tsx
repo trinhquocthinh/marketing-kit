@@ -24,7 +24,7 @@ export default function TemplateCard({ item, onClick }: TemplateCardProps) {
       <div className="relative border border-gray-200 rounded-lg overflow-hidden bg-white">
         {marqueeText && (
           <div className="absolute top-1 left-1 z-10 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">
-            <Marquee text={marqueeText} maxChars={8} />
+            <Marquee text={marqueeText} minChars={8} />
           </div>
         )}
         <div className="relative w-full aspect-square">

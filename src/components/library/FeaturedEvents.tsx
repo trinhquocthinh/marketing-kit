@@ -17,9 +17,11 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
 
   return (
     <div className="space-y-3">
-      <h4 className="text-sm font-semibold text-gray-900">
+      {/* Title – matches RN SmallNext(13) SemiBold */}
+      <h4 className="text-[13px] font-semibold text-black font-[Montserrat,sans-serif]">
         {I18n.marketingDashboard.featuredEvents}
       </h4>
+
       {data.map((item, index) => {
         const marqueeLabel = item.labels?.find((l) => l.type === LabelEnum.MARQUEE)?.value || '';
         const hasHot = item.labels?.some((l) => l.type === LabelEnum.HOT);
@@ -29,28 +31,42 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
           <button
             key={item.id ?? index}
             onClick={() => onPress(item)}
-            className="w-full rounded-lg bg-white border border-gray-200 p-5 flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-shadow text-left"
+            className="w-full rounded-lg bg-white border-[0.5px] border-[#B2998F] p-5 flex items-center justify-between gap-4 shadow-[0_1px_1px_0_#E5CDC3] hover:shadow-md transition-shadow text-left"
           >
-            <div className="flex-1 min-w-0 space-y-1">
+            {/* Left container – flex-[0.9] matches RN */}
+            <div className="flex-[0.9] min-w-0 space-y-1 items-start">
+              {/* Marquee label */}
               {marqueeLabel && (
-                <div className="text-xs text-red-500">
-                  <Marquee text={marqueeLabel} />
-                </div>
+                <Marquee
+                  text={marqueeLabel}
+                  className="h-[14px]"
+                  textClassName="text-[8px] leading-[14px] text-red-500"
+                />
               )}
-              <div className="flex items-start gap-1.5">
-                <span className="text-sm font-semibold text-gray-900 line-clamp-2">{item.name}</span>
+
+              {/* Title + HOT badge */}
+              <div className="flex items-start gap-[5px]">
+                <span className="text-[13px] font-semibold text-black font-[Montserrat,sans-serif] line-clamp-2">
+                  {item.name}
+                </span>
                 {hasHot && (
-                  <span className="flex-shrink-0 text-xs bg-red-500 text-white px-1.5 py-0.5 rounded">HOT</span>
+                  <span className="flex-shrink-0 w-5 h-5 bg-red-500 text-white text-[8px] rounded flex items-center justify-center font-bold">
+                    🔥
+                  </span>
                 )}
               </div>
+
+              {/* Expired date – Smaller(11), Granite(#808080) */}
               {expiredDate && (
-                <p className="text-xs text-gray-500">
+                <p className="text-[11px] text-[#808080] font-[Montserrat,sans-serif]">
                   {`${I18n.marketingDashboard.expired}: ${format(expiredDate, 'dd/MM/yyyy')}`}
                 </p>
               )}
+
+              {/* Type – ExtraSmallNext(9), HalloweenOrangeBold(#ED5E28) or NewCar(#295ACB) */}
               <p
-                className={`text-xs font-semibold ${
-                  item.type === TypeEnum.RECRUIT ? 'text-blue-600' : 'text-[#FA875B]'
+                className={`text-[9px] font-semibold font-[Montserrat,sans-serif] ${
+                  item.type === TypeEnum.RECRUIT ? 'text-[#295ACB]' : 'text-[#ED5E28]'
                 }`}
               >
                 {item.type === TypeEnum.SALE
@@ -58,9 +74,13 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
                   : I18n.marketingDashboard.teamDevelopment}
               </p>
             </div>
-            <svg className="w-6 h-6 text-[#FA875B] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+
+            {/* Arrow icon – Orange circle, 24x24 */}
+            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#FA875B] flex items-center justify-center">
+              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </button>
         );
       })}

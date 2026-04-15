@@ -50,7 +50,7 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
   return (
     <div className="py-6 space-y-4">
       {/* Section title – matches RN label style: fontSize Normal(16), fontWeight SemiBold */}
-      <h3 className="text-base font-semibold text-black px-[15px] font-[Montserrat,sans-serif]">
+      <h3 className="text-base font-semibold text-white px-[15px] font-[Montserrat,sans-serif]">
         {I18n.marketingDashboard.topUsedPosters}
       </h3>
 
@@ -75,7 +75,7 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
                 onClick={() => onSelect(item)}
               >
                 {/* Image card – aspect ratio 4:3, matching RN height: SCREEN_WIDTH * 0.75 */}
-                <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
+                <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-md border border-white/20">
                   <Image
                     src={`${CDN_URL}${item.imageLink}`}
                     alt={item.name}
@@ -93,7 +93,7 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
                       textClassName="text-xs leading-[14px] text-red-500"
                     />
                   )}
-                  <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
+                  <p className="text-sm font-medium text-white truncate">{item.name}</p>
                 </div>
               </div>
             );
@@ -109,7 +109,7 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
               key={i}
               onClick={() => goTo(i)}
               className={`w-2 h-2 rounded-full transition-colors ${
-                i === currentIndex ? 'bg-[#FF8050]' : 'bg-[#C9C9C9]'
+                i === currentIndex ? 'bg-orange-400' : 'bg-white/20'
               }`}
             />
           ))}

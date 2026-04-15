@@ -18,7 +18,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
   return (
     <div className="space-y-3">
       {/* Title – matches RN SmallNext(13) SemiBold */}
-      <h4 className="text-[13px] font-semibold text-black font-[Montserrat,sans-serif]">
+      <h4 className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif]">
         {I18n.marketingDashboard.featuredEvents}
       </h4>
 
@@ -31,7 +31,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
           <button
             key={item.id ?? index}
             onClick={() => onPress(item)}
-            className="w-full rounded-lg bg-white border-[0.5px] border-[#B2998F] p-5 flex items-center justify-between gap-4 shadow-[0_1px_1px_0_#E5CDC3] hover:shadow-md transition-shadow text-left"
+            className="w-full rounded-2xl bg-gradient-to-r from-orange-500/20 to-rose-500/20 backdrop-blur-md border border-orange-500/30 p-5 flex items-center justify-between gap-4 hover:bg-white/10 transition-all text-left group"
           >
             {/* Left container – flex-[0.9] matches RN */}
             <div className="flex-[0.9] min-w-0 space-y-1 items-start">
@@ -46,12 +46,12 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
 
               {/* Title + HOT badge */}
               <div className="flex items-start gap-[5px]">
-                <span className="text-[13px] font-semibold text-black font-[Montserrat,sans-serif] line-clamp-2">
+                <span className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif] line-clamp-2">
                   {item.name}
                 </span>
                 {hasHot && (
-                  <span className="flex-shrink-0 w-5 h-5 bg-red-500 text-white text-[8px] rounded flex items-center justify-center font-bold">
-                    🔥
+                  <span className="flex-shrink-0 px-2 py-0.5 bg-orange-500 text-white text-[8px] rounded flex items-center justify-center font-bold">
+                    MỚI NHẤT
                   </span>
                 )}
               </div>
@@ -75,9 +75,9 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
               </p>
             </div>
 
-            {/* Arrow icon – Orange circle, 24x24 */}
-            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#FA875B] flex items-center justify-center">
-              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+            {/* Arrow icon */}
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </div>

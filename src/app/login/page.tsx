@@ -144,72 +144,94 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* Header bar – Register button (top-right), matching RN headerBar */}
-      <div className="w-full flex justify-end px-4 py-3">
-        <button
-          onClick={() => {/* TODO: Register flow */}}
-          className="text-sm font-semibold text-[#FA875B] font-[Montserrat,sans-serif]"
-        >
-          {I18n.registerIconText}
-        </button>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-slate-900">
+      {/* Background blobs */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-600/40 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-rose-600/40 blur-[150px]" />
+        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-indigo-600/30 blur-[100px]" />
       </div>
 
-      {/* Body */}
-      <div className="flex-1 flex flex-col px-4 mt-8 max-w-md mx-auto w-full">
-        {/* Logo – centered, matching RN imageContent */}
-        <div className="flex justify-center items-center mb-6">
-          <div className="w-[128px] h-[128px] relative">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-8 relative z-10 overflow-hidden">
+        {/* Decorative glow */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400 to-rose-400 opacity-20 rounded-bl-full blur-2xl" />
+
+        {/* Header – Register button */}
+        {/* <div className="flex justify-end mb-6 relative z-10">
+          <button
+            onClick={() => {TODO: Register flow }}
+            className="text-sm font-semibold text-orange-400 hover:text-orange-300 transition-colors"
+          >
+            {I18n.registerIconText}
+          </button>
+        </div> */}
+
+        {/* Logo */}
+        <div className="text-center mb-8 relative z-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 border border-white/20 mb-4 shadow-inner">
             <Image
               src="/images/logo.png"
               alt="Izion Logo"
-              width={128}
-              height={128}
+              width={48}
+              height={48}
               className="object-contain"
               priority
               onError={(e) => {
-                // Fallback if logo image not found
                 (e.target as HTMLImageElement).style.display = 'none';
                 (e.target as HTMLImageElement).parentElement!.innerHTML =
-                  '<div class="w-[128px] h-[128px] bg-[#FA875B] rounded-2xl flex items-center justify-center"><svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg></div>';
+                  '<span class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-rose-400">izi</span>';
               }}
             />
           </div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Marketing Kit</h1>
+          <p className="text-slate-300 mt-2 font-medium text-sm">{I18n.marketingDashboard.tutorialDesc}</p>
         </div>
 
-        {/* Form – matching RN bottomContainer */}
-        <form onSubmit={handleSubmit} className="flex-1 space-y-0">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
           {/* Phone Number field */}
-          <div className="mb-1">
-            <label className="block text-sm font-bold text-gray-900 mb-1.5 mt-5 font-[Montserrat,sans-serif]">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2 pl-1">
               {I18n.phoneNumber}
             </label>
-            <input
-              type="tel"
-              inputMode="numeric"
-              value={phoneNumber}
-              maxLength={phoneNumberMaxLen(phoneNumber)}
-              placeholder={I18n.phoneNumberHolder}
-              onChange={(e) => handlePhoneChange(e.target.value)}
-              onFocus={() => setPhoneFocused(true)}
-              onBlur={() => setPhoneFocused(false)}
-              className={`w-full h-12 px-4 rounded-lg border text-sm font-[Montserrat,sans-serif] text-black placeholder-gray-400 outline-none transition-colors ${
-                phoneFocused
-                  ? 'border-[#FA875B]'
-                  : 'border-gray-400'
-              }`}
-            />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className={`w-5 h-5 transition-colors ${phoneFocused ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={phoneNumber}
+                maxLength={phoneNumberMaxLen(phoneNumber)}
+                placeholder={I18n.phoneNumberHolder}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                onFocus={() => setPhoneFocused(true)}
+                onBlur={() => setPhoneFocused(false)}
+                className={`block w-full pl-12 pr-4 py-3.5 bg-black/20 border rounded-xl text-white placeholder-slate-500 outline-none transition-all backdrop-blur-sm text-sm ${
+                  phoneFocused
+                    ? 'border-orange-400/50 ring-2 ring-orange-400/50'
+                    : 'border-white/10'
+                }`}
+              />
+            </div>
             {phoneError && phoneError.length > 0 && (
-              <p className="mt-1.5 mx-1 text-sm text-red-500">{phoneError}</p>
+              <p className="mt-1.5 ml-1 text-sm text-rose-400">{phoneError}</p>
             )}
           </div>
 
           {/* Password field */}
-          <div className="mb-1">
-            <label className="block text-sm font-bold text-gray-900 mb-1.5 mt-5 font-[Montserrat,sans-serif]">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2 pl-1">
               {I18n.password}
             </label>
-            <div className="relative">
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className={`w-5 h-5 transition-colors ${passwordFocused ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
               <input
                 type={passwordVisible ? 'text' : 'password'}
                 value={password}
@@ -217,26 +239,23 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                className={`w-full h-12 px-4 pr-12 rounded-lg border text-sm font-[Montserrat,sans-serif] text-black placeholder-gray-400 outline-none transition-colors ${
+                className={`block w-full pl-12 pr-12 py-3.5 bg-black/20 border rounded-xl text-white placeholder-slate-500 outline-none transition-all backdrop-blur-sm text-sm ${
                   passwordFocused
-                    ? 'border-[#FA875B]'
-                    : 'border-gray-400'
+                    ? 'border-orange-400/50 ring-2 ring-orange-400/50'
+                    : 'border-white/10'
                 }`}
               />
-              {/* Eye icon – matching RN eyeIcon (absolute, 20x20, top-14 right-14) */}
               <button
                 type="button"
                 onClick={() => setPasswordVisible(!passwordVisible)}
-                className="absolute top-1/2 right-3.5 -translate-y-1/2 w-5 h-5 text-gray-500 hover:text-gray-700 focus:outline-none"
+                className="absolute top-1/2 right-3.5 -translate-y-1/2 w-5 h-5 text-slate-400 hover:text-slate-200 focus:outline-none transition-colors"
               >
                 {passwordVisible ? (
-                  // Eye On
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 ) : (
-                  // Eye Off
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
                     <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
                     <line x1="1" y1="1" x2="23" y2="23" />
@@ -246,15 +265,15 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Terms & Conditions checkbox – matching RN EnrolmentCheckBox */}
-          <div className="flex items-start gap-2 mt-4">
+          {/* Terms & Conditions checkbox */}
+          <div className="flex items-start gap-2.5">
             <button
               type="button"
               onClick={() => setIsConfirmTerms(!isConfirmTerms)}
-              className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded border-2 flex items-center justify-center transition-colors ${
+              className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded border-2 flex items-center justify-center transition-all ${
                 isConfirmTerms
-                  ? 'bg-[#FA875B] border-[#FA875B]'
-                  : 'bg-white border-gray-400'
+                  ? 'bg-gradient-to-r from-orange-500 to-rose-500 border-orange-500'
+                  : 'bg-transparent border-white/30'
               }`}
             >
               {isConfirmTerms && (
@@ -263,12 +282,12 @@ export default function LoginPage() {
                 </svg>
               )}
             </button>
-            <span className="text-sm text-gray-700 font-[Montserrat,sans-serif]">
+            <span className="text-sm text-slate-300">
               {I18n.agreeTo}{' '}
               <button
                 type="button"
                 onClick={() => {/* TODO: Show T&C */}}
-                className="font-semibold text-gray-900 underline"
+                className="font-semibold text-orange-400 underline underline-offset-2 hover:text-orange-300 transition-colors"
               >
                 {I18n.termsAndCondition}
               </button>
@@ -277,17 +296,17 @@ export default function LoginPage() {
 
           {/* Login error message */}
           {loginError && (
-            <p className="mt-3 text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">{loginError}</p>
+            <p className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 px-4 py-2.5 rounded-xl backdrop-blur-sm">{loginError}</p>
           )}
 
-          {/* Login button – matching RN loginButtonEnabled / loginDisableButton */}
+          {/* Login button */}
           <button
             type="submit"
             disabled={isDisabled || loading}
-            className={`w-full h-12 mt-5 rounded-full font-bold text-sm font-[Montserrat,sans-serif] transition-all ${
+            className={`w-full py-4 rounded-xl font-bold text-sm transition-all transform ${
               isDisabled || loading
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-[#FA875B] text-white shadow-[0_1.5px_2px_0_#C45922] hover:bg-[#EB7446] active:scale-[0.98]'
+                ? 'bg-white/10 text-slate-500 cursor-not-allowed border border-white/10'
+                : 'bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg hover:from-orange-400 hover:to-rose-400 hover:scale-[1.02] active:scale-95'
             }`}
           >
             {loading ? (
@@ -303,39 +322,38 @@ export default function LoginPage() {
             )}
           </button>
 
-          {/* Forgot password – matching RN forgotPassword style */}
+          {/* Forgot password */}
           <button
             type="button"
             onClick={handleForgotPassword}
-            className="w-full text-center mt-4 text-sm font-semibold text-[#FA875B] font-[Montserrat,sans-serif] hover:opacity-80"
+            className="w-full text-center text-sm font-medium text-slate-400 hover:text-orange-400 transition-colors"
           >
             {I18n.forgotPassword}
           </button>
         </form>
       </div>
 
-      {/* Loading overlay – matching RN CustomsActivityIndicatorComponent */}
+      {/* Loading overlay */}
       {loading && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 shadow-xl flex items-center gap-3">
-            <svg className="animate-spin h-6 w-6 text-[#FA875B]" fill="none" viewBox="0 0 24 24">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl flex items-center gap-3">
+            <svg className="animate-spin h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <span className="text-sm text-gray-700">{I18n.loading}</span>
+            <span className="text-sm text-slate-200">{I18n.loading}</span>
           </div>
         </div>
       )}
 
-      {/* Pending account modal – matching RN ActionModal + popup */}
+      {/* Pending account modal */}
       <Modal
         isOpen={showPendingModal}
         onClose={() => setShowPendingModal(false)}
       >
         <div className="flex flex-col items-center text-center">
-          {/* Popup image area */}
-          <div className="w-full h-36 bg-gradient-to-br from-orange-100 to-orange-50 rounded-t-xl flex items-center justify-center mb-4">
-            <svg className="w-20 h-20 text-[#FA875B] opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-full h-36 bg-gradient-to-br from-orange-500/20 to-rose-500/20 rounded-t-xl flex items-center justify-center mb-4">
+            <svg className="w-20 h-20 text-orange-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
@@ -348,7 +366,7 @@ export default function LoginPage() {
             </p>
             <button
               onClick={() => setShowPendingModal(false)}
-              className="w-full h-12 mt-5 bg-[#FA875B] text-white rounded-full font-bold text-sm font-[Montserrat,sans-serif] shadow-[0_1.5px_2px_0_#C45922] hover:bg-[#EB7446] active:scale-[0.98] transition-all"
+              className="w-full h-12 mt-5 bg-gradient-to-r from-orange-500 to-rose-500 text-white rounded-xl font-bold text-sm shadow-lg hover:from-orange-400 hover:to-rose-400 active:scale-95 transition-all"
             >
               {I18n.gotItAndTurnBack}
             </button>

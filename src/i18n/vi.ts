@@ -24,6 +24,7 @@ const vi = {
   izionWillCheckInformationAndContactSoon: 'Izion sẽ kiểm tra thông tin và liên hệ bạn sớm nhất có thể.',
   gotItAndTurnBack: 'Đã hiểu, quay lại',
   logIn: 'Đăng nhập',
+  logout: 'Đăng xuất',
   submit: 'Gửi',
   cancel: 'Hủy',
   confirm: 'Xác nhận',

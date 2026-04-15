@@ -93,9 +93,9 @@ export default function PerformancePage() {
   }
 
   return (
-    <div className="min-h-full bg-[#F5F5F5]">
-      {/* Filter & Sort – two side-by-side dropdowns (48% each) */}
-      <div className="flex gap-3 px-4 py-3 bg-white">
+    <div className="min-h-full">
+      {/* Filter & Sort */}
+      <div className="flex gap-3 px-4 py-3 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 mb-4">
         <div className="w-[48%]">
           <Dropdown
             options={LIST_FILTER.map((f) => ({ ...f, isSelected: f.id === filter }))}
@@ -113,7 +113,7 @@ export default function PerformancePage() {
       </div>
 
       {/* Section title */}
-      <p className="px-5 pt-5 pb-2 text-sm font-semibold text-black font-[Montserrat,sans-serif]">
+      <p className="px-5 pt-5 pb-2 text-sm font-semibold text-white font-[Montserrat,sans-serif]">
         {I18n.marketingDashboard.tutorialTitle2}
       </p>
 
@@ -138,16 +138,12 @@ function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: (
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-lg bg-white overflow-hidden text-left"
-      style={{
-        border: '0.5px solid #9E9E9E',
-        boxShadow: '0px 1px 1px 0px rgba(0,0,0,0.3)',
-      }}
+      className="w-full rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 overflow-hidden text-left hover:bg-white/15 transition-all group"
     >
       {/* Section top: name + type + arrow */}
       <div className="flex items-center justify-between px-5 pt-3 pb-4">
         <div className="flex-[0.7] min-w-0">
-          <p className="text-sm font-semibold text-black font-[Montserrat,sans-serif] line-clamp-2">
+          <p className="text-sm font-semibold text-white font-[Montserrat,sans-serif] line-clamp-2">
             {item.name}
           </p>
           <p
@@ -160,40 +156,30 @@ function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: (
           </p>
         </div>
         {/* Orange circle arrow icon */}
-        <div className="w-6 h-6 rounded-full bg-[#ED5E28] flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-lg">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 5l7 7-7 7" />
           </svg>
         </div>
       </div>
 
-      {/* Section bottom: two stat blocks with vertical divider */}
-      <div
-        className="flex items-center"
-        style={{
-          backgroundColor: '#F5F5F5',
-          borderTop: '0.5px solid #C0C0C0',
-          borderBottomLeftRadius: 8,
-          borderBottomRightRadius: 8,
-          paddingTop: 8,
-          paddingBottom: 14,
-        }}
-      >
+      {/* Section bottom: two stat blocks */}
+      <div className="flex items-center bg-white/5 border-t border-white/10 rounded-b-2xl py-2 pb-3.5">
         <div className="flex-1 flex flex-col items-center gap-0.5 px-4">
-          <span className="text-base font-semibold text-[#FF8050] font-[Montserrat,sans-serif]">
+          <span className="text-base font-semibold text-orange-400 font-[Montserrat,sans-serif]">
             {numberWithCommasDot(item.count)}
           </span>
-          <span className="text-xs font-semibold text-[#666] font-[Montserrat,sans-serif]">
+          <span className="text-xs font-semibold text-slate-500 font-[Montserrat,sans-serif]">
             {I18n.marketingDashboard.interactions}
           </span>
         </div>
         {/* Vertical divider */}
-        <div className="w-px self-stretch bg-[#C0C0C0]" />
+        <div className="w-px self-stretch bg-white/10" />
         <div className="flex-1 flex flex-col items-center gap-0.5 px-4">
-          <span className="text-base font-semibold text-[#FF8050] font-[Montserrat,sans-serif]">
+          <span className="text-base font-semibold text-orange-400 font-[Montserrat,sans-serif]">
             {numberWithCommasDot(item.sum)}
           </span>
-          <span className="text-xs font-semibold text-[#666] font-[Montserrat,sans-serif]">
+          <span className="text-xs font-semibold text-slate-500 font-[Montserrat,sans-serif]">
             {isSale
               ? I18n.marketingDashboard.insuranceFee
               : I18n.marketingDashboard.eSignCompletions}

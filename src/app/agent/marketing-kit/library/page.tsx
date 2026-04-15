@@ -88,12 +88,12 @@ export default function LibraryPage() {
   // ── Loading skeleton ──
   if (isLoading && folders.length === 0) {
     return (
-      <div className="bg-[#F5F5F5] min-h-screen p-4 space-y-4">
+      <div className="min-h-screen p-4 space-y-4">
         <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full rounded-lg" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
         <div className="grid grid-cols-2 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-lg" />
+            <Skeleton key={i} className="h-28 rounded-2xl" />
           ))}
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function LibraryPage() {
   // ── Empty state ──
   if (folders.length === 0 && !isLoading) {
     return (
-      <div className="bg-[#F5F5F5] min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <NoData message={I18n.marketingDashboard.libraryEmpty} />
       </div>
     );
@@ -111,14 +111,14 @@ export default function LibraryPage() {
 
   return (
     <>
-      {/* Main container – WildSand bg, matches RN styles.container */}
-      <div className="bg-[#F5F5F5] min-h-screen">
+      {/* Main container */}
+      <div className="min-h-screen">
         {/* Top Used Image Carousel */}
         {topUsed.length > 0 && (
           <>
             <ImageSlider mostUsedImages={topUsed} onSelect={handleNavigatePoster} />
-            {/* Divider line – matches RN AmericanSilver, 8px height */}
-            <div className="w-full h-2 bg-[#D1D1D1]" />
+            {/* Divider line */}
+            <div className="w-full h-px bg-white/10" />
           </>
         )}
 
@@ -126,24 +126,24 @@ export default function LibraryPage() {
         <div className="mt-[23px] px-[15px] pb-5 space-y-0">
           {/* Header row: title + search button */}
           <div className="flex items-center justify-between mb-[23px]">
-            <h3 className="text-base font-semibold text-black font-[Montserrat,sans-serif]">
+            <h3 className="text-base font-semibold text-white font-[Montserrat,sans-serif]">
               {I18n.marketingDashboard.folderTitle}
             </h3>
             <button
               onClick={() => setIsSearchOpen(true)}
               className="flex items-center gap-1 hover:opacity-80 transition-opacity"
             >
-              <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span className="text-[11px] font-semibold text-black font-[Montserrat,sans-serif]">
+              <span className="text-[11px] font-semibold text-white font-[Montserrat,sans-serif]">
                 {I18n.search}
               </span>
             </button>
           </div>
 
           {/* Filter & Sort – 2 columns, 48% each (matches RN sortContainer) */}
-          <div className="flex justify-between mb-6">
+          <div className="flex justify-between mb-6 bg-white/5 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
             <div className="w-[48%]">
               <Dropdown
                 options={LIST_FILTER.map((f) => ({
@@ -190,13 +190,13 @@ export default function LibraryPage() {
 
       {/* Loading overlay */}
       {isLoading && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 shadow-xl flex items-center gap-3">
-            <svg className="animate-spin h-6 w-6 text-[#FA875B]" fill="none" viewBox="0 0 24 24">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-xl flex items-center gap-3">
+            <svg className="animate-spin h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <span className="text-sm text-gray-700">{I18n.loading}</span>
+            <span className="text-sm text-slate-300">{I18n.loading}</span>
           </div>
         </div>
       )}

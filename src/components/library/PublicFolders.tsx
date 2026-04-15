@@ -16,7 +16,7 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
   return (
     <div className="space-y-3">
       {/* Title – SmallNext(13) SemiBold */}
-      <h4 className="text-[13px] font-semibold text-black font-[Montserrat,sans-serif]">
+      <h4 className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif]">
         {I18n.marketingDashboard.publicFolders}
       </h4>
 
@@ -30,13 +30,13 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
             <button
               key={item.id ?? index}
               onClick={() => onPress(item)}
-              className="rounded-lg bg-gradient-to-br from-orange-50 to-amber-50 py-5 px-4 flex items-center justify-between text-left hover:shadow-md transition-shadow"
+              className="rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 py-5 px-4 flex items-center justify-between text-left hover:bg-white/10 transition-all hover:-translate-y-1 relative group"
             >
               {/* Left content – 80% width matching RN */}
               <div className="flex-1 min-w-0 space-y-1 w-[80%]">
                 {/* Topic label row + marquee + HOT */}
                 <div className="flex items-center gap-[5px]">
-                  <span className="text-[9px] text-[#808080] font-[Montserrat,sans-serif]">
+                  <span className="text-[9px] text-slate-400 font-[Montserrat,sans-serif]">
                     {I18n.marketingDashboard.topic}
                   </span>
                   {marqueeLabel && (
@@ -47,14 +47,15 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
                     />
                   )}
                   {hasHot && (
-                    <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center text-[8px]">
-                      🔥
+                    <span className="flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-rose-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
                     </span>
                   )}
                 </div>
 
                 {/* Folder name – SmallNext(13) SemiBold */}
-                <p className="text-[13px] font-semibold text-black font-[Montserrat,sans-serif] line-clamp-2">
+                <p className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif] line-clamp-2">
                   {item.name}
                 </p>
 
@@ -71,7 +72,7 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
               </div>
 
               {/* Arrow */}
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#FA875B] flex items-center justify-center">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>

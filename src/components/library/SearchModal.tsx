@@ -57,19 +57,19 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
             }}
             onKeyDown={handleKeyDown}
             placeholder={I18n.search + '...'}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FA875B] focus:border-transparent"
+            className="flex-1 bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50"
             autoFocus
           />
           <button
             onClick={handleSearch}
-            className="px-4 py-2 bg-[#FA875B] text-white rounded-lg text-sm font-medium hover:bg-[#e8764e] transition-colors"
+            className="px-4 py-2 bg-linear-to-r from-orange-500 to-rose-500 text-white rounded-xl text-sm font-medium hover:from-orange-400 hover:to-rose-400 transition-colors"
           >
             {I18n.search}
           </button>
         </div>
 
         {hasSearched && (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-400">
             {results.length} {I18n.marketingDashboard.topUsedPosters ? 'kết quả' : 'results'}
           </p>
         )}
@@ -79,7 +79,7 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
         )}
 
         {results.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto custom-scrollbar">
             {results.map((item) => (
               <button
                 key={item.id}
@@ -87,9 +87,9 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
                   onSelect(item);
                   handleClose();
                 }}
-                className="text-left rounded-lg border border-gray-200 p-2 hover:border-[#FA875B] hover:shadow-sm transition-all"
+                className="text-left rounded-2xl border border-white/10 bg-white/5 p-2 hover:border-orange-500/50 hover:bg-white/10 transition-all"
               >
-                <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
+                <p className="text-sm font-medium text-white truncate">{item.name}</p>
               </button>
             ))}
           </div>

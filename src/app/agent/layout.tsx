@@ -2,8 +2,11 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { I18n } from '@/i18n';
+import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
+import { authActions } from '@/lib/slices/auth.slice';
+import { httpService } from '@/lib/http.service';
 
 const tabs = [
   { href: '/agent/marketing-kit/library', label: I18n.marketingDashboard.libraries, icon: LibraryIcon },
@@ -13,7 +16,7 @@ const tabs = [
 
 function LibraryIcon({ active }: { active: boolean }) {
   return (
-    <svg className={`w-5 h-5 ${active ? 'text-[#FA875B]' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`w-5 h-5 ${active ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
     </svg>
   );
@@ -21,7 +24,7 @@ function LibraryIcon({ active }: { active: boolean }) {
 
 function MyImagesIcon({ active }: { active: boolean }) {
   return (
-    <svg className={`w-5 h-5 ${active ? 'text-[#FA875B]' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`w-5 h-5 ${active ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   );
@@ -29,7 +32,7 @@ function MyImagesIcon({ active }: { active: boolean }) {
 
 function PerformanceIcon({ active }: { active: boolean }) {
   return (
-    <svg className={`w-5 h-5 ${active ? 'text-[#FA875B]' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`w-5 h-5 ${active ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
     </svg>
   );
@@ -37,54 +40,118 @@ function PerformanceIcon({ active }: { active: boolean }) {
 
 export default function AgentLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const agentCode = useAppSelector((state) => state.authentication.agentCode);
+  const phone = useAppSelector((state) => state.authentication.phone);
+  const displayName = agentCode || phone || 'Agent';
+  const initials = displayName.slice(0, 2).toUpperCase();
+
+  const handleLogout = () => {
+    dispatch(authActions.logout());
+    httpService.clearToken();
+    document.cookie = 'auth_token=; path=/; max-age=0';
+    router.push('/login');
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#FA875B] rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h1 className="text-lg font-semibold text-gray-900">{I18n.marketingDashboard.title}</h1>
+    <div className="min-h-screen flex text-slate-200">
+      {/* Background gradient blobs */}
+      <div className="fixed inset-0 z-0 overflow-hidden bg-slate-900">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-600/40 blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-rose-600/40 blur-[150px] mix-blend-screen" />
+        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-indigo-600/30 blur-[100px] mix-blend-screen" />
+      </div>
+
+      {/* Desktop Sidebar */}
+      <aside className="w-64 shrink-0 flex-col bg-slate-900/40 backdrop-blur-2xl border-r border-white/10 hidden md:flex z-10 fixed inset-y-0 left-0">
+        {/* Logo */}
+        <div className="h-20 flex items-center px-6 border-b border-white/10">
+          <div className="text-2xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-rose-400">
+            IZIon24
+          </div>
+          <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-white/10 text-slate-300 border border-white/20">AGENT</span>
+        </div>
+
+        {/* Nav tabs */}
+        <div className="flex-1 py-6 px-4 space-y-2">
+          {tabs.map((tab) => {
+            const isActive = pathname.startsWith(tab.href);
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={`w-full flex items-center px-4 py-3 rounded-xl transition-all ${
+                  isActive
+                    ? 'bg-linear-to-r from-orange-500/20 to-rose-500/20 border border-orange-500/30 text-white shadow-[0_0_15px_rgba(249,115,22,0.1)]'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
+                }`}
+              >
+                <tab.icon active={isActive} />
+                <span className="ml-3 font-medium">{tab.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* User section */}
+        <div className="p-4 border-t border-white/10">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-400 to-rose-400 flex items-center justify-center text-white font-bold text-sm">
+              {initials}
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-white truncate">{displayName}</p>
+            </div>
+            <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-rose-400 transition-colors" title={I18n.logout}>
+              <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
           </div>
         </div>
-      </header>
+      </aside>
 
-      {/* Tab Navigation */}
-      <nav className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-0">
-            {tabs.map((tab) => {
-              const isActive = pathname.startsWith(tab.href);
-              return (
-                <Link
-                  key={tab.href}
-                  href={tab.href}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    isActive
-                      ? 'border-[#FA875B] text-[#FA875B]'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <tab.icon active={isActive} />
-                  {tab.label}
-                </Link>
-              );
-            })}
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden md:ml-64 z-10">
+        {/* Mobile Header */}
+        <header className="md:hidden h-16 flex items-center justify-between px-4 bg-slate-900/60 backdrop-blur-lg border-b border-white/10 sticky top-0 z-20">
+          <div className="font-bold text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-400">
+            IZIon24 MKT
           </div>
-        </div>
-      </nav>
+          <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-rose-400 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
+        </header>
 
-      {/* Content */}
-      <main className="flex-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {children}
+        {/* Mobile Tab Navigation */}
+        <div className="md:hidden flex overflow-x-auto bg-slate-900/40 backdrop-blur-md border-b border-white/10 sticky top-16 z-20 hide-scrollbar">
+          {tabs.map((tab) => {
+            const isActive = pathname.startsWith(tab.href);
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={`flex-1 py-4 text-sm font-medium text-center whitespace-nowrap transition-colors relative ${
+                  isActive ? 'text-orange-400' : 'text-slate-400'
+                }`}
+              >
+                {tab.label}
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-orange-400 to-rose-400" />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+          <div className="max-w-6xl mx-auto">
+            {children}
+          </div>
         </div>
       </main>
     </div>

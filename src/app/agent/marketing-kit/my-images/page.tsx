@@ -11,10 +11,13 @@ import { generateMktLink, isExpiredDate } from '@/lib/marketing-dashboard.utils'
 import Skeleton from '@/components/ui/Skeleton';
 import NoData from '@/components/ui/NoData';
 
+type FilterMode = 'all' | 'favorites';
+
 export default function MyImagesPage() {
   const router = useRouter();
   const { getAlias, updateAlias, isLoading } = useMarketingDashboard();
   const [aliasList, setAliasList] = useState<AliasData[]>([]);
+  const [filter, setFilter] = useState<FilterMode>('all');
 
   useEffect(() => {
     const loadData = async () => {
@@ -28,9 +31,11 @@ export default function MyImagesPage() {
     .filter((a) => a.labels?.some((l) => l.type === LabelEnum.FAVORITE))
     .sort((a, b) => new Date(b.priorityAt || b.created!).getTime() - new Date(a.priorityAt || a.created!).getTime());
 
-  const nonFavorites = aliasList
-    .filter((a) => !a.labels?.some((l) => l.type === LabelEnum.FAVORITE))
-    .sort((a, b) => new Date(b.created!).getTime() - new Date(a.created!).getTime());
+  const allSorted = [...aliasList].sort(
+    (a, b) => new Date(b.created!).getTime() - new Date(a.created!).getTime(),
+  );
+
+  const filteredAliases = filter === 'favorites' ? favorites : allSorted;
 
   const handleFavorite = async (alias: AliasData) => {
     const hasFav = alias.labels?.some((l) => l.type === LabelEnum.FAVORITE);
@@ -82,95 +87,93 @@ export default function MyImagesPage() {
 
   if (isLoading && aliasList.length === 0) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-24 rounded-lg" />
-        ))}
+      <div className="space-y-6 p-4 md:p-8">
+        <Skeleton className="h-8 w-64 bg-white/10 rounded-lg" />
+        <Skeleton className="h-12 w-80 bg-white/5 rounded-xl" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-0">
+              <Skeleton className="aspect-4/5 rounded-t-2xl bg-white/5" />
+              <Skeleton className="h-16 rounded-b-2xl bg-white/5" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (aliasList.length === 0 && !isLoading) {
-    return (
-      <NoData message={I18n.noData} />
-    );
+    return <NoData message={I18n.noData} />;
   }
 
   return (
-    <div className="space-y-8">
-      {/* Favorites */}
-      {favorites.length > 0 && (
-        <AliasSection
-          title={I18n.marketingDashboard.favorite}
-          icon="heart"
-          aliases={favorites}
-          onFavorite={handleFavorite}
-          onCopyLink={handleCopyLink}
-          onShare={handleShare}
-          onDownload={handleDownload}
-          onPress={(alias) => router.push(`/agent/marketing-kit/my-images/${alias.id}`)}
-        />
-      )}
+    <div className="space-y-6 pb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-2xl font-bold text-white">
+          {I18n.marketingDashboard.myPictures}
+        </h2>
+        <button
+          onClick={() => router.push('/agent/marketing-kit/library')}
+          className="px-5 py-2.5 bg-linear-to-r from-orange-500 to-rose-500 rounded-xl text-white font-semibold hover:opacity-90 shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-transform hover:-translate-y-0.5 w-full sm:w-auto text-sm"
+        >
+          + {I18n.marketingDashboard.createNew}
+        </button>
+      </div>
 
-      {/* All images */}
-      {nonFavorites.length > 0 && (
-        <AliasSection
-          title={I18n.marketingDashboard.myPictures}
-          icon="image"
-          aliases={nonFavorites}
-          onFavorite={handleFavorite}
-          onCopyLink={handleCopyLink}
-          onShare={handleShare}
-          onDownload={handleDownload}
-          onPress={(alias) => router.push(`/agent/marketing-kit/my-images/${alias.id}`)}
-        />
-      )}
-    </div>
-  );
-}
-
-interface AliasSectionProps {
-  title: string;
-  icon: 'heart' | 'image';
-  aliases: AliasData[];
-  onFavorite: (alias: AliasData) => void;
-  onCopyLink: (alias: AliasData) => void;
-  onShare: (alias: AliasData) => void;
-  onDownload: (alias: AliasData) => void;
-  onPress: (alias: AliasData) => void;
-}
-
-function AliasSection({ title, icon, aliases, onFavorite, onCopyLink, onShare, onDownload, onPress }: AliasSectionProps) {
-  return (
-    <div>
-      <div className="flex items-center gap-2 mb-4">
-        {icon === 'heart' ? (
-          <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
-        ) : (
-          <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* Filter Toggle */}
+      <div className="flex bg-slate-900/50 p-1.5 rounded-xl backdrop-blur-md border border-white/10 w-fit shadow-inner">
+        <button
+          onClick={() => setFilter('all')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
+            filter === 'all'
+              ? 'bg-slate-800 text-orange-400 border border-white/5 shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-        )}
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
-        <span className="text-xs text-slate-400">({aliases.length})</span>
+          {I18n.marketingDashboard.myPictures} ({aliasList.length})
+        </button>
+        <button
+          onClick={() => setFilter('favorites')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
+            filter === 'favorites'
+              ? 'bg-slate-800 text-rose-400 border border-white/5 shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <svg
+            className={`w-4 h-4 ${filter === 'favorites' ? 'fill-rose-400 text-rose-400' : ''}`}
+            fill={filter === 'favorites' ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          {I18n.marketingDashboard.favorite} ({favorites.length})
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {aliases.map((alias) => (
-          <AliasCard
-            key={alias.id}
-            alias={alias}
-            onFavorite={() => onFavorite(alias)}
-            onCopyLink={() => onCopyLink(alias)}
-            onShare={() => onShare(alias)}
-            onDownload={() => onDownload(alias)}
-            onClick={() => onPress(alias)}
-          />
-        ))}
-      </div>
+      {/* Grid */}
+      {filteredAliases.length === 0 ? (
+        <NoData message={filter === 'favorites' ? 'Chưa có ảnh yêu thích' : I18n.noData} />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredAliases.map((alias) => (
+            <AliasCard
+              key={alias.id}
+              alias={alias}
+              onFavorite={() => handleFavorite(alias)}
+              onCopyLink={() => handleCopyLink(alias)}
+              onShare={() => handleShare(alias)}
+              onDownload={() => handleDownload(alias)}
+              onClick={() => router.push(`/agent/marketing-kit/my-images/${alias.id}`)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -189,51 +192,57 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
   const isFav = alias.labels?.some((l) => l.type === LabelEnum.FAVORITE);
 
   return (
-    <div
-      className={`bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl overflow-hidden hover:shadow-[0_0_30px_rgba(249,115,22,0.15)] transition-all flex flex-col ${
-        expired ? 'opacity-50 grayscale' : ''
-      }`}
-    >
-      <button onClick={onClick} className="w-full text-left">
-        <div className="relative aspect-[4/3] bg-slate-800 group">
-          {alias.imageLink && (
+    <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/40 transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col group">
+      {/* Image Container */}
+      <button onClick={onClick} className="relative aspect-4/5 bg-linear-to-br from-slate-700/50 to-slate-800/50 flex items-center justify-center overflow-hidden cursor-pointer p-4 group-hover:bg-slate-700/80 transition-colors w-full">
+        <div className="w-full h-full bg-slate-900/50 rounded-xl border border-white/5 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 relative overflow-hidden shadow-inner">
+          {alias.imageLink ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={`${CDN_URL}${alias.imageLink}`}
               alt={alias.name || 'Alias'}
               className="w-full h-full object-contain"
             />
+          ) : (
+            <svg className="w-16 h-16 text-slate-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
           )}
-          {expired && (
-            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded">
-              {I18n.marketingDashboard.expired}
-            </div>
-          )}
-          {/* Hover overlay actions */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
-            <span className="p-2 bg-white/20 rounded-full text-white">
-              <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-            </span>
+        </div>
+
+        {/* Expired badge */}
+        {expired && (
+          <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded text-[10px] font-medium text-slate-300 border border-white/10 shadow-sm">
+            {I18n.marketingDashboard.expired}
           </div>
-        </div>
-        <div className="p-3">
-          <p className="text-sm font-medium text-white truncate">{alias.name}</p>
-          {alias.created && (
-            <p className="text-xs text-slate-400 mt-0.5">
-              {new Date(alias.created).toLocaleDateString('vi-VN')}
-            </p>
-          )}
-        </div>
+        )}
       </button>
 
-      {/* Action bar */}
-      <div className="flex items-center border-t border-white/10 bg-white/5">
+      {/* Info Section */}
+      <div className="p-4 bg-slate-900/50 flex flex-col gap-1 border-t border-white/5">
+        <h3 className="text-white font-medium text-sm line-clamp-1 group-hover:text-orange-300 transition-colors">
+          {alias.name}
+        </h3>
+        {alias.created && (
+          <p className="text-xs text-slate-500 font-medium">
+            {new Date(alias.created).toLocaleDateString('vi-VN')}
+          </p>
+        )}
+      </div>
+
+      {/* Action Bar */}
+      <div className="flex items-center justify-between px-2 py-2 bg-slate-900/80 border-t border-white/5">
         <button
           onClick={onFavorite}
-          className="flex-1 flex items-center justify-center py-2 hover:bg-white/10 transition-colors"
+          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors group/btn"
           title={I18n.marketingDashboard.favorite}
         >
           <svg
-            className={`w-4 h-4 ${isFav ? 'text-red-500 fill-current' : 'text-slate-400'}`}
+            className={`w-4.5 h-4.5 transition-colors ${
+              isFav
+                ? 'text-rose-500 fill-rose-500 group-hover/btn:fill-transparent'
+                : 'text-slate-400 group-hover/btn:text-rose-400'
+            }`}
             fill={isFav ? 'currentColor' : 'none'}
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -243,28 +252,28 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
         </button>
         <button
           onClick={onDownload}
-          className="flex-1 flex items-center justify-center py-2 hover:bg-white/10 transition-colors"
+          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-orange-400"
           title={I18n.marketingDashboard.download}
         >
-          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
         </button>
         <button
           onClick={onCopyLink}
-          className="flex-1 flex items-center justify-center py-2 hover:bg-white/10 transition-colors"
+          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-orange-400"
           title={I18n.marketingDashboard.copyLink}
         >
-          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
           </svg>
         </button>
         <button
           onClick={onShare}
-          className="flex-1 flex items-center justify-center py-2 hover:bg-white/10 transition-colors"
+          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-orange-400"
           title={I18n.marketingDashboard.share}
         >
-          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
           </svg>
         </button>

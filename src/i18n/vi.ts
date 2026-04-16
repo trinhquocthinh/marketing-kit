@@ -117,6 +117,7 @@ const vi = {
     // My Images
     favorite: 'Yêu thích',
     myPictures: 'Hình ảnh của tôi',
+    createNew: 'Tạo mới',
     download: 'Tải xuống',
     copyLink: 'Sao chép liên kết',
     share: 'Chia sẻ',

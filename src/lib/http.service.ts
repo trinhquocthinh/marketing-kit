@@ -22,8 +22,14 @@ class HttpService {
       },
     });
 
+    // Public endpoints that must NOT send an Authorization header
+    const PUBLIC_ENDPOINTS = ['/agents/login', '/agents/register'];
+
     this.client.interceptors.request.use((config) => {
-      if (!config.headers['Authorization']) {
+      const isPublic = PUBLIC_ENDPOINTS.some((ep) => config.url?.includes(ep));
+      if (isPublic) {
+        delete config.headers['Authorization'];
+      } else if (!config.headers['Authorization']) {
         const token = store.getState().authentication.token;
         if (token) {
           config.headers['Authorization'] = `Bearer ${token}`;

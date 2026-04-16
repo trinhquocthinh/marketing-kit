@@ -75,7 +75,6 @@ const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
             src={imageUrl}
             alt="Poster template"
             className="block w-full h-auto"
-            crossOrigin="anonymous"
           />
         </div>
 
@@ -95,7 +94,7 @@ const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
           <div className="flex items-center gap-[3%]">
             {/* Avatar – 32x32 in RN base */}
             <div
-              className="rounded-full overflow-hidden border border-gray-200 flex-shrink-0"
+              className="rounded-full overflow-hidden border border-gray-200 shrink-0"
               style={{
                 width: `${AVATAR_SIZE_RATIO * 100}cqw`,
                 height: `${AVATAR_SIZE_RATIO * 100}cqw`,
@@ -106,7 +105,6 @@ const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
                 src={avatarUrl}
                 alt="Avatar"
                 className="w-full h-full object-cover"
-                crossOrigin="anonymous"
               />
             </div>
             <div className="flex flex-col">
@@ -148,7 +146,7 @@ const PosterCanvas = forwardRef<HTMLDivElement, PosterCanvasProps>(
             {/* QR white box – overlapping footer/image boundary, shadow, rounded */}
             {qrDataUrl && (
               <div
-                className="bg-white rounded-md shadow-md flex items-center justify-center flex-shrink-0"
+                className="bg-white rounded-md shadow-md flex items-center justify-center shrink-0"
                 style={{
                   width: `${QR_BOX_SIZE_RATIO * 100}cqw`,
                   height: `${QR_BOX_SIZE_RATIO * 100}cqw`,

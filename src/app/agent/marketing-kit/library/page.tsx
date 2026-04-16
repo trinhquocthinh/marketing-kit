@@ -117,13 +117,21 @@ export default function LibraryPage() {
       {/* Main container */}
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Marquee effect for Marketing Kit label (from BRD rule 3.2.1) */}
-        <div className="mb-6 overflow-hidden bg-white/5 border border-white/10 rounded-lg p-2 flex items-center backdrop-blur-sm">
-          <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded mr-3 whitespace-nowrap">THÔNG BÁO</span>
-          <div className="marquee flex-1 overflow-hidden">
-            <p className="animate-pulse text-sm text-slate-300 font-medium whitespace-nowrap">
-              {I18n.marketingDashboard.marquee}
-            </p>
+
+        <div className="mb-8 relative bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl h-12 flex items-center shadow-lg overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-36 bg-linear-to-r from-slate-900/95 via-slate-900/80 to-transparent z-10 flex items-center pl-3">
+            <span className="bg-linear-to-r from-orange-500 to-rose-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)] whitespace-nowrap flex items-center gap-1.5">
+              <span className="animate-pulse">🔥</span> THÔNG BÁO
+            </span>
           </div>
+          <div className="flex-1 overflow-hidden ml-32 relative h-full flex items-center">
+            <div className="absolute whitespace-nowrap animate-marquee flex items-center">
+              <p className="text-sm text-slate-200 font-medium tracking-wide">
+                {I18n.marketingDashboard.marquee}
+              </p>
+            </div>
+          </div>
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l from-slate-900/90 to-transparent z-10 pointer-events-none"></div>
         </div>
 
         {/* Top Used Image Carousel – "Dùng nhiều nhất" */}

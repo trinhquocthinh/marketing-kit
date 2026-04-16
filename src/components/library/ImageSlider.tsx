@@ -121,7 +121,7 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
               <div
                 key={item.id ?? index}
                 style={{ width: itemWidthStyle }}
-                className="shrink-0 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 cursor-pointer hover:bg-white/20 transition-all group"
+                className="shrink-0 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 cursor-pointer hover:bg-white/20 hover:border-orange-500/50 transition-all group shadow-lg flex flex-col"
                 onClick={() => onSelect(item)}
               >
                 {/* Poster: image on top, agent footer at bottom – fixed height for uniform cards */}
@@ -147,7 +147,9 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
                       textClassName="text-xs leading-[14px] text-red-500"
                     />
                   )}
-                  <h3 className="text-white text-center font-medium truncate">{item.name}</h3>
+                  <div className='mt-auto bg-slate-800/50 backdrop-blur-sm p-3 rounded-xl border border-white/5 group-hover:bg-slate-800/80 transition-colors'>
+                    <h3 className="text-white font-semibold truncate group-hover:text-orange-300 transition-colors">{item.name}</h3>
+                  </div>
                 </div>
               </div>
             );
@@ -162,9 +164,8 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
             <button
               key={i}
               onClick={() => goTo(i)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                i === displayIndex ? 'bg-orange-400' : 'bg-white/20'
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${i === displayIndex ? 'bg-orange-400' : 'bg-white/20'
+                }`}
             />
           ))}
         </div>

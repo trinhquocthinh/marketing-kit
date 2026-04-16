@@ -5,10 +5,10 @@ import { useRouter, useParams } from 'next/navigation';
 import { I18n } from '@/i18n';
 import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
 import type { GroupTemplateModel } from '@/types';
-import TemplateCard from '@/components/library/TemplateCard';
+import SearchResultCard from '@/components/library/SearchResultCard';
+import TemplateListItem from '@/components/library/TemplateListItem';
 import Skeleton from '@/components/ui/Skeleton';
 import NoData from '@/components/ui/NoData';
-import { CDN_URL } from '@/lib/api.config';
 
 export default function FolderDetailPage() {
   const router = useRouter();
@@ -16,7 +16,7 @@ export default function FolderDetailPage() {
   const folderId = Number(params.posterId);
   const { folders, isLoading } = useMarketingDashboard();
 
-  const [isGrid, setIsGrid] = useState(true);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const folder = folders.find((f) => f.id === folderId);
 
@@ -30,7 +30,7 @@ export default function FolderDetailPage() {
         <Skeleton className="h-8 w-48" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square rounded-lg" />
+            <Skeleton key={i} className="aspect-square rounded-2xl" />
           ))}
         </div>
       </div>
@@ -42,36 +42,46 @@ export default function FolderDetailPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 sticky top-0 z-10 bg-slate-900/60 backdrop-blur-xl p-4 md:p-6 -mx-4 md:-mx-8 border-b border-white/10 shadow-sm">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-slate-300 hover:text-white transition-colors group w-fit"
+        >
+          <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <h2 className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-rose-400 line-clamp-1">
+            {folder.name}
+          </h2>
+        </button>
+
+        {/* Grid / Card View Toggle */}
+        <div className="flex bg-black/40 p-1 rounded-xl backdrop-blur-md border border-white/10 self-end md:self-auto shadow-inner">
           <button
-            onClick={() => router.back()}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            onClick={() => setViewMode('grid')}
+            className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'grid'
+                ? 'bg-linear-to-r from-orange-500/80 to-rose-500/80 text-white shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <h2 className="text-base font-semibold text-gray-900">{folder.name}</h2>
-        </div>
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
-          <button
-            onClick={() => setIsGrid(true)}
-            className={`p-1.5 rounded-md transition-colors ${isGrid ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
+            <span className="text-sm font-medium hidden sm:inline">Lưới</span>
           </button>
           <button
-            onClick={() => setIsGrid(false)}
-            className={`p-1.5 rounded-md transition-colors ${!isGrid ? 'bg-white shadow-sm' : 'hover:bg-gray-200'}`}
+            onClick={() => setViewMode('list')}
+            className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'list'
+                ? 'bg-linear-to-r from-orange-500/80 to-rose-500/80 text-white shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
+            <span className="text-sm font-medium hidden sm:inline">Danh sách</span>
           </button>
         </div>
       </div>
@@ -79,10 +89,10 @@ export default function FolderDetailPage() {
       {/* Templates */}
       {folder.templates.length === 0 ? (
         <NoData message={I18n.noData} />
-      ) : isGrid ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      ) : viewMode === 'grid' ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-2 md:px-0">
           {folder.templates.map((template) => (
-            <TemplateCard
+            <SearchResultCard
               key={template.id}
               item={template}
               onClick={() => handleSelectTemplate(template)}
@@ -90,33 +100,14 @@ export default function FolderDetailPage() {
           ))}
         </div>
       ) : (
-        /* List/Carousel view */
-        <div className="space-y-3">
+        /* List View */
+        <div className="flex flex-col gap-4 md:gap-6 px-2 md:px-0">
           {folder.templates.map((template) => (
-            <button
+            <TemplateListItem
               key={template.id}
+              item={template}
               onClick={() => handleSelectTemplate(template)}
-              className="w-full flex items-center gap-4 p-3 bg-white rounded-lg border border-gray-200 hover:border-[#FA875B] transition-colors text-left"
-            >
-              <div className="relative w-20 h-20 flex-shrink-0 border border-gray-100 rounded overflow-hidden">
-                <img
-                  src={`${CDN_URL}${template.imageLink}`}
-                  alt={template.name}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 truncate">{template.name}</p>
-                {template.validTo && (
-                  <p className="text-xs text-gray-400 mt-1">
-                    HSD: {new Date(template.validTo).toLocaleDateString('vi-VN')}
-                  </p>
-                )}
-              </div>
-              <svg className="w-5 h-5 text-[#FA875B] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </button>
+            />
           ))}
         </div>
       )}

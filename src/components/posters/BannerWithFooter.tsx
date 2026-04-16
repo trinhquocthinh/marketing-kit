@@ -24,6 +24,7 @@ export interface BannerWithFooterProps {
 export default function BannerWithFooter({
   name,
   phone,
+  qr,
   avatarUrl,
   imageMeta,
   url,
@@ -44,14 +45,21 @@ export default function BannerWithFooter({
     img.src = url;
   }, [url, onLoadSuccess]);
 
-  // Generate placeholder QR
+  // Generate QR code (real if qr prop provided, placeholder otherwise)
   useEffect(() => {
-    QRCode.toDataURL('https://example.com', {
-      width: 168,
-      margin: 1,
-      color: { dark: '#CCCCCC', light: '#FFFFFF' },
-    }).then(setQrDataUrl);
-  }, []);
+    if (qr) {
+      QRCode.toDataURL(qr, {
+        width: 168,
+        margin: 1,
+      }).then(setQrDataUrl);
+    } else {
+      QRCode.toDataURL('https://example.com', {
+        width: 168,
+        margin: 1,
+        color: { dark: '#CCCCCC', light: '#FFFFFF' },
+      }).then(setQrDataUrl);
+    }
+  }, [qr]);
 
   const imageAspectRatio = originalSize.width / originalSize.height;
   const originalTotalHeight =

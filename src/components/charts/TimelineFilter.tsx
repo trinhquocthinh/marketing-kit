@@ -19,21 +19,21 @@ export default function TimelineFilter({ selected, onChange, className = '' }: T
   return (
     <div className={className}>
       {/* Header: Tổng quan hoạt động */}
-      <p className="text-sm font-semibold text-[#333] font-[Montserrat,sans-serif]">
+      <h3 className="text-base font-bold text-white mb-4">
         {I18n.marketingDashboard.overviewOfActivities}
-      </p>
+      </h3>
 
       {/* Time tabs */}
-      <div className="flex gap-1 bg-[#F5F5F5] rounded-lg p-1 mt-3">
+      <div className="flex bg-slate-800/40 p-1.5 rounded-xl backdrop-blur-md border border-white/10 shadow-inner mb-4">
         {TABS_TIME.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => onChange(tab.value)}
-            className={`flex-1 px-3 py-2 text-xs rounded-md transition-colors font-[Montserrat,sans-serif] ${
+            className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
               selected === tab.value
-                ? 'bg-white text-[#ED5E28] font-semibold shadow-sm'
-                : 'text-[#666] hover:text-[#333]'
+                ? 'bg-slate-700/80 text-orange-400 shadow-md border border-white/5'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             {tab.name}
@@ -42,11 +42,11 @@ export default function TimelineFilter({ selected, onChange, className = '' }: T
       </div>
 
       {/* Date range text */}
-      <p className="text-[11px] text-[#888] font-[Montserrat,sans-serif] mt-2">
+      <p className="text-sm text-slate-400 font-medium">
         <span>{I18n.marketingDashboard.from} </span>
-        <span className="font-semibold text-[#333]">{formatDateToString(fromDate, 'dd/MM/yyyy')}</span>
+        <span className="text-white font-bold">{formatDateToString(fromDate, 'dd/MM/yyyy')}</span>
         <span> {I18n.marketingDashboard.to} </span>
-        <span className="font-semibold text-[#333]">{formatDateToString(toDate, 'dd/MM/yyyy')}</span>
+        <span className="text-white font-bold">{formatDateToString(toDate, 'dd/MM/yyyy')}</span>
       </p>
     </div>
   );

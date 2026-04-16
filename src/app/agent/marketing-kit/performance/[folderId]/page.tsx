@@ -78,11 +78,17 @@ export default function FolderPerformancePage() {
 
   if (isLoading && !data.name) {
     return (
-      <div className="space-y-4 p-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 rounded-lg" />
+      <div className="space-y-6 pb-8">
+        <Skeleton className="h-16 bg-white/5 rounded-xl" />
+        <Skeleton className="h-10 bg-white/5 rounded-xl" />
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 bg-white/5 rounded-xl" />
+          ))}
+        </div>
+        <Skeleton className="h-64 bg-white/5 rounded-2xl" />
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-28 rounded-lg" />
+          <Skeleton key={i} className="h-40 bg-white/5 rounded-2xl" />
         ))}
       </div>
     );
@@ -91,139 +97,114 @@ export default function FolderPerformancePage() {
   const isSale = data.type === TypeEnum.SALE || (data.type as string) === StatusEnum.SALE;
 
   return (
-    <div className="min-h-full">
-      {/* Header with back button */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-[#E6E6E6]">
-        <button onClick={() => router.back()} className="p-1 hover:bg-gray-100 rounded-lg">
-          <svg className="w-5 h-5 text-[#333]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="pb-10 flex flex-col gap-8">
+      {/* Header: back + title + info tip */}
+      <div className="flex flex-col gap-2">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-slate-300 hover:text-white transition-colors group w-fit"
+        >
+          <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
+          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-1">{data.name}</h2>
         </button>
-        <h2 className="text-base font-semibold text-black font-[Montserrat,sans-serif] truncate">
-          {data.name}
-        </h2>
-      </div>
-
-      {/* Top container: white bg – info tip, time tabs, chart */}
-      <div className="bg-white px-5 py-4">
-        {/* Info tip */}
-        <div className="flex items-start gap-2 mb-4">
-          <svg className="w-4 h-4 text-[#999] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 ml-7">
+          <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
           </svg>
-          <p className="text-[11px] italic text-[#888] font-[Montserrat,sans-serif]">
-            {I18n.marketingDashboard.textHeaderPerformanceTip}
-          </p>
+          <span>{I18n.marketingDashboard.textHeaderPerformanceTip}</span>
         </div>
-
-        {/* Timeline filter tabs */}
-        <TimelineFilter selected={timeLine} onChange={handleTimelineChange} />
-
-        {/* Chart */}
-        <PerformanceChart alias={data} timeLine={timeLine} timeRange={periods} className="mt-6" />
       </div>
 
-      {/* List container: WildSand bg – title, sort, alias cards */}
-      <div className="bg-[#F5F5F5] px-5 py-4">
-        <p className="text-sm font-semibold text-black font-[Montserrat,sans-serif] mb-3">
-          {I18n.marketingDashboard.imageCatalog}
-        </p>
+      {/* Timeline filter + Chart */}
+      <div className="flex flex-col gap-8 max-w-4xl mx-auto w-full">
+        <section>
+          <TimelineFilter selected={timeLine} onChange={handleTimelineChange} />
+        </section>
 
-        <div className="mb-4">
-          <Dropdown
-            options={sortOptions.map((s) => ({ ...s, isSelected: s.id === sort }))}
-            onSelect={(opt) => setSort(opt.id as SortEnum)}
-            label={I18n.arrangeBy}
-          />
-        </div>
+        <section>
+          <PerformanceChart alias={data} timeLine={timeLine} timeRange={periods} />
+        </section>
 
-        {/* Alias items */}
-        <div className="flex flex-col gap-3">
-          {sortedAliases.map((alias) => (
-            <div
-              key={alias.id}
-              className="flex gap-4 rounded-lg bg-white overflow-hidden"
-              style={{
-                border: '0.5px solid #9E9E9E',
-                boxShadow: '0px 1px 1px 0px rgba(0,0,0,0.3)',
-                padding: '17px 28px 17px 20px',
-              }}
-            >
-              {/* Left: image + name */}
-              <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                <div
-                  className="overflow-hidden"
-                  style={{
-                    width: '30vw',
-                    maxWidth: 120,
-                    aspectRatio: '1',
-                    border: '0.5px solid #C0C0C0',
-                  }}
-                >
-                  {alias.imageLink && (
+        {/* Alias list section */}
+        <section>
+          <h3 className="text-base font-bold text-white mb-4">
+            {I18n.marketingDashboard.imageCatalog}
+          </h3>
+
+          <div className="flex flex-col gap-2 mb-4">
+            <Dropdown
+              options={sortOptions.map((s) => ({ ...s, isSelected: s.id === sort }))}
+              onSelect={(opt) => setSort(opt.id as SortEnum)}
+              label={I18n.arrangeBy}
+            />
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {sortedAliases.map((alias) => (
+              <div
+                key={alias.id}
+                className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row gap-6 hover:bg-white/5 transition-all"
+              >
+                {/* Left: image + name */}
+                <div className="w-full md:w-32 h-40 md:h-32 bg-slate-900 rounded-xl flex items-center justify-center overflow-hidden shrink-0 relative border border-white/5">
+                  {alias.imageLink ? (
                     <img
                       src={`${CDN_URL}${alias.imageLink}`}
                       alt={alias.name}
                       className="w-full h-full object-contain"
                     />
+                  ) : (
+                    <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                   )}
-                </div>
-                <p
-                  className="text-xs font-semibold text-black font-[Montserrat,sans-serif] text-center line-clamp-2"
-                  style={{ width: '30vw', maxWidth: 120 }}
-                >
-                  {alias.name}
-                </p>
-              </div>
-
-              {/* Right: stats + button */}
-              <div className="flex-1 flex flex-col justify-center py-1">
-                {/* Interactions */}
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-base font-semibold text-[#FF8050] font-[Montserrat,sans-serif]">
-                    {numberWithCommasDot(alias.count)}
-                  </span>
-                  <span className="text-xs font-semibold text-[#666] font-[Montserrat,sans-serif]">
-                    {I18n.marketingDashboard.interactions}
-                  </span>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2">
+                    <p className="text-[10px] text-white font-medium truncate text-center">{alias.name}</p>
+                  </div>
                 </div>
 
-                {/* Divider */}
-                <div className="w-full h-px bg-[#C0C0C0] my-2" />
-
-                {/* Fee / eSign */}
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-base font-semibold text-[#FF8050] font-[Montserrat,sans-serif]">
-                    {numberWithCommasDot(alias.sum)}
-                  </span>
-                  <span className="text-xs font-semibold text-[#666] font-[Montserrat,sans-serif]">
-                    {isSale
-                      ? I18n.marketingDashboard.insuranceFee
-                      : I18n.marketingDashboard.eSignCompletions}
-                  </span>
-                </div>
-
-                {/* View detail button */}
-                <div className="flex justify-center mt-4">
-                  <button
-                    onClick={() =>
-                      router.push(
-                        `/agent/marketing-kit/performance/${folderId}/${alias.id}?timeLine=${timeLine}&from=${periods.from}&to=${periods.to}`
-                      )
-                    }
-                    className="px-3 py-1.5 rounded-md text-xs font-semibold font-[Montserrat,sans-serif] text-[#ED5E28]"
-                    style={{
-                      backgroundColor: '#FFF0E6',
-                      border: '0.5px solid #FFA07A',
-                    }}
-                  >
-                    {I18n.marketingDashboard.imagePerformance}
-                  </button>
+                {/* Right: stats + button */}
+                <div className="flex-1 flex flex-col">
+                  <div className="flex flex-col sm:flex-row gap-4 mb-4 md:mb-auto">
+                    <div className="flex-1">
+                      <span className="text-orange-500 font-bold text-xl">
+                        {numberWithCommasDot(alias.count)}
+                      </span>
+                      <p className="text-xs text-slate-400 font-medium">
+                        {I18n.marketingDashboard.interactions}
+                      </p>
+                    </div>
+                    <div className="h-px w-full sm:w-px sm:h-12 bg-white/10" />
+                    <div className="flex-1">
+                      <span className="text-orange-500 font-bold text-xl">
+                        {numberWithCommasDot(alias.sum)}
+                      </span>
+                      <p className="text-xs text-slate-400 font-medium">
+                        {isSale
+                          ? I18n.marketingDashboard.insuranceFee
+                          : I18n.marketingDashboard.eSignCompletions}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 border-t border-white/10 pt-4 flex justify-end md:border-t-0 md:pt-0 md:mt-0">
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/agent/marketing-kit/performance/${folderId}/${alias.id}?timeLine=${timeLine}&from=${periods.from}&to=${periods.to}`
+                        )
+                      }
+                      className="px-6 py-2 rounded-xl border border-orange-500 text-orange-400 font-semibold hover:bg-orange-500/10 transition-colors w-full sm:w-auto text-sm"
+                    >
+                      {I18n.marketingDashboard.imagePerformance}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

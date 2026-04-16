@@ -22,26 +22,32 @@ import { I18n } from '@/i18n';
 const SALE_CARDS = [
   {
     key: 'click',
-    borderColor: '#FF8050',
-    bg: 'rgba(255,128,80,0.1)',
-    shadow: '#FFDACD',
-    textColor: '#CE5C31',
+    bgClass: 'bg-orange-500/5',
+    borderClass: 'border-orange-500/30',
+    hoverClass: 'hover:bg-orange-500/10',
+    iconBgClass: 'bg-orange-500/20 border-orange-500/30',
+    iconClass: 'text-orange-400',
+    valueClass: 'text-orange-500',
     icon: '👆',
   },
   {
     key: 'allocate',
-    borderColor: '#EA9E35',
-    bg: 'rgba(234,158,53,0.1)',
-    shadow: '#FFE1BA',
-    textColor: '#A45F00',
+    bgClass: 'bg-amber-500/5',
+    borderClass: 'border-amber-500/30',
+    hoverClass: 'hover:bg-amber-500/10',
+    iconBgClass: 'bg-amber-500/20 border-amber-500/30',
+    iconClass: 'text-amber-400',
+    valueClass: 'text-amber-500',
     icon: '📋',
   },
   {
     key: 'submited',
-    borderColor: '#4A91F9',
-    bg: 'rgba(74,145,249,0.1)',
-    shadow: '#C0DAFF',
-    textColor: '#1D69D8',
+    bgClass: 'bg-blue-500/5',
+    borderClass: 'border-blue-500/30',
+    hoverClass: 'hover:bg-blue-500/10',
+    iconBgClass: 'bg-blue-500/20 border-blue-500/30',
+    iconClass: 'text-blue-400',
+    valueClass: 'text-blue-500',
     icon: '📄',
   },
 ] as const;
@@ -49,26 +55,32 @@ const SALE_CARDS = [
 const RECRUIT_CARDS = [
   {
     key: 'click',
-    borderColor: '#4A91F9',
-    bg: 'rgba(74,145,249,0.07)',
-    shadow: '#C0DAFF',
-    textColor: '#1C3FAA',
+    bgClass: 'bg-orange-500/5',
+    borderClass: 'border-orange-500/30',
+    hoverClass: 'hover:bg-orange-500/10',
+    iconBgClass: 'bg-orange-500/20 border-orange-500/30',
+    iconClass: 'text-orange-400',
+    valueClass: 'text-orange-500',
     icon: '👆',
   },
   {
     key: 'register',
-    borderColor: '#1C70C4',
-    bg: '#D9E7FF',
-    shadow: '#C0DAFF',
-    textColor: '#1C3FAA',
+    bgClass: 'bg-amber-500/5',
+    borderClass: 'border-amber-500/30',
+    hoverClass: 'hover:bg-amber-500/10',
+    iconBgClass: 'bg-amber-500/20 border-amber-500/30',
+    iconClass: 'text-amber-400',
+    valueClass: 'text-amber-500',
     icon: '✅',
   },
   {
     key: 'esign',
-    borderColor: '#1C3FAA',
-    bg: '#B2D1FF',
-    shadow: '#C0DAFF',
-    textColor: '#1C3FAA',
+    bgClass: 'bg-blue-500/5',
+    borderClass: 'border-blue-500/30',
+    hoverClass: 'hover:bg-blue-500/10',
+    iconBgClass: 'bg-blue-500/20 border-blue-500/30',
+    iconClass: 'text-blue-400',
+    valueClass: 'text-blue-500',
     icon: '✍️',
   },
 ] as const;
@@ -138,110 +150,99 @@ export default function PerformanceChart({
   return (
     <div className={className}>
       {/* Section title */}
-      <p className="text-[13px] font-semibold font-[Montserrat,sans-serif] text-black">
+      <h3 className="text-base font-bold text-white mb-2">
         {I18n.marketingDashboard.performances.statistics}
-      </p>
+      </h3>
 
-      {/* Report summary cards – matching RN summaryContainer */}
+      {/* Report summary cards */}
       <div className="flex flex-col gap-3 mt-4">
         {summaryCards.map((card) => (
           <div
             key={card.key}
-            className="flex items-center rounded-lg px-4 py-2"
-            style={{
-              border: `1px solid ${card.borderColor}`,
-              backgroundColor: card.bg,
-              boxShadow: `0px 2px 0px 0px ${card.shadow}`,
-            }}
+            className={`${card.bgClass} backdrop-blur-md border ${card.borderClass} rounded-xl p-4 flex items-center gap-4 ${card.hoverClass} transition-colors`}
           >
-            <div className="w-11 h-11 rounded-full border border-black/20 bg-white flex items-center justify-center text-lg flex-shrink-0">
-              {card.icon}
+            <div className={`w-10 h-10 rounded-full ${card.iconBgClass} flex items-center justify-center border shrink-0`}>
+              <span className={`text-lg ${card.iconClass}`}>{card.icon}</span>
             </div>
-            <span
-              className="ml-3.5 text-base font-semibold font-[Montserrat,sans-serif]"
-              style={{ color: card.textColor }}
-            >
-              {numberWithCommasDot(card.value)}
-            </span>
-            <span className="ml-1.5 text-[11px] text-black font-[Montserrat,sans-serif]">
-              {card.label}
-            </span>
+            <div className="flex items-baseline gap-2">
+              <span className={`text-xl font-bold ${card.valueClass}`}>
+                {numberWithCommasDot(card.value)}
+              </span>
+              <span className="text-sm font-medium text-slate-300">
+                {card.label}
+              </span>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Chart header: title + total */}
       <div className="mt-8">
-        <p className="text-[13px] font-semibold font-[Montserrat,sans-serif] text-black">
+        <h3 className="text-base font-bold text-white mb-1">
           {isSale
             ? I18n.marketingDashboard.performances.sale.title
             : I18n.marketingDashboard.performances.recruit.title}
-        </p>
-        <div className="flex items-baseline gap-1 mt-4">
-          <span
-            className="text-base font-semibold font-[Montserrat,sans-serif]"
-            style={{ color: lineColor }}
-          >
-            {numberWithCommasDot(isSale ? totalPaid : totalEsign)}
-          </span>
-          <span className="text-[11px] text-[#4D4D4D] font-[Montserrat,sans-serif]">
+        </h3>
+        <p className="text-sm text-emerald-400 font-bold mb-6">
+          {numberWithCommasDot(isSale ? totalPaid : totalEsign)}{' '}
+          <span className="text-slate-400 font-medium">
             {isSale
               ? I18n.marketingDashboard.performances.sale.unitOfTotal
               : I18n.marketingDashboard.performances.recruit.unitOfTotal}
           </span>
-        </div>
+        </p>
       </div>
 
-      {/* Line chart – 250px matching RN */}
-      <div className="mt-4">
-        <ResponsiveContainer width="100%" height={250}>
+      {/* Line chart */}
+      <div className="w-full h-64 bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-6">
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="rgba(0,0,0,0.15)"
+              stroke="rgba(255,255,255,0.1)"
               strokeWidth={1}
             />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 12, fill: '#000', fontFamily: 'Montserrat, sans-serif' }}
+              tick={{ fontSize: 12, fill: '#94a3b8' }}
               tickLine={false}
-              axisLine={{ stroke: '#666', strokeWidth: 2 }}
+              axisLine={{ stroke: '#475569', strokeWidth: 1 }}
             />
             <YAxis
               domain={[0, yMax]}
               tickCount={7}
-              tick={{ fontSize: 12, fill: '#000', fontFamily: 'Montserrat, sans-serif' }}
+              tick={{ fontSize: 12, fill: '#94a3b8' }}
               tickLine={false}
-              axisLine={{ stroke: '#E6E6E6' }}
+              axisLine={{ stroke: '#334155' }}
             />
             <RechartsTooltip
               contentStyle={{
-                borderRadius: '4px',
-                backgroundColor: '#000',
-                border: 'none',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(8px)',
                 color: '#fff',
                 fontSize: '12px',
-                fontFamily: 'Montserrat, sans-serif',
               }}
               itemStyle={{ color: '#fff' }}
-              labelStyle={{ color: '#fff', fontSize: '11px' }}
-              cursor={{ stroke: '#000', strokeDasharray: '4 4' }}
+              labelStyle={{ color: '#94a3b8', fontSize: '11px' }}
+              cursor={{ stroke: '#475569', strokeDasharray: '4 4' }}
             />
             <Line
               type="monotone"
               dataKey="value"
-              stroke={lineColor}
+              stroke="#10b981"
               strokeWidth={2}
               dot={{
                 r: 4,
-                fill: '#fff',
-                stroke: lineColor,
+                fill: '#0f172a',
+                stroke: '#10b981',
                 strokeWidth: 2,
               }}
               activeDot={{
                 r: 6,
-                fill: '#fff',
-                stroke: lineColor,
+                fill: '#0f172a',
+                stroke: '#10b981',
                 strokeWidth: 2,
               }}
             />
@@ -250,11 +251,14 @@ export default function PerformanceChart({
       </div>
 
       {/* Chart note */}
-      <p className="mt-2 text-[11px] italic text-[#666] font-[Montserrat,sans-serif]">
-        {isSale
-          ? I18n.marketingDashboard.performances.sale.chartNote.text
-          : I18n.marketingDashboard.performances.recruit.chartNote.text}
-      </p>
+      <div className="flex items-start gap-2 mt-4 text-xs text-slate-400 font-medium italic pl-1">
+        <div className="w-1.5 h-1.5 rounded-sm bg-blue-500 mt-1 shrink-0 rotate-45" />
+        <p>
+          {isSale
+            ? I18n.marketingDashboard.performances.sale.chartNote.text
+            : I18n.marketingDashboard.performances.recruit.chartNote.text}
+        </p>
+      </div>
     </div>
   );
 }

@@ -76,13 +76,13 @@ export default function PerformancePage() {
 
   if (isLoading && performances.length === 0) {
     return (
-      <div className="space-y-4 p-4">
-        <div className="flex gap-3">
-          <Skeleton className="h-10 flex-1 rounded-lg" />
-          <Skeleton className="h-10 flex-1 rounded-lg" />
+      <div className="space-y-6 pb-8">
+        <div className="flex flex-col sm:flex-row gap-4 lg:gap-8">
+          <Skeleton className="h-16 flex-1 bg-white/5 rounded-xl" />
+          <Skeleton className="h-16 flex-1 bg-white/5 rounded-xl" />
         </div>
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-28 rounded-lg" />
+          <Skeleton key={i} className="h-28 bg-white/5 rounded-2xl" />
         ))}
       </div>
     );
@@ -93,17 +93,17 @@ export default function PerformancePage() {
   }
 
   return (
-    <div className="min-h-full">
-      {/* Filter & Sort */}
-      <div className="flex gap-3 px-4 py-3 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 mb-4">
-        <div className="w-[48%]">
+    <div className="space-y-6 pb-8">
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4 lg:gap-8">
+        <div className="flex-1 flex flex-col gap-2">
           <Dropdown
             options={LIST_FILTER.map((f) => ({ ...f, isSelected: f.id === filter }))}
             onSelect={(opt) => handleFilter(opt.id)}
             label={I18n.filterBy}
           />
         </div>
-        <div className="w-[48%]">
+        <div className="flex-1 flex flex-col gap-2">
           <Dropdown
             options={sortOptions.map((s) => ({ ...s, isSelected: s.id === sort }))}
             onSelect={(opt) => setSort(opt.id as SortEnum)}
@@ -113,12 +113,12 @@ export default function PerformancePage() {
       </div>
 
       {/* Section title */}
-      <p className="px-5 pt-5 pb-2 text-sm font-semibold text-white font-[Montserrat,sans-serif]">
+      <h3 className="text-lg font-bold text-white pl-1">
         {I18n.marketingDashboard.tutorialTitle2}
-      </p>
+      </h3>
 
       {/* Performance item list */}
-      <div className="flex flex-col gap-3 px-4 pb-6">
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-3">
         {sortedData.map((item, index) => (
           <PerformanceCard
             key={item.id ?? index}
@@ -131,59 +131,61 @@ export default function PerformancePage() {
   );
 }
 
-/* ── Performance Item Card – matches RN sectionTop + sectionBottom ── */
+/* ── Performance Item Card ── */
 function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: () => void }) {
   const isSale = item.type === TypeEnum.SALE || item.type === StatusEnum.SALE;
 
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 overflow-hidden text-left hover:bg-white/15 transition-all group"
+      className="w-full bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white/5 hover:border-orange-500/30 hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all cursor-pointer group text-left"
     >
-      {/* Section top: name + type + arrow */}
-      <div className="flex items-center justify-between px-5 pt-3 pb-4">
-        <div className="flex-[0.7] min-w-0">
-          <p className="text-sm font-semibold text-white font-[Montserrat,sans-serif] line-clamp-2">
-            {item.name}
-          </p>
-          <p
-            className="text-xs font-semibold font-[Montserrat,sans-serif] mt-1"
-            style={{ color: isSale ? '#ED5E28' : '#295ACB' }}
-          >
-            {isSale
-              ? I18n.marketingDashboard.boostSales
-              : I18n.marketingDashboard.teamDevelopment}
-          </p>
-        </div>
-        {/* Orange circle arrow icon */}
-        <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-lg">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
+      {/* Left: Name & Type */}
+      <div className="w-full md:w-1/3 pr-4">
+        <h4 className="text-white font-bold text-base mb-1 group-hover:text-orange-200 transition-colors line-clamp-1">
+          {item.name}
+        </h4>
+        <p className={`text-xs font-semibold ${isSale ? 'text-orange-500' : 'text-blue-400'}`}>
+          {isSale
+            ? I18n.marketingDashboard.boostSales
+            : I18n.marketingDashboard.teamDevelopment}
+        </p>
       </div>
 
-      {/* Section bottom: two stat blocks */}
-      <div className="flex items-center bg-white/5 border-t border-white/10 rounded-b-2xl py-2 pb-3.5">
-        <div className="flex-1 flex flex-col items-center gap-0.5 px-4">
-          <span className="text-base font-semibold text-orange-400 font-[Montserrat,sans-serif]">
+      {/* Right: Stats & Arrow */}
+      <div className="w-full md:w-2/3 flex flex-row items-center border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-8 relative">
+        {/* Stat 1: Interactions */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <span className="text-orange-500 font-bold text-xl">
             {numberWithCommasDot(item.count)}
           </span>
-          <span className="text-xs font-semibold text-slate-500 font-[Montserrat,sans-serif]">
+          <span className="text-[10px] sm:text-xs text-slate-500 font-medium mt-1">
             {I18n.marketingDashboard.interactions}
           </span>
         </div>
+
         {/* Vertical divider */}
-        <div className="w-px self-stretch bg-white/10" />
-        <div className="flex-1 flex flex-col items-center gap-0.5 px-4">
-          <span className="text-base font-semibold text-orange-400 font-[Montserrat,sans-serif]">
+        <div className="w-px h-12 bg-white/10 mx-2 sm:mx-6" />
+
+        {/* Stat 2: Revenue or E-sign */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <span className="text-orange-500 font-bold text-xl">
             {numberWithCommasDot(item.sum)}
           </span>
-          <span className="text-xs font-semibold text-slate-500 font-[Montserrat,sans-serif]">
+          <span className="text-[10px] sm:text-xs text-slate-500 font-medium mt-1">
             {isSale
               ? I18n.marketingDashboard.insuranceFee
               : I18n.marketingDashboard.eSignCompletions}
           </span>
+        </div>
+
+        {/* Arrow button */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 md:relative md:top-auto md:translate-y-0 md:ml-6 shrink-0 bg-slate-900/50 md:bg-transparent rounded-full shadow-lg md:shadow-none">
+          <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_4px_15px_rgba(249,115,22,0.4)]">
+            <svg className="w-5 h-5 text-white ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
         </div>
       </div>
     </button>

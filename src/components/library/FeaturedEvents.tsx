@@ -19,7 +19,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
   return (
     <div className="space-y-3">
       {/* Title */}
-      <h2 className="text-xl font-bold text-white flex items-center gap-2">
+      <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
         {I18n.marketingDashboard.featuredEvents}
       </h2>
 
@@ -33,7 +33,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
             <button
               key={item.id ?? index}
               onClick={() => onPress(item)}
-              className="w-full rounded-2xl bg-gradient-to-r from-orange-500/20 to-rose-500/20 backdrop-blur-md border border-orange-500/30 p-5 flex items-center justify-between gap-4 hover:bg-white/10 transition-all text-left group"
+              className="w-full rounded-2xl bg-gradient-to-r from-orange-500/20 to-rose-500/20 backdrop-blur-md border border-[var(--nav-active-border)] p-5 flex items-center justify-between gap-4 hover:bg-[var(--surface-hover)] transition-all text-left group"
             >
               {/* Left container – flex-[0.9] matches RN */}
               <div className="flex-[0.9] min-w-0 space-y-1 items-start">
@@ -48,7 +48,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
 
                 {/* Title + HOT badge */}
                 <div className="flex items-start gap-1.25">
-                  <span className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif] line-clamp-2">
+                  <span className="text-[13px] font-semibold text-[var(--text-primary)] font-[Montserrat,sans-serif] line-clamp-2">
                     {item.name}
                   </span>
                   {hasHot && (

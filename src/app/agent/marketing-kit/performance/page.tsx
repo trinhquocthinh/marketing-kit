@@ -113,7 +113,7 @@ export default function PerformancePage() {
       </div>
 
       {/* Section title */}
-      <h3 className="text-lg font-bold text-white pl-1">
+      <h3 className="text-lg font-bold text-[var(--text-primary)] pl-1">
         {I18n.marketingDashboard.tutorialTitle2}
       </h3>
 
@@ -138,11 +138,11 @@ function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: (
   return (
     <button
       onClick={onClick}
-      className="w-full bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white/5 hover:border-orange-500/30 hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all cursor-pointer group text-left"
+      className="w-full bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[var(--surface-hover)] hover:border-orange-500/30 hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all cursor-pointer group text-left theme-transition"
     >
       {/* Left: Name & Type */}
       <div className="w-full md:w-1/3 pr-4">
-        <h4 className="text-white font-bold text-base mb-1 group-hover:text-orange-200 transition-colors line-clamp-1">
+        <h4 className="text-[var(--text-primary)] font-bold text-base mb-1 group-hover:text-orange-200 transition-colors line-clamp-1">
           {item.name}
         </h4>
         <p className={`text-xs font-semibold ${isSale ? 'text-orange-500' : 'text-blue-400'}`}>
@@ -153,7 +153,7 @@ function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: (
       </div>
 
       {/* Right: Stats & Arrow */}
-      <div className="w-full md:w-2/3 flex flex-row items-center border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-8 relative">
+      <div className="w-full md:w-2/3 flex flex-row items-center border-t md:border-t-0 md:border-l border-[var(--border)] pt-4 md:pt-0 md:pl-8 relative">
         {/* Stat 1: Interactions */}
         <div className="flex-1 flex flex-col items-center justify-center text-center">
           <span className="text-orange-500 font-bold text-xl">
@@ -165,7 +165,7 @@ function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: (
         </div>
 
         {/* Vertical divider */}
-        <div className="w-px h-12 bg-white/10 mx-2 sm:mx-6" />
+        <div className="w-px h-12 bg-[var(--border)] mx-2 sm:mx-6" />
 
         {/* Stat 2: Revenue or E-sign */}
         <div className="flex-1 flex flex-col items-center justify-center text-center">
@@ -180,7 +180,7 @@ function PerformanceCard({ item, onClick }: { item: PerformanceModel; onClick: (
         </div>
 
         {/* Arrow button */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 md:relative md:top-auto md:translate-y-0 md:ml-6 shrink-0 bg-slate-900/50 md:bg-transparent rounded-full shadow-lg md:shadow-none">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 md:relative md:top-auto md:translate-y-0 md:ml-6 shrink-0 bg-[var(--surface)] md:bg-transparent rounded-full shadow-lg md:shadow-none">
           <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_4px_15px_rgba(249,115,22,0.4)]">
             <svg className="w-5 h-5 text-white ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -31,7 +31,7 @@ export default function TemplateListItem({ item, onClick }: TemplateListItemProp
   return (
     <div
       onClick={onClick}
-      className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 cursor-pointer hover:bg-white/20 hover:border-orange-500/50 hover:shadow-[0_8px_30px_rgba(249,115,22,0.2)] transition-all hover:-translate-y-1 group flex flex-row items-center gap-4 md:gap-6 shadow-lg w-full"
+      className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-4 cursor-pointer hover:bg-[var(--surface-hover)] hover:border-[var(--primary)]/50 hover:shadow-[0_8px_30px_var(--shadow-color)] transition-all hover:-translate-y-1 group flex flex-row items-center gap-4 md:gap-6 soft-shadow w-full theme-transition"
     >
       {/* Thumbnail */}
       <div
@@ -59,11 +59,11 @@ export default function TemplateListItem({ item, onClick }: TemplateListItemProp
 
       {/* Info */}
       <div className="flex-1 flex flex-col h-full py-1 md:py-2">
-        <h3 className="text-white font-semibold text-base md:text-lg line-clamp-2 group-hover:text-orange-300 transition-colors leading-snug mb-2">
+        <h3 className="text-[var(--text-primary)] font-semibold text-base md:text-lg line-clamp-2 group-hover:text-[var(--primary)] transition-colors leading-snug mb-2">
           {item.name}
         </h3>
         {validTo && (
-          <p className="text-sm text-slate-400 font-medium flex items-center gap-1.5 mb-4">
+          <p className="text-sm text-[var(--text-muted)] font-medium flex items-center gap-1.5 mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
             Hết hạn: {validTo}
           </p>
@@ -72,7 +72,7 @@ export default function TemplateListItem({ item, onClick }: TemplateListItemProp
           <button className="text-xs md:text-sm px-4 py-2 bg-linear-to-r from-orange-500 to-rose-500 rounded-lg text-white font-medium hover:opacity-90 shadow-md transition-opacity">
             Sử dụng mẫu
           </button>
-          <button className="text-xs md:text-sm px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-slate-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2">
+          <button className="text-xs md:text-sm px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-2">
             <svg className="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>

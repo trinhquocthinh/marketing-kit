@@ -104,12 +104,12 @@ export default function MyImageDetailPage() {
       <div className="flex items-center justify-between gap-4 mb-6">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-slate-300 hover:text-white transition-colors group w-fit"
+          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group w-fit"
         >
           <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-1">{alias.name}</h2>
+          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1">{alias.name}</h2>
         </button>
       </div>
 
@@ -117,7 +117,7 @@ export default function MyImageDetailPage() {
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 flex-1">
         {/* Left: Image Preview */}
         <div className="w-full lg:w-[60%] flex flex-col">
-          <div className="w-full bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden p-2 md:p-4 flex items-center justify-center relative group">
+          <div className="w-full bg-[var(--surface)] backdrop-blur-md rounded-2xl border border-[var(--border)] shadow-2xl overflow-hidden p-2 md:p-4 flex items-center justify-center relative group theme-transition">
             {alias.imageLink ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -126,7 +126,7 @@ export default function MyImageDetailPage() {
                 className="w-full h-auto object-contain rounded-xl"
               />
             ) : (
-              <div className="w-full aspect-video bg-slate-900/50 rounded-xl flex items-center justify-center">
+              <div className="w-full aspect-video bg-[var(--surface-hover)] rounded-xl flex items-center justify-center">
                 <svg className="w-16 h-16 text-slate-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -150,25 +150,25 @@ export default function MyImageDetailPage() {
         {/* Right: Info & Actions */}
         <div className="w-full lg:w-[40%] flex flex-col gap-6">
           {/* Info Card */}
-          <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-lg flex flex-col gap-4">
+          <div className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-6 shadow-lg flex flex-col gap-4 theme-transition">
             <div className="flex justify-between items-start gap-4">
-              <span className="text-slate-400 text-sm font-medium whitespace-nowrap">{I18n.marketingDashboard.aliasName}</span>
-              <span className="text-white font-semibold text-right leading-tight">{alias.name}</span>
+              <span className="text-[var(--text-muted)] text-sm font-medium whitespace-nowrap">{I18n.marketingDashboard.aliasName}</span>
+              <span className="text-[var(--text-primary)] font-semibold text-right leading-tight">{alias.name}</span>
             </div>
-            <div className="h-px w-full bg-white/5" />
+            <div className="h-px w-full bg-[var(--border)]" />
             {alias.created && (
               <>
                 <div className="flex justify-between items-center gap-4">
-                  <span className="text-slate-400 text-sm font-medium">{I18n.portal.posterValidFrom}</span>
-                  <span className="text-white font-medium">{new Date(alias.created).toLocaleDateString('vi-VN')}</span>
+                  <span className="text-[var(--text-muted)] text-sm font-medium">{I18n.portal.posterValidFrom}</span>
+                  <span className="text-[var(--text-primary)] font-medium">{new Date(alias.created).toLocaleDateString('vi-VN')}</span>
                 </div>
-                <div className="h-px w-full bg-white/5" />
+                <div className="h-px w-full bg-[var(--border)]" />
               </>
             )}
             {alias.validTo && (
               <div className="flex justify-between items-center gap-4">
-                <span className="text-slate-400 text-sm font-medium">{I18n.portal.posterValidTo}</span>
-                <span className={`font-medium ${expired ? 'text-rose-400' : 'text-white'}`}>
+                <span className="text-[var(--text-muted)] text-sm font-medium">{I18n.portal.posterValidTo}</span>
+                <span className={`font-medium ${expired ? 'text-rose-400' : 'text-[var(--text-primary)]'}`}>
                   {new Date(alias.validTo).toLocaleDateString('vi-VN')}
                 </span>
               </div>
@@ -176,13 +176,13 @@ export default function MyImageDetailPage() {
           </div>
 
           {/* Action Buttons Grid */}
-          <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-lg grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3">
+          <div className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-4 shadow-lg grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3 theme-transition">
             <button
               onClick={handleFavorite}
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border transition-all hover:scale-[1.02] active:scale-95 ${
                 isFav
                   ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                  : 'bg-white/5 border-transparent text-slate-300 hover:bg-white/10'
+                  : 'bg-[var(--surface-hover)] border-transparent text-[var(--text-secondary)] hover:bg-[var(--surface)]'
               }`}
             >
               <svg
@@ -201,8 +201,8 @@ export default function MyImageDetailPage() {
               disabled={expired}
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-transparent transition-all hover:scale-[1.02] active:scale-95 ${
                 expired
-                  ? 'bg-white/5 opacity-50 cursor-not-allowed text-slate-500'
-                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                  ? 'bg-[var(--surface-hover)] opacity-50 cursor-not-allowed text-[var(--text-muted)]'
+                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]'
               }`}
             >
               <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,8 +216,8 @@ export default function MyImageDetailPage() {
               disabled={expired}
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-transparent transition-all hover:scale-[1.02] active:scale-95 ${
                 expired
-                  ? 'bg-white/5 opacity-50 cursor-not-allowed text-slate-500'
-                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                  ? 'bg-[var(--surface-hover)] opacity-50 cursor-not-allowed text-[var(--text-muted)]'
+                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]'
               }`}
             >
               <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,8 +231,8 @@ export default function MyImageDetailPage() {
               disabled={expired}
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-transparent transition-all hover:scale-[1.02] active:scale-95 ${
                 expired
-                  ? 'bg-white/5 opacity-50 cursor-not-allowed text-slate-500'
-                  : 'bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white'
+                  ? 'bg-[var(--surface-hover)] opacity-50 cursor-not-allowed text-[var(--text-muted)]'
+                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]'
               }`}
             >
               <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

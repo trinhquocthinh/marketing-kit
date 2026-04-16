@@ -17,7 +17,7 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
   return (
     <div className="space-y-3">
       {/* Title */}
-      <h2 className="text-xl font-bold text-white flex items-center gap-2">
+      <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
         {I18n.marketingDashboard.publicFolders}
       </h2>
 
@@ -31,14 +31,14 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
             <button
               key={item.id ?? index}
               onClick={() => onPress(item)}
-              className="rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 py-5 px-4 flex items-center justify-between text-left hover:bg-white/10 transition-all hover:-translate-y-1 relative group"
+              className="rounded-2xl bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] py-5 px-4 flex items-center justify-between text-left hover:bg-[var(--surface-hover)] transition-all hover:-translate-y-1 relative group theme-transition"
             >
-              <div className='absolute top-0 right-8 w-16 h-3 bg-white/10 rounded-b-lg' />
+              <div className='absolute top-0 right-8 w-16 h-3 bg-[var(--surface-hover)] rounded-b-lg' />
               {/* Left content – 80% width matching RN */}
               <div className="flex-1 min-w-0 space-y-1 w-[80%]">
                 {/* Topic label row + marquee + HOT */}
                 <div className="flex items-center gap-1.25">
-                  <span className="min-w-7.5 text-[9px] text-slate-400 font-[Montserrat,sans-serif]">
+                  <span className="min-w-7.5 text-[9px] text-[var(--text-muted)] font-[Montserrat,sans-serif]">
                     {I18n.marketingDashboard.topic}
                   </span>
                   {marqueeLabel && (
@@ -54,7 +54,7 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
                 </div>
 
                 {/* Folder name – SmallNext(13) SemiBold */}
-                <p className="text-[13px] font-semibold text-white font-[Montserrat,sans-serif] line-clamp-2">
+                <p className="text-[13px] font-semibold text-[var(--text-primary)] font-[Montserrat,sans-serif] line-clamp-2">
                   {item.name}
                 </p>
 

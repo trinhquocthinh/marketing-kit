@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { I18n } from '@/i18n';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 const sidebarLinks = [
   {
@@ -39,17 +40,24 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen flex theme-transition relative">
+      {/* Background gradient blobs */}
+      <div className="fixed inset-0 z-0 overflow-hidden bg-[var(--background)]">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[var(--blob-1)] blur-[120px] gradient-blob" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[var(--blob-2)] blur-[150px] gradient-blob" />
+        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-[var(--blob-3)] blur-[100px] gradient-blob" />
+      </div>
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col sticky top-0 h-screen">
+      <aside className="w-64 bg-[var(--sidebar-bg)] backdrop-blur-2xl border-r border-[var(--border)] flex flex-col sticky top-0 h-screen z-10 theme-transition">
         {/* Logo */}
-        <div className="h-14 flex items-center gap-3 px-6 border-b">
-          <div className="w-8 h-8 bg-[#FA875B] rounded-lg flex items-center justify-center">
+        <div className="h-14 flex items-center gap-3 px-6 border-b border-[var(--border)]">
+          <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-lg font-semibold text-gray-900">Admin Portal</span>
+          <span className="text-lg font-semibold text-[var(--text-primary)]">Admin Portal</span>
         </div>
 
         {/* Nav */}
@@ -62,11 +70,11 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
                 href={link.href}
                 className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-orange-50 text-[#FA875B] border-r-2 border-[#FA875B]'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-[var(--primary-light)] text-[var(--primary)] border-r-2 border-[var(--primary)]'
+                    : 'text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                <span className={isActive ? 'text-[#FA875B]' : 'text-gray-400'}>{link.icon}</span>
+                <span className={isActive ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}>{link.icon}</span>
                 {link.label}
               </Link>
             );
@@ -74,10 +82,11 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Bottom */}
-        <div className="border-t p-4">
+        <div className="border-t border-[var(--border)] p-4 space-y-2">
+          <ThemeToggle />
           <Link
             href="/agent/marketing-kit/library"
-            className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
+            className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -88,7 +97,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-8 z-10">
         {children}
       </main>
     </div>

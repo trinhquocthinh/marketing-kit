@@ -183,10 +183,10 @@ export default function AvatarManagementPage() {
   return (
     <div className="flex flex-col h-full relative">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/10 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-20">
+      <div className="flex items-center justify-between p-4 md:p-6 border-b border-[var(--border)] bg-[var(--sidebar-bg)] backdrop-blur-xl sticky top-0 z-20 theme-transition">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-slate-300 hover:text-white transition-colors group"
+          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
         >
           <svg
             className="w-5 h-5 mr-2 text-orange-400 group-hover:-translate-x-1 transition-transform"
@@ -196,7 +196,7 @@ export default function AvatarManagementPage() {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <h2 className="text-lg md:text-xl font-bold text-white">
+          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)]">
             {I18n.marketingDashboard.avatarManagement}
           </h2>
         </button>
@@ -206,7 +206,7 @@ export default function AvatarManagementPage() {
               setIsDeleteMode(false);
               setYourAvatars((prev) => prev.map((a) => ({ ...a, isSelectedDelete: undefined })));
             }}
-            className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+            className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             Hủy thao tác
           </button>
@@ -219,7 +219,7 @@ export default function AvatarManagementPage() {
 
           {/* Section 1: Pattern Avatars (System) */}
           <section>
-            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-4">
               Mẫu đại diện
             </h3>
             <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 snap-x">
@@ -261,10 +261,10 @@ export default function AvatarManagementPage() {
           {/* Section 2: Your Avatars (Personal) */}
           <section>
             <div className="flex justify-between items-end mb-4">
-              <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                 Ảnh của bạn ({yourAvatars.length}/10)
               </h3>
-              <span className="text-xs text-slate-500">{I18n.marketingDashboard.maxFileSize}</span>
+              <span className="text-xs text-[var(--text-muted)]">{I18n.marketingDashboard.maxFileSize}</span>
             </div>
 
             {yourAvatars.length >= 10 && (
@@ -279,7 +279,7 @@ export default function AvatarManagementPage() {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="w-full aspect-square rounded-full border-2 border-dashed border-slate-600 flex flex-col items-center justify-center cursor-pointer hover:border-orange-500 hover:bg-orange-500/5 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full aspect-square rounded-full border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center cursor-pointer hover:border-orange-500 hover:bg-orange-500/5 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUploading ? (
                     <svg className="w-8 h-8 text-slate-500 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -376,7 +376,7 @@ export default function AvatarManagementPage() {
                 })),
               );
             }}
-            className="pointer-events-auto flex items-center px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 text-slate-300 rounded-full transition-all text-sm font-medium shadow-lg backdrop-blur-md"
+            className="pointer-events-auto flex items-center px-6 py-2.5 bg-[var(--surface)] border border-[var(--border)] hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 text-[var(--text-secondary)] rounded-full transition-all text-sm font-medium shadow-lg backdrop-blur-md"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -388,11 +388,11 @@ export default function AvatarManagementPage() {
 
       {/* Floating action bar in delete mode */}
       {isDeleteMode && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 p-2 bg-slate-800/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-30">
-          <span className="text-sm font-medium text-white px-4">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 p-2 bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-2xl z-30">
+          <span className="text-sm font-medium text-[var(--text-primary)] px-4">
             Đã chọn <span className="text-rose-400">{selectedDeleteCount}</span> ảnh
           </span>
-          <div className="w-px h-6 bg-white/20" />
+          <div className="w-px h-6 bg-[var(--border)]" />
           <button
             onClick={() => setDeleteConfirmOpen(true)}
             disabled={selectedDeleteCount === 0}
@@ -420,17 +420,17 @@ export default function AvatarManagementPage() {
       {deleteConfirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteConfirmOpen(false)} />
-          <div className="relative bg-slate-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
-            <h3 className="text-lg font-semibold text-white mb-2">
+          <div className="relative bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
+            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
               {I18n.marketingDashboard.deleteConfirmTitle}
             </h3>
-            <p className="text-sm text-slate-400 mb-6">
+            <p className="text-sm text-[var(--text-muted)] mb-6">
               {I18n.marketingDashboard.deleteConfirmMessage}
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteConfirmOpen(false)}
-                className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white font-medium hover:bg-white/10 transition-colors text-sm"
+                className="px-5 py-2.5 bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] font-medium hover:bg-[var(--surface)] transition-colors text-sm"
               >
                 {I18n.cancel}
               </button>

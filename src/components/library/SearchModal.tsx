@@ -56,17 +56,17 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
       onClick={handleClose}
     >
       <div
-        className="w-full h-[90vh] md:h-auto md:max-h-[85vh] max-w-5xl bg-slate-900/80 backdrop-blur-2xl border border-white/20 md:shadow-2xl rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col"
+        className="w-full h-[90vh] md:h-auto md:max-h-[85vh] max-w-5xl glass-card md:shadow-2xl rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col theme-transition"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-5 md:p-6 border-b border-white/10">
-          <h2 className="text-xl md:text-2xl font-bold text-white tracking-wide">
+        <div className="flex justify-between items-center p-5 md:p-6 border-b border-[var(--border)]">
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-wide">
             {I18n.search} mẫu thiết kế
           </h2>
           <button
             onClick={handleClose}
-            className="p-2 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] rounded-full transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -75,10 +75,10 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
         </div>
 
         {/* Search Input */}
-        <div className="p-5 md:p-6 border-b border-white/10 bg-black/20">
+        <div className="p-5 md:p-6 border-b border-[var(--border)] bg-[var(--input-bg)]">
           <div className="flex gap-3 flex-col sm:flex-row">
             <div className="relative flex-1">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -87,7 +87,7 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value.slice(0, 100))}
                 placeholder="Nhập tên mẫu, ví dụ: 'sức khỏe', 'tuyển dụng'..."
-                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-orange-400/50 focus:ring-1 focus:ring-orange-400/50 transition-all text-base backdrop-blur-md"
+                className="w-full pl-12 pr-4 py-3.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 focus:ring-1 focus:ring-[var(--primary)]/50 transition-all text-base backdrop-blur-md"
               />
             </div>
             <button
@@ -97,7 +97,7 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
               {I18n.search}
             </button>
           </div>
-          <div className="mt-4 text-sm font-medium text-orange-200/80 pl-1">
+          <div className="mt-4 text-sm font-medium text-[var(--primary)] pl-1">
             {searchText.trim()
               ? `${results.length} kết quả cho "${searchText}"`
               : `${allTemplates.length} kết quả hiển thị`}
@@ -105,7 +105,7 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
         </div>
 
         {/* Results */}
-        <div className="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar bg-white/5">
+        <div className="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar bg-[var(--surface)] backdrop-blur-md">
           {results.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 pb-8">
               {results.map((item) => (
@@ -121,13 +121,13 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full py-12 text-center opacity-80">
-              <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-6">
-                <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-24 h-24 bg-[var(--surface)] border border-[var(--border)] rounded-full flex items-center justify-center mb-6">
+                <svg className="w-10 h-10 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <p className="text-xl text-white font-bold mb-2">Không tìm thấy mẫu thiết kế</p>
-              <p className="text-slate-400 max-w-sm">
+              <p className="text-xl text-[var(--text-primary)] font-bold mb-2">Không tìm thấy mẫu thiết kế</p>
+              <p className="text-[var(--text-muted)] max-w-sm">
                 Không có kết quả phù hợp cho &quot;{searchText}&quot;. Vui lòng thử lại với một từ khóa khác.
               </p>
             </div>

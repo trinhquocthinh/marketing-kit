@@ -44,7 +44,7 @@ export default function SearchResultCard({ item, onClick }: SearchResultCardProp
         <button
             ref={containerRef}
             onClick={onClick}
-            className="text-left bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 cursor-pointer hover:bg-white/20 hover:border-orange-500/50 transition-all hover:-translate-y-1 group flex flex-col h-full shadow-lg"
+            className="text-left bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-4 cursor-pointer hover:bg-[var(--surface-hover)] hover:border-[var(--primary)]/50 transition-all hover:-translate-y-1 group flex flex-col h-full soft-shadow theme-transition"
         >
             <div
                 className="bg-linear-to-br from-slate-700 to-slate-800 rounded-xl mb-3 overflow-hidden relative flex items-center justify-center"
@@ -70,8 +70,8 @@ export default function SearchResultCard({ item, onClick }: SearchResultCardProp
                     </div>
                 )}
             </div>
-            <div className='mt-auto bg-slate-800/50 backdrop-blur-sm p-3 rounded-xl border border-white/5 group-hover:bg-slate-800/80 transition-colors'>
-                <h3 className="text-[14px] text-white font-semibold truncate group-hover:text-orange-300 transition-colors">{item.name}</h3>
+            <div className='mt-auto bg-[var(--surface-hover)] backdrop-blur-sm p-3 rounded-xl border border-[var(--border)] group-hover:bg-[var(--surface)] transition-colors'>
+                <h3 className="text-[14px] text-[var(--text-primary)] font-semibold truncate group-hover:text-[var(--primary)] transition-colors">{item.name}</h3>
             </div>
         </button>
     );

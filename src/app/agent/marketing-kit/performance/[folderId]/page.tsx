@@ -102,14 +102,14 @@ export default function FolderPerformancePage() {
       <div className="flex flex-col gap-2">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-slate-300 hover:text-white transition-colors group w-fit"
+          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group w-fit"
         >
           <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-1">{data.name}</h2>
+          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1">{data.name}</h2>
         </button>
-        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 ml-7">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] ml-7">
           <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
           </svg>
@@ -129,7 +129,7 @@ export default function FolderPerformancePage() {
 
         {/* Alias list section */}
         <section>
-          <h3 className="text-base font-bold text-white mb-4">
+          <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">
             {I18n.marketingDashboard.imageCatalog}
           </h3>
 
@@ -145,10 +145,10 @@ export default function FolderPerformancePage() {
             {sortedAliases.map((alias) => (
               <div
                 key={alias.id}
-                className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex flex-col md:flex-row gap-6 hover:bg-white/5 transition-all"
+                className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-4 flex flex-col md:flex-row gap-6 hover:bg-[var(--surface-hover)] transition-all theme-transition"
               >
                 {/* Left: image + name */}
-                <div className="w-full md:w-32 h-40 md:h-32 bg-slate-900 rounded-xl flex items-center justify-center overflow-hidden shrink-0 relative border border-white/5">
+                <div className="w-full md:w-32 h-40 md:h-32 bg-[var(--surface-hover)] rounded-xl flex items-center justify-center overflow-hidden shrink-0 relative border border-[var(--border)]">
                   {alias.imageLink ? (
                     <img
                       src={`${CDN_URL}${alias.imageLink}`}
@@ -172,23 +172,23 @@ export default function FolderPerformancePage() {
                       <span className="text-orange-500 font-bold text-xl">
                         {numberWithCommasDot(alias.count)}
                       </span>
-                      <p className="text-xs text-slate-400 font-medium">
+                      <p className="text-xs text-[var(--text-muted)] font-medium">
                         {I18n.marketingDashboard.interactions}
                       </p>
                     </div>
-                    <div className="h-px w-full sm:w-px sm:h-12 bg-white/10" />
+                    <div className="h-px w-full sm:w-px sm:h-12 bg-[var(--border)]" />
                     <div className="flex-1">
                       <span className="text-orange-500 font-bold text-xl">
                         {numberWithCommasDot(alias.sum)}
                       </span>
-                      <p className="text-xs text-slate-400 font-medium">
+                      <p className="text-xs text-[var(--text-muted)] font-medium">
                         {isSale
                           ? I18n.marketingDashboard.insuranceFee
                           : I18n.marketingDashboard.eSignCompletions}
                       </p>
                     </div>
                   </div>
-                  <div className="mt-4 border-t border-white/10 pt-4 flex justify-end md:border-t-0 md:pt-0 md:mt-0">
+                  <div className="mt-4 border-t border-[var(--border)] pt-4 flex justify-end md:border-t-0 md:pt-0 md:mt-0">
                     <button
                       onClick={() =>
                         router.push(

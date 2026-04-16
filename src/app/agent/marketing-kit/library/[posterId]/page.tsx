@@ -44,10 +44,10 @@ export default function FolderDetailPage() {
   return (
     <div className="pb-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 sticky top-0 z-10 bg-slate-900/60 backdrop-blur-xl p-4 md:p-6 -mx-4 md:-mx-8 border-b border-white/10 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 sticky top-0 z-10 bg-[var(--sidebar-bg)] backdrop-blur-xl p-4 md:p-6 -mx-4 md:-mx-8 border-b border-[var(--border)] shadow-sm theme-transition">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-slate-300 hover:text-white transition-colors group w-fit"
+          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group w-fit"
         >
           <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -58,12 +58,12 @@ export default function FolderDetailPage() {
         </button>
 
         {/* Grid / Card View Toggle */}
-        <div className="flex bg-black/40 p-1 rounded-xl backdrop-blur-md border border-white/10 self-end md:self-auto shadow-inner">
+        <div className="flex bg-[var(--surface)] p-1 rounded-xl backdrop-blur-md border border-[var(--border)] self-end md:self-auto shadow-inner theme-transition">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'grid'
                 ? 'bg-linear-to-r from-orange-500/80 to-rose-500/80 text-white shadow-md'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
               }`}
           >
             <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +75,7 @@ export default function FolderDetailPage() {
             onClick={() => setViewMode('list')}
             className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'list'
                 ? 'bg-linear-to-r from-orange-500/80 to-rose-500/80 text-white shadow-md'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
               }`}
           >
             <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

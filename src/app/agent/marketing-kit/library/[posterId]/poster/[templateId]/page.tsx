@@ -213,19 +213,19 @@ export default function PosterDetailPage() {
   // ── Review overlay ──
   if (isReviewing) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-slate-900">
+      <div className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]">
         {/* Review header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
+        <div className="flex items-center justify-between px-4 py-3 bg-[var(--sidebar-bg)] backdrop-blur-xl border-b border-[var(--border)]">
           <button
             onClick={() => setIsReviewing(false)}
-            className="text-slate-300 text-sm font-medium hover:text-white transition-colors"
+            className="text-[var(--text-secondary)] text-sm font-medium hover:text-[var(--text-primary)] transition-colors"
           >
             {I18n.close}
           </button>
-          <span className="text-white text-sm font-semibold">
+          <span className="text-[var(--text-primary)] text-sm font-semibold">
             {I18n.marketingDashboard.review}
           </span>
-          <span className="text-slate-400 text-xs">
+          <span className="text-[var(--text-muted)] text-xs">
             {Math.round(reviewZoom * 100)}%
           </span>
         </div>
@@ -250,17 +250,17 @@ export default function PosterDetailPage() {
         </div>
 
         {/* Zoom controls */}
-        <div className="flex items-center justify-center gap-4 px-4 py-3 bg-slate-900/80 backdrop-blur-xl border-t border-white/10">
+        <div className="flex items-center justify-center gap-4 px-4 py-3 bg-[var(--sidebar-bg)] backdrop-blur-xl border-t border-[var(--border)]">
           <button
             onClick={() =>
               setReviewZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))
             }
             disabled={reviewZoom <= ZOOM_MIN}
-            className="p-1 text-slate-400 hover:text-white transition-colors disabled:opacity-30"
+            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6"/></svg>
           </button>
-          <span className="text-sm font-medium text-slate-200 w-12 text-center">
+          <span className="text-sm font-medium text-[var(--text-secondary)] w-12 text-center">
             {Math.round(reviewZoom * 100)}%
           </span>
           <button
@@ -268,7 +268,7 @@ export default function PosterDetailPage() {
               setReviewZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))
             }
             disabled={reviewZoom >= ZOOM_MAX}
-            className="p-1 text-slate-400 hover:text-white transition-colors disabled:opacity-30"
+            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6M11 8v6"/></svg>
           </button>
@@ -280,10 +280,10 @@ export default function PosterDetailPage() {
   return (
     <div className="flex flex-col pb-32 lg:pb-10 h-full">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 mb-6 sticky top-0 z-10 bg-slate-900/60 backdrop-blur-xl p-4 md:p-6 -mx-4 md:-mx-8 border-b border-white/10 shadow-sm">
+      <div className="flex items-center justify-between gap-4 mb-6 sticky top-0 z-10 bg-[var(--sidebar-bg)] backdrop-blur-xl p-4 md:p-6 -mx-4 md:-mx-8 border-b border-[var(--border)] shadow-sm theme-transition">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-slate-300 hover:text-white transition-colors group"
+          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
         >
           <svg
             className="w-5 h-5 mr-2 text-orange-400 group-hover:-translate-x-1 transition-transform"
@@ -298,13 +298,13 @@ export default function PosterDetailPage() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-1">
+          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1">
             {template.name}
           </h2>
         </button>
         <button
           onClick={() => router.back()}
-          className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden sm:block"
+          className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors hidden sm:block"
         >
           {I18n.close}
         </button>
@@ -318,7 +318,7 @@ export default function PosterDetailPage() {
           {/* Glassmorphism poster frame */}
           <div
             ref={previewContainerRef}
-            className="w-full max-w-md bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative overflow-auto p-4"
+            className="w-full max-w-md bg-[var(--surface)] backdrop-blur-md rounded-2xl border border-[var(--border)] shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative overflow-auto p-4 theme-transition"
           >
             <div
               className="w-full rounded-xl relative overflow-hidden"
@@ -342,17 +342,17 @@ export default function PosterDetailPage() {
           </div>
 
           {/* Zoom controls */}
-          <div className="flex items-center gap-4 mt-6 bg-slate-800/50 backdrop-blur-md border border-white/10 rounded-full px-4 py-2">
+          <div className="flex items-center gap-4 mt-6 bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] rounded-full px-4 py-2 theme-transition">
             <button
               onClick={() =>
                 setZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))
               }
               disabled={zoom <= ZOOM_MIN}
-              className="p-1 text-slate-400 hover:text-white transition-colors disabled:opacity-30"
+              className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
             >
               <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6"/></svg>
             </button>
-            <span className="text-sm font-medium text-slate-200 w-12 text-center">
+            <span className="text-sm font-medium text-[var(--text-secondary)] w-12 text-center">
               {Math.round(zoom * 100)}%
             </span>
             <button
@@ -360,7 +360,7 @@ export default function PosterDetailPage() {
                 setZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))
               }
               disabled={zoom >= ZOOM_MAX}
-              className="p-1 text-slate-400 hover:text-white transition-colors disabled:opacity-30"
+              className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
             >
               <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6M11 8v6"/></svg>
             </button>
@@ -397,12 +397,12 @@ export default function PosterDetailPage() {
           {/* Form Fields */}
           <div className="space-y-5 flex-1">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2 pl-1">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
                 {I18n.fullName} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
+                className="w-full px-4 py-3.5 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={I18n.fullName}
@@ -411,12 +411,12 @@ export default function PosterDetailPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2 pl-1">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
                 {I18n.phone} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
+                className="w-full px-4 py-3.5 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder={I18n.phone}
@@ -425,17 +425,17 @@ export default function PosterDetailPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2 pl-1">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
                 {I18n.marketingDashboard.aliasName} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
+                className="w-full px-4 py-3.5 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
                 value={aliasName}
                 onChange={(e) => setAliasName(e.target.value)}
                 placeholder={I18n.marketingDashboard.aliasName}
               />
-              <p className="text-xs text-slate-400 mt-2 pl-1">
+              <p className="text-xs text-[var(--text-muted)] mt-2 pl-1">
                 {I18n.marketingDashboard.aliasNameDesc}
               </p>
             </div>
@@ -446,7 +446,7 @@ export default function PosterDetailPage() {
             <button
               disabled={isSaving || !imageLoaded}
               onClick={handleReview}
-              className="flex-1 py-4 px-6 bg-white/5 border border-white/10 rounded-xl text-white font-semibold hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-4 px-6 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] font-semibold hover:bg-[var(--surface-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {I18n.marketingDashboard.review}
             </button>
@@ -487,11 +487,11 @@ export default function PosterDetailPage() {
       </div>
 
       {/* Action Buttons (Sticky Bottom on Mobile) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-slate-900/90 backdrop-blur-xl border-t border-white/10 z-20 flex gap-3 safe-pb">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[var(--sidebar-bg)] backdrop-blur-xl border-t border-[var(--border)] z-20 flex gap-3 safe-pb">
         <button
           disabled={isSaving || !imageLoaded}
           onClick={handleReview}
-          className="flex-[0.4] py-3.5 px-4 bg-white/5 border border-white/10 rounded-xl text-white font-semibold hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-[0.4] py-3.5 px-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] font-semibold hover:bg-[var(--surface-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {I18n.marketingDashboard.review}
         </button>

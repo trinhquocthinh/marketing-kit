@@ -7,6 +7,7 @@ import { I18n } from '@/i18n';
 import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
 import { authActions } from '@/lib/slices/auth.slice';
 import { httpService } from '@/lib/http.service';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 const tabs = [
   { href: '/agent/marketing-kit/library', label: I18n.marketingDashboard.libraries, icon: LibraryIcon },
@@ -16,7 +17,7 @@ const tabs = [
 
 function LibraryIcon({ active }: { active: boolean }) {
   return (
-    <svg className={`w-5 h-5 ${active ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`w-5 h-5 ${active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
     </svg>
   );
@@ -24,7 +25,7 @@ function LibraryIcon({ active }: { active: boolean }) {
 
 function MyImagesIcon({ active }: { active: boolean }) {
   return (
-    <svg className={`w-5 h-5 ${active ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`w-5 h-5 ${active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   );
@@ -32,7 +33,7 @@ function MyImagesIcon({ active }: { active: boolean }) {
 
 function PerformanceIcon({ active }: { active: boolean }) {
   return (
-    <svg className={`w-5 h-5 ${active ? 'text-orange-400' : 'text-slate-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`w-5 h-5 ${active ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
     </svg>
   );
@@ -55,22 +56,22 @@ export default function AgentLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen flex text-slate-200">
+    <div className="min-h-screen flex text-[var(--text-secondary)] theme-transition">
       {/* Background gradient blobs */}
-      <div className="fixed inset-0 z-0 overflow-hidden bg-slate-900">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-600/40 blur-[120px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-rose-600/40 blur-[150px] mix-blend-screen" />
-        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-indigo-600/30 blur-[100px] mix-blend-screen" />
+      <div className="fixed inset-0 z-0 overflow-hidden bg-[var(--background)]">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[var(--blob-1)] blur-[120px] gradient-blob" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[var(--blob-2)] blur-[150px] gradient-blob" />
+        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-[var(--blob-3)] blur-[100px] gradient-blob" />
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-64 shrink-0 flex-col bg-slate-900/40 backdrop-blur-2xl border-r border-white/10 hidden md:flex z-10 fixed inset-y-0 left-0">
+      <aside className="w-64 shrink-0 flex-col bg-[var(--sidebar-bg)] backdrop-blur-2xl border-r border-[var(--border)] hidden md:flex z-10 fixed inset-y-0 left-0 theme-transition">
         {/* Logo */}
-        <div className="h-20 flex items-center px-6 border-b border-white/10">
+        <div className="h-20 flex items-center px-6 border-b border-[var(--border)]">
           <div className="text-2xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-rose-400">
             IZIon24
           </div>
-          <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-white/10 text-slate-300 border border-white/20">AGENT</span>
+          <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--badge-bg)] text-[var(--text-secondary)] border border-[var(--border)]">AGENT</span>
         </div>
 
         {/* Nav tabs */}
@@ -83,8 +84,8 @@ export default function AgentLayout({ children }: { children: ReactNode }) {
                 href={tab.href}
                 className={`w-full flex items-center px-4 py-3 rounded-xl transition-all ${
                   isActive
-                    ? 'bg-linear-to-r from-orange-500/20 to-rose-500/20 border border-orange-500/30 text-white shadow-[0_0_15px_rgba(249,115,22,0.1)]'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
+                    ? 'bg-[image:var(--nav-active-bg)] border border-[var(--nav-active-border)] text-[var(--text-primary)] shadow-[0_0_15px_rgba(249,115,22,0.1)]'
+                    : 'text-[var(--text-muted)] hover:bg-[var(--nav-hover-bg)] hover:text-[var(--text-primary)] border border-transparent'
                 }`}
               >
                 <tab.icon active={isActive} />
@@ -95,15 +96,16 @@ export default function AgentLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* User section */}
-        <div className="p-4 border-t border-white/10">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+        <div className="p-4 border-t border-[var(--border)]">
+          <ThemeToggle />
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] mt-2 theme-transition">
             <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-400 to-rose-400 flex items-center justify-center text-white font-bold text-sm">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-white truncate">{displayName}</p>
+              <p className="text-sm font-bold text-[var(--text-primary)] truncate">{displayName}</p>
             </div>
-            <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-rose-400 transition-colors" title={I18n.logout}>
+            <button onClick={handleLogout} className="p-2 text-[var(--text-muted)] hover:text-rose-400 transition-colors" title={I18n.logout}>
               <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
@@ -115,19 +117,22 @@ export default function AgentLayout({ children }: { children: ReactNode }) {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden md:ml-64 z-10">
         {/* Mobile Header */}
-        <header className="md:hidden h-16 flex items-center justify-between px-4 bg-slate-900/60 backdrop-blur-lg border-b border-white/10 sticky top-0 z-20">
+        <header className="md:hidden h-16 flex items-center justify-between px-4 bg-[var(--sidebar-bg)] backdrop-blur-lg border-b border-[var(--border)] sticky top-0 z-20 theme-transition">
           <div className="font-bold text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-400">
             IZIon24 MKT
           </div>
-          <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-rose-400 transition-colors">
+          <div className="flex items-center gap-2">
+            <ThemeToggle compact />
+            <button onClick={handleLogout} className="p-2 text-[var(--text-muted)] hover:text-rose-400 transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-          </button>
+            </button>
+          </div>
         </header>
 
         {/* Mobile Tab Navigation */}
-        <div className="md:hidden flex overflow-x-auto bg-slate-900/40 backdrop-blur-md border-b border-white/10 sticky top-16 z-20 hide-scrollbar">
+        <div className="md:hidden flex overflow-x-auto bg-[var(--sidebar-bg)] backdrop-blur-md border-b border-[var(--border)] sticky top-16 z-20 hide-scrollbar theme-transition">
           {tabs.map((tab) => {
             const isActive = pathname.startsWith(tab.href);
             return (
@@ -135,7 +140,7 @@ export default function AgentLayout({ children }: { children: ReactNode }) {
                 key={tab.href}
                 href={tab.href}
                 className={`flex-1 py-4 text-sm font-medium text-center whitespace-nowrap transition-colors relative ${
-                  isActive ? 'text-orange-400' : 'text-slate-400'
+                  isActive ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'
                 }`}
               >
                 {tab.label}

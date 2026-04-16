@@ -59,12 +59,12 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
 
   return (
     <div ref={ref} className={`relative ${className}`}>
-      {label && <label className="block text-sm font-medium text-slate-300 mb-1">{label}</label>}
+      {label && <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{label}</label>}
       <button
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 text-sm border border-white/10 rounded-lg bg-black/20 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-orange-400/50 backdrop-blur-sm"
+        className="w-full flex items-center justify-between px-3 py-2 text-sm border border-[var(--border)] rounded-lg bg-[var(--input-bg)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 backdrop-blur-sm theme-transition"
       >
         <span>{selected?.title}</span>
         <svg className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,14 +76,14 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
         <div
           ref={menuRef}
           style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, width: menuPos.width }}
-          className="z-[9999] bg-slate-800/90 backdrop-blur-md border border-white/10 rounded-lg shadow-lg"
+          className="z-[9999] bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] rounded-lg soft-shadow theme-transition"
         >
           {options.map((option) => (
             <button
               key={option.id}
               type="button"
-              className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 first:rounded-t-lg last:rounded-b-lg ${
-                option.isSelected ? 'text-orange-400 font-medium bg-white/5' : 'text-slate-300'
+              className={`w-full text-left px-3 py-2 text-sm hover:bg-[var(--surface-hover)] first:rounded-t-lg last:rounded-b-lg ${
+                option.isSelected ? 'text-[var(--primary)] font-medium bg-[var(--surface)]' : 'text-[var(--text-secondary)]'
               }`}
               onClick={() => {
                 onSelect(option);

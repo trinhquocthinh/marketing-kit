@@ -150,7 +150,7 @@ export default function PerformanceChart({
   return (
     <div className={className}>
       {/* Section title */}
-      <h3 className="text-base font-bold text-white mb-2">
+      <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">
         {I18n.marketingDashboard.performances.statistics}
       </h3>
 
@@ -168,7 +168,7 @@ export default function PerformanceChart({
               <span className={`text-xl font-bold ${card.valueClass}`}>
                 {numberWithCommasDot(card.value)}
               </span>
-              <span className="text-sm font-medium text-slate-300">
+              <span className="text-sm font-medium text-[var(--text-secondary)]">
                 {card.label}
               </span>
             </div>
@@ -178,14 +178,14 @@ export default function PerformanceChart({
 
       {/* Chart header: title + total */}
       <div className="mt-8">
-        <h3 className="text-base font-bold text-white mb-1">
+        <h3 className="text-base font-bold text-[var(--text-primary)] mb-1">
           {isSale
             ? I18n.marketingDashboard.performances.sale.title
             : I18n.marketingDashboard.performances.recruit.title}
         </h3>
         <p className="text-sm text-emerald-400 font-bold mb-6">
           {numberWithCommasDot(isSale ? totalPaid : totalEsign)}{' '}
-          <span className="text-slate-400 font-medium">
+          <span className="text-[var(--text-muted)] font-medium">
             {isSale
               ? I18n.marketingDashboard.performances.sale.unitOfTotal
               : I18n.marketingDashboard.performances.recruit.unitOfTotal}
@@ -194,7 +194,7 @@ export default function PerformanceChart({
       </div>
 
       {/* Line chart */}
-      <div className="w-full h-64 bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-6">
+      <div className="w-full h-64 bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-2xl p-4 md:p-6 theme-transition">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             <CartesianGrid
@@ -251,7 +251,7 @@ export default function PerformanceChart({
       </div>
 
       {/* Chart note */}
-      <div className="flex items-start gap-2 mt-4 text-xs text-slate-400 font-medium italic pl-1">
+      <div className="flex items-start gap-2 mt-4 text-xs text-[var(--text-muted)] font-medium italic pl-1">
         <div className="w-1.5 h-1.5 rounded-sm bg-blue-500 mt-1 shrink-0 rotate-45" />
         <p>
           {isSale

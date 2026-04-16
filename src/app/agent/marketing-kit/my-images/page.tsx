@@ -110,7 +110,7 @@ export default function MyImagesPage() {
     <div className="space-y-6 pb-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-white">
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">
           {I18n.marketingDashboard.myPictures}
         </h2>
         <button
@@ -122,13 +122,13 @@ export default function MyImagesPage() {
       </div>
 
       {/* Filter Toggle */}
-      <div className="flex bg-slate-900/50 p-1.5 rounded-xl backdrop-blur-md border border-white/10 w-fit shadow-inner">
+      <div className="flex bg-[var(--surface)] p-1.5 rounded-xl backdrop-blur-md border border-[var(--border)] w-fit shadow-inner theme-transition">
         <button
           onClick={() => setFilter('all')}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
             filter === 'all'
-              ? 'bg-slate-800 text-orange-400 border border-white/5 shadow-md'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-[var(--surface-hover)] text-orange-400 border border-[var(--border)] shadow-md'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
           }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,8 +140,8 @@ export default function MyImagesPage() {
           onClick={() => setFilter('favorites')}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
             filter === 'favorites'
-              ? 'bg-slate-800 text-rose-400 border border-white/5 shadow-md'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-[var(--surface-hover)] text-rose-400 border border-[var(--border)] shadow-md'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
           }`}
         >
           <svg
@@ -192,10 +192,10 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
   const isFav = alias.labels?.some((l) => l.type === LabelEnum.FAVORITE);
 
   return (
-    <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/40 transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col group">
+    <div className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl overflow-hidden hover:border-orange-500/40 transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col group theme-transition">
       {/* Image Container */}
-      <button onClick={onClick} className="relative aspect-4/5 bg-linear-to-br from-slate-700/50 to-slate-800/50 flex items-center justify-center overflow-hidden cursor-pointer p-4 group-hover:bg-slate-700/80 transition-colors w-full">
-        <div className="w-full h-full bg-slate-900/50 rounded-xl border border-white/5 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 relative overflow-hidden shadow-inner">
+      <button onClick={onClick} className="relative aspect-4/5 bg-linear-to-br from-[var(--surface-hover)] to-[var(--surface)] flex items-center justify-center overflow-hidden cursor-pointer p-4 group-hover:bg-[var(--surface-hover)] transition-colors w-full">
+        <div className="w-full h-full bg-[var(--surface-hover)] rounded-xl border border-[var(--border)] flex items-center justify-center group-hover:scale-105 transition-transform duration-500 relative overflow-hidden shadow-inner">
           {alias.imageLink ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -212,15 +212,15 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
 
         {/* Expired badge */}
         {expired && (
-          <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded text-[10px] font-medium text-slate-300 border border-white/10 shadow-sm">
+          <div className="absolute top-3 left-3 bg-[var(--surface)]/80 backdrop-blur-md px-2.5 py-1 rounded text-[10px] font-medium text-[var(--text-secondary)] border border-[var(--border)] shadow-sm">
             {I18n.marketingDashboard.expired}
           </div>
         )}
       </button>
 
       {/* Info Section */}
-      <div className="p-4 bg-slate-900/50 flex flex-col gap-1 border-t border-white/5">
-        <h3 className="text-white font-medium text-sm line-clamp-1 group-hover:text-orange-300 transition-colors">
+      <div className="p-4 bg-[var(--surface-hover)] flex flex-col gap-1 border-t border-[var(--border)]">
+        <h3 className="text-[var(--text-primary)] font-medium text-sm line-clamp-1 group-hover:text-orange-300 transition-colors">
           {alias.name}
         </h3>
         {alias.created && (
@@ -231,17 +231,17 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
       </div>
 
       {/* Action Bar */}
-      <div className="flex items-center justify-between px-2 py-2 bg-slate-900/80 border-t border-white/5">
+      <div className="flex items-center justify-between px-2 py-2 bg-[var(--surface)] border-t border-[var(--border)]">
         <button
           onClick={onFavorite}
-          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors group/btn"
+          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors group/btn"
           title={I18n.marketingDashboard.favorite}
         >
           <svg
             className={`w-4.5 h-4.5 transition-colors ${
               isFav
                 ? 'text-rose-500 fill-rose-500 group-hover/btn:fill-transparent'
-                : 'text-slate-400 group-hover/btn:text-rose-400'
+                : 'text-[var(--text-muted)] group-hover/btn:text-rose-400'
             }`}
             fill={isFav ? 'currentColor' : 'none'}
             stroke="currentColor"
@@ -252,7 +252,7 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
         </button>
         <button
           onClick={onDownload}
-          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-orange-400"
+          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-[var(--text-muted)] hover:text-orange-400"
           title={I18n.marketingDashboard.download}
         >
           <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,7 +261,7 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
         </button>
         <button
           onClick={onCopyLink}
-          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-orange-400"
+          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-[var(--text-muted)] hover:text-orange-400"
           title={I18n.marketingDashboard.copyLink}
         >
           <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +270,7 @@ function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick
         </button>
         <button
           onClick={onShare}
-          className="p-2.5 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-orange-400"
+          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-[var(--text-muted)] hover:text-orange-400"
           title={I18n.marketingDashboard.share}
         >
           <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

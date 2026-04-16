@@ -21,7 +21,7 @@ export default function TemplateCard({ item, onClick }: TemplateCardProps) {
       onClick={onClick}
       className={`group text-left transition-all ${isExpired ? 'opacity-50 grayscale' : ''}`}
     >
-      <div className="relative border border-white/10 rounded-2xl overflow-hidden bg-white/10">
+      <div className="relative border border-[var(--border)] rounded-2xl overflow-hidden bg-[var(--surface)] backdrop-blur-md theme-transition">
         {marqueeText && (
           <div className="absolute top-1 left-1 z-10 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">
             <Marquee text={marqueeText} minChars={8} />
@@ -44,11 +44,11 @@ export default function TemplateCard({ item, onClick }: TemplateCardProps) {
           )}
         </div>
       </div>
-      <p className="mt-1.5 text-xs font-semibold text-white text-center line-clamp-2 group-hover:text-orange-400 transition-colors">
+      <p className="mt-1.5 text-xs font-semibold text-[var(--text-primary)] text-center line-clamp-2 group-hover:text-[var(--primary)] transition-colors">
         {item.name}
       </p>
       {item.validTo && (
-        <p className="text-[10px] text-slate-400 text-center mt-0.5">
+        <p className="text-[10px] text-[var(--text-muted)] text-center mt-0.5">
           {`HSD: ${format(new Date(item.validTo), 'dd/MM/yyyy')}`}
         </p>
       )}

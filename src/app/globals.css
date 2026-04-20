@@ -40,7 +40,7 @@
 
 /* ── Light theme ── */
 [data-theme="light"] {
-  --background: #eef1f5;
+  --background: #dfe3e9;
   --foreground: #1e293b;
   --surface: rgba(255, 255, 255, 0.50);
   --surface-hover: rgba(255, 255, 255, 0.68);
@@ -134,7 +134,7 @@ body,
 }
 
 .animate-marquee {
-  animation: marquee 8s linear infinite;
+  animation: marquee 20s linear infinite;
 }
 
 /* Custom scrollbar */

@@ -270,7 +270,7 @@ export default function LoginPage() {
               onClick={() => setIsConfirmTerms(!isConfirmTerms)}
               className={`mt-0.5 w-5 h-5 shrink-0 rounded border-2 flex items-center justify-center transition-all ${isConfirmTerms
                   ? 'bg-linear-to-r from-orange-500 to-rose-500 border-orange-500'
-                  : 'bg-(--input-bg) border-white/30'
+                  : 'bg-(--input-bg) border-white/50'
                 }`}
             >
               {isConfirmTerms && (

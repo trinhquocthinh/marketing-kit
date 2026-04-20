@@ -194,8 +194,8 @@ export default function PerformanceChart({
       </div>
 
       {/* Line chart */}
-      <div className="w-full h-64 bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-2xl p-4 md:p-6 theme-transition">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="w-full bg-[var(--surface)] backdrop-blur-sm border border-[var(--border)] rounded-2xl p-4 md:p-6 theme-transition">
+        <ResponsiveContainer width="100%" height={250}>
           <LineChart data={chartData}>
             <CartesianGrid
               strokeDasharray="3 3"

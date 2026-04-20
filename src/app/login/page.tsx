@@ -144,17 +144,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[var(--background)]">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
       {/* Background blobs */}
       <div className="fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[var(--blob-1)] blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[var(--blob-2)] blur-[150px]" />
-        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-[var(--blob-3)] blur-[100px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-(--blob-1) blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-(--blob-2) blur-[150px]" />
+        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-(--blob-3) blur-[100px]" />
       </div>
 
-      <div className="w-full max-w-md bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] shadow-2xl rounded-3xl p-8 relative z-10 overflow-hidden theme-transition">
+      <div className="w-full max-w-md bg-(--glass-bg) backdrop-blur-xl border border-(--glass-border) shadow-2xl rounded-3xl p-8 relative z-10 overflow-hidden theme-transition">
         {/* Decorative glow */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400 to-rose-400 opacity-20 rounded-bl-full blur-2xl" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-orange-400 to-rose-400 opacity-20 rounded-bl-full blur-2xl" />
 
         {/* Header – Register button */}
         {/* <div className="flex justify-end mb-6 relative z-10">
@@ -179,24 +179,24 @@ export default function LoginPage() {
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
                 (e.target as HTMLImageElement).parentElement!.innerHTML =
-                  '<span class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-rose-400">izi</span>';
+                  '<span class="text-3xl font-extrabold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-rose-400">izi</span>';
               }}
             />
           </div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">Marketing Kit</h1>
-          <p className="text-[var(--text-secondary)] mt-2 font-medium text-sm">{I18n.marketingDashboard.tutorialDesc}</p>
+          <h1 className="text-3xl font-bold text-t-primary tracking-tight">Marketing Kit</h1>
+          <p className="text-t-secondary mt-2 font-medium text-sm">{I18n.marketingDashboard.tutorialDesc}</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
           {/* Phone Number field */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
+            <label className="block text-sm font-medium text-t-secondary mb-2 pl-1">
               {I18n.phoneNumber}
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className={`w-5 h-5 transition-colors ${phoneFocused ? 'text-orange-400' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-5 h-5 transition-colors ${phoneFocused ? 'text-orange-400' : 'text-t-muted'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
               </div>
@@ -209,11 +209,10 @@ export default function LoginPage() {
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 onFocus={() => setPhoneFocused(true)}
                 onBlur={() => setPhoneFocused(false)}
-                className={`block w-full pl-12 pr-4 py-3.5 bg-[var(--input-bg)] border rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-all backdrop-blur-sm text-sm ${
-                  phoneFocused
+                className={`block w-full pl-12 pr-4 py-3.5 bg-(--input-bg) border rounded-xl text-t-primary placeholder-t-muted outline-none transition-all backdrop-blur-sm text-sm ${phoneFocused
                     ? 'border-orange-400/50 ring-2 ring-orange-400/50'
-                    : 'border-[var(--border)]'
-                }`}
+                    : 'border-(--border)'
+                  }`}
               />
             </div>
             {phoneError && phoneError.length > 0 && (
@@ -223,12 +222,12 @@ export default function LoginPage() {
 
           {/* Password field */}
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
+            <label className="block text-sm font-medium text-t-secondary mb-2 pl-1">
               {I18n.password}
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className={`w-5 h-5 transition-colors ${passwordFocused ? 'text-orange-400' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-5 h-5 transition-colors ${passwordFocused ? 'text-orange-400' : 'text-t-muted'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
@@ -239,16 +238,15 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                className={`block w-full pl-12 pr-12 py-3.5 bg-[var(--input-bg)] border rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-all backdrop-blur-sm text-sm ${
-                  passwordFocused
+                className={`block w-full pl-12 pr-12 py-3.5 bg-(--input-bg) border rounded-xl text-t-primary placeholder-t-muted outline-none transition-all backdrop-blur-sm text-sm ${passwordFocused
                     ? 'border-orange-400/50 ring-2 ring-orange-400/50'
-                    : 'border-[var(--border)]'
-                }`}
+                    : 'border-(--border)'
+                  }`}
               />
               <button
                 type="button"
                 onClick={() => setPasswordVisible(!passwordVisible)}
-                className="absolute top-1/2 right-3.5 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)] hover:text-[var(--text-secondary)] focus:outline-none transition-colors"
+                className="absolute top-1/2 right-3.5 -translate-y-1/2 w-5 h-5 text-t-muted hover:text-t-secondary focus:outline-none transition-colors"
               >
                 {passwordVisible ? (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
@@ -270,11 +268,10 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setIsConfirmTerms(!isConfirmTerms)}
-              className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded border-2 flex items-center justify-center transition-all ${
-                isConfirmTerms
-                  ? 'bg-gradient-to-r from-orange-500 to-rose-500 border-orange-500'
-                  : 'bg-transparent border-white/30'
-              }`}
+              className={`mt-0.5 w-5 h-5 shrink-0 rounded border-2 flex items-center justify-center transition-all ${isConfirmTerms
+                  ? 'bg-linear-to-r from-orange-500 to-rose-500 border-orange-500'
+                  : 'bg-(--input-bg) border-white/30'
+                }`}
             >
               {isConfirmTerms && (
                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
@@ -282,11 +279,11 @@ export default function LoginPage() {
                 </svg>
               )}
             </button>
-            <span className="text-sm text-[var(--text-secondary)]">
-              {I18n.agreeTo}{' '}
+            <span className="text-sm text-t-secondary">
+              {I18n.agreeTo}{'  '}
               <button
                 type="button"
-                onClick={() => {/* TODO: Show T&C */}}
+                onClick={() => {/* TODO: Show T&C */ }}
                 className="font-semibold text-orange-400 underline underline-offset-2 hover:text-orange-300 transition-colors"
               >
                 {I18n.termsAndCondition}
@@ -303,11 +300,10 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isDisabled || loading}
-            className={`w-full py-4 rounded-xl font-bold text-sm transition-all transform ${
-              isDisabled || loading
-                ? 'bg-[var(--surface-hover)] text-[var(--text-muted)] cursor-not-allowed border border-[var(--border)]'
-                : 'bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg hover:from-orange-400 hover:to-rose-400 hover:scale-[1.02] active:scale-95'
-            }`}
+            className={`w-full py-4 rounded-xl font-bold text-sm transition-all transform ${isDisabled || loading
+                ? 'bg-surface-hover text-t-muted cursor-not-allowed border border-(--border)'
+                : 'bg-linear-to-r from-orange-500 to-rose-500 text-white shadow-lg hover:from-orange-400 hover:to-rose-400 hover:scale-[1.02] active:scale-95'
+              }`}
           >
             {loading ? (
               <span className="inline-flex items-center gap-2">
@@ -326,7 +322,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleForgotPassword}
-            className="w-full text-center text-sm font-medium text-[var(--text-muted)] hover:text-orange-400 transition-colors"
+            className="w-full text-center text-sm font-medium text-t-muted hover:text-orange-400 transition-colors"
           >
             {I18n.forgotPassword}
           </button>
@@ -335,13 +331,13 @@ export default function LoginPage() {
 
       {/* Loading overlay */}
       {loading && (
-        <div className="fixed inset-0 bg-[var(--overlay-bg)] backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-(--overlay-bg) backdrop-blur-sm flex items-center justify-center z-50">
           <div className="glass-card rounded-2xl p-6 flex items-center gap-3">
             <svg className="animate-spin h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <span className="text-sm text-[var(--text-secondary)]">{I18n.loading}</span>
+            <span className="text-sm text-t-secondary">{I18n.loading}</span>
           </div>
         </div>
       )}
@@ -352,7 +348,7 @@ export default function LoginPage() {
         onClose={() => setShowPendingModal(false)}
       >
         <div className="flex flex-col items-center text-center">
-          <div className="w-full h-36 bg-gradient-to-br from-orange-500/20 to-rose-500/20 rounded-t-xl flex items-center justify-center mb-4">
+          <div className="w-full h-36 bg-linear-to-br from-orange-500/20 to-rose-500/20 rounded-t-xl flex items-center justify-center mb-4">
             <svg className="w-20 h-20 text-orange-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -366,7 +362,7 @@ export default function LoginPage() {
             </p>
             <button
               onClick={() => setShowPendingModal(false)}
-              className="w-full h-12 mt-5 bg-gradient-to-r from-orange-500 to-rose-500 text-white rounded-xl font-bold text-sm shadow-lg hover:from-orange-400 hover:to-rose-400 active:scale-95 transition-all"
+              className="w-full h-12 mt-5 bg-linear-to-r from-orange-500 to-rose-500 text-white rounded-xl font-bold text-sm shadow-lg hover:from-orange-400 hover:to-rose-400 active:scale-95 transition-all"
             >
               {I18n.gotItAndTurnBack}
             </button>

@@ -1,22 +1,28 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'neon';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
 }
 
 const variantClasses = {
-  primary: 'bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white',
-  secondary: 'bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] border border-[var(--border)]',
-  danger: 'bg-red-600 hover:bg-red-700 text-white',
-  ghost: 'bg-transparent hover:bg-[var(--surface-hover)] text-[var(--text-primary)]',
+  primary:
+    'bg-linear-to-br from-orange-400 to-rose-400 text-white shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] hover:brightness-110 border border-white/10',
+  secondary:
+    'glass-card text-[var(--text-primary)] hover:border-[var(--border-bright)] hover:bg-[var(--surface-hover)]',
+  danger:
+    'bg-linear-to-br from-rose-500 to-red-600 text-white shadow-[var(--glow-rose)] hover:brightness-110 border border-white/10',
+  ghost:
+    'bg-transparent hover:bg-[var(--surface-hover)] text-[var(--text-primary)] border border-transparent hover:border-[var(--border)]',
+  neon:
+    'bg-[var(--surface)] text-[var(--primary)] border border-[var(--nav-active-border)] shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] hover:bg-[var(--surface-hover)]',
 };
 
 const sizeClasses = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
-  lg: 'px-6 py-3 text-base',
+  sm: 'px-3.5 py-1.5 text-sm rounded-lg',
+  md: 'px-5 py-2.5 text-sm rounded-xl',
+  lg: 'px-7 py-3.5 text-base rounded-2xl',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -24,7 +30,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={`inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)] disabled:opacity-50 disabled:cursor-not-allowed theme-transition ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+        className={`inline-flex items-center justify-center font-semibold tracking-wide transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:opacity-50 disabled:cursor-not-allowed theme-transition ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
         disabled={disabled || loading}
         {...props}
       >

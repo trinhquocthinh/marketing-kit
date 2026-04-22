@@ -106,10 +106,10 @@ export default function MyImageDetailPage() {
           onClick={() => router.back()}
           className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group w-fit"
         >
-          <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-[var(--primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1">{alias.name}</h2>
+          <h2 className="font-display text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1 tracking-tight">{alias.name}</h2>
         </button>
       </div>
 
@@ -117,7 +117,7 @@ export default function MyImageDetailPage() {
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 flex-1">
         {/* Left: Image Preview */}
         <div className="w-full lg:w-[60%] flex flex-col">
-          <div className="w-full bg-[var(--surface)] backdrop-blur-md rounded-2xl border border-[var(--border)] shadow-2xl overflow-hidden p-2 md:p-4 flex items-center justify-center relative group theme-transition">
+          <div className="w-full glass-card rounded-2xl overflow-hidden p-2 md:p-4 flex items-center justify-center relative group theme-transition">
             {alias.imageLink ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -127,7 +127,7 @@ export default function MyImageDetailPage() {
               />
             ) : (
               <div className="w-full aspect-video bg-[var(--surface-hover)] rounded-xl flex items-center justify-center">
-                <svg className="w-16 h-16 text-slate-500/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-16 h-16 text-[var(--text-muted)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -135,8 +135,8 @@ export default function MyImageDetailPage() {
 
             {/* Expired overlay */}
             {expired && (
-              <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center rounded-2xl">
-                <div className="bg-rose-500/20 border border-rose-500/50 text-rose-400 px-6 py-3 rounded-xl font-bold text-lg flex items-center gap-3 backdrop-blur-md shadow-lg">
+              <div className="absolute inset-0 bg-[var(--background)]/75 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+                <div className="bg-[var(--accent-rose)]/20 border border-[var(--accent-rose)]/50 text-[var(--accent-rose)] px-6 py-3 rounded-xl font-bold text-lg flex items-center gap-3 backdrop-blur-md shadow-[var(--glow-rose)]">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -150,25 +150,25 @@ export default function MyImageDetailPage() {
         {/* Right: Info & Actions */}
         <div className="w-full lg:w-[40%] flex flex-col gap-6">
           {/* Info Card */}
-          <div className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-6 shadow-lg flex flex-col gap-4 theme-transition">
+          <div className="glass-card rounded-2xl p-6 flex flex-col gap-4 theme-transition">
             <div className="flex justify-between items-start gap-4">
               <span className="text-[var(--text-muted)] text-sm font-medium whitespace-nowrap">{I18n.marketingDashboard.aliasName}</span>
-              <span className="text-[var(--text-primary)] font-semibold text-right leading-tight">{alias.name}</span>
+              <span className="font-display text-[var(--text-primary)] font-bold text-right leading-tight">{alias.name}</span>
             </div>
-            <div className="h-px w-full bg-[var(--border)]" />
+            <div className="h-px w-full bg-[var(--glass-border)]" />
             {alias.created && (
               <>
                 <div className="flex justify-between items-center gap-4">
                   <span className="text-[var(--text-muted)] text-sm font-medium">{I18n.portal.posterValidFrom}</span>
                   <span className="text-[var(--text-primary)] font-medium">{new Date(alias.created).toLocaleDateString('vi-VN')}</span>
                 </div>
-                <div className="h-px w-full bg-[var(--border)]" />
+                <div className="h-px w-full bg-[var(--glass-border)]" />
               </>
             )}
             {alias.validTo && (
               <div className="flex justify-between items-center gap-4">
                 <span className="text-[var(--text-muted)] text-sm font-medium">{I18n.portal.posterValidTo}</span>
-                <span className={`font-medium ${expired ? 'text-rose-400' : 'text-[var(--text-primary)]'}`}>
+                <span className={`font-medium ${expired ? 'text-[var(--accent-rose)]' : 'text-[var(--text-primary)]'}`}>
                   {new Date(alias.validTo).toLocaleDateString('vi-VN')}
                 </span>
               </div>
@@ -176,17 +176,17 @@ export default function MyImageDetailPage() {
           </div>
 
           {/* Action Buttons Grid */}
-          <div className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-4 shadow-lg grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3 theme-transition">
+          <div className="glass-card rounded-2xl p-4 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-3 theme-transition">
             <button
               onClick={handleFavorite}
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border transition-all hover:scale-[1.02] active:scale-95 ${
                 isFav
-                  ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                  : 'bg-[var(--surface-hover)] border-transparent text-[var(--text-secondary)] hover:bg-[var(--surface)]'
+                  ? 'bg-[var(--accent-rose)]/15 border-[var(--accent-rose)]/40 text-[var(--accent-rose)] shadow-[var(--glow-rose)]'
+                  : 'bg-[var(--surface-hover)] border-transparent text-[var(--text-secondary)] hover:border-[var(--border-bright)]'
               }`}
             >
               <svg
-                className={`w-5.5 h-5.5 ${isFav ? 'fill-rose-400' : ''}`}
+                className={`w-5.5 h-5.5 ${isFav ? 'fill-[var(--accent-rose)]' : ''}`}
                 fill={isFav ? 'currentColor' : 'none'}
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -202,7 +202,7 @@ export default function MyImageDetailPage() {
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-transparent transition-all hover:scale-[1.02] active:scale-95 ${
                 expired
                   ? 'bg-[var(--surface-hover)] opacity-50 cursor-not-allowed text-[var(--text-muted)]'
-                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]'
+                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:border-[var(--border-bright)] hover:text-[var(--primary)]'
               }`}
             >
               <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,7 +217,7 @@ export default function MyImageDetailPage() {
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-transparent transition-all hover:scale-[1.02] active:scale-95 ${
                 expired
                   ? 'bg-[var(--surface-hover)] opacity-50 cursor-not-allowed text-[var(--text-muted)]'
-                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]'
+                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:border-[var(--border-bright)] hover:text-[var(--primary)]'
               }`}
             >
               <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,7 +232,7 @@ export default function MyImageDetailPage() {
               className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-transparent transition-all hover:scale-[1.02] active:scale-95 ${
                 expired
                   ? 'bg-[var(--surface-hover)] opacity-50 cursor-not-allowed text-[var(--text-muted)]'
-                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]'
+                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:border-[var(--border-bright)] hover:text-[var(--primary)]'
               }`}
             >
               <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +246,7 @@ export default function MyImageDetailPage() {
           <div className="mt-auto pt-2">
             <button
               onClick={() => router.push(`/agent/marketing-kit/performance/${alias.id}`)}
-              className="w-full py-4 bg-linear-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 rounded-xl text-white font-bold shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full py-4 bg-linear-to-r from-orange-400 to-rose-500 hover:brightness-110 rounded-xl text-white font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />

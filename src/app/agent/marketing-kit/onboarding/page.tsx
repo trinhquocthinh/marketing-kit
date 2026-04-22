@@ -34,11 +34,18 @@ export default function OnboardingPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4 relative overflow-hidden theme-transition">
+      {/* Aurora decoration */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-1/3 -left-1/4 w-[60%] aspect-square rounded-full bg-[var(--aurora-blob-a)] blur-3xl opacity-70 animate-aurora-1" />
+        <div className="absolute -bottom-1/3 -right-1/4 w-[55%] aspect-square rounded-full bg-[var(--aurora-blob-b)] blur-3xl opacity-60 animate-aurora-2" />
+      </div>
+      <div className="noise-overlay" />
+
+      <div className="w-full max-w-lg relative z-10">
+        <div className="glass-card rounded-2xl overflow-hidden">
           {/* Image area */}
-          <div className="aspect-[4/3] bg-gray-100 flex items-center justify-center">
+          <div className="aspect-[4/3] bg-[var(--surface-hover)] flex items-center justify-center">
             <img
               src={tutorial.image}
               alt={tutorial.title}
@@ -51,8 +58,8 @@ export default function OnboardingPage() {
 
           {/* Content */}
           <div className="p-8 text-center">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">{tutorial.title}</h2>
-            <p className="text-sm text-gray-500 mb-8">{tutorial.desc}</p>
+            <h2 className="font-display text-xl font-bold text-[var(--text-primary)] mb-2 tracking-tight">{tutorial.title}</h2>
+            <p className="text-sm text-[var(--text-muted)] mb-8">{tutorial.desc}</p>
 
             {/* Dots */}
             <div className="flex items-center justify-center gap-2 mb-8">
@@ -60,8 +67,8 @@ export default function OnboardingPage() {
                 <button
                   key={i}
                   onClick={() => setCurrentIndex(i)}
-                  className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                    i === currentIndex ? 'bg-[#FA875B]' : 'bg-gray-200'
+                  className={`h-2.5 rounded-full transition-all ${
+                    i === currentIndex ? 'w-6 bg-linear-to-r from-orange-400 to-rose-500 shadow-[var(--glow-primary)]' : 'w-2.5 bg-[var(--surface-hover)]'
                   }`}
                 />
               ))}
@@ -71,7 +78,7 @@ export default function OnboardingPage() {
             <div className="flex items-center justify-between">
               {!isLast ? (
                 <>
-                  <button onClick={handleSkip} className="text-sm text-gray-400 hover:text-gray-600">
+                  <button onClick={handleSkip} className="text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
                     Bỏ qua
                   </button>
                   <Button onClick={handleNext}>Tiếp theo</Button>

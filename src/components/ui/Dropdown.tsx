@@ -64,7 +64,11 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 text-sm border border-[var(--border)] rounded-lg bg-[var(--input-bg)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 backdrop-blur-sm theme-transition"
+        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-xl bg-[var(--input-bg)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] backdrop-blur-xl theme-transition border transition-all ${
+          isOpen
+            ? 'border-[var(--nav-active-border)] shadow-[var(--glow-primary)]'
+            : 'border-[var(--glass-border)] hover:border-[var(--border-bright)]'
+        }`}
       >
         <span>{selected?.title}</span>
         <svg className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,14 +80,16 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
         <div
           ref={menuRef}
           style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, width: menuPos.width }}
-          className="z-[9999] bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] rounded-lg soft-shadow theme-transition"
+          className="glass-card z-[9999] rounded-xl overflow-hidden theme-transition"
         >
           {options.map((option) => (
             <button
               key={option.id}
               type="button"
-              className={`w-full text-left px-3 py-2 text-sm hover:bg-[var(--surface-hover)] first:rounded-t-lg last:rounded-b-lg ${
-                option.isSelected ? 'text-[var(--primary)] font-medium bg-[var(--surface)]' : 'text-[var(--text-secondary)]'
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-[var(--surface-hover)] ${
+                option.isSelected
+                  ? 'text-[var(--primary)] font-semibold bg-[var(--nav-active-bg)]'
+                  : 'text-[var(--text-secondary)]'
               }`}
               onClick={() => {
                 onSelect(option);

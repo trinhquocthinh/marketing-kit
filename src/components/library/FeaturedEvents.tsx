@@ -16,10 +16,10 @@ function FolderIcon({ type }: { type: string }) {
 
   return (
     <div
-      className={`shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center ${
+      className={`shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center border border-white/10 ${
         isRecruit
-          ? 'bg-linear-to-br from-slate-600 to-slate-800'
-          : 'bg-linear-to-br from-orange-400 to-rose-500'
+          ? 'bg-linear-to-br from-[var(--accent-violet)] to-indigo-600 shadow-[var(--glow-violet)]'
+          : 'bg-linear-to-br from-orange-400 to-rose-500 shadow-[var(--glow-primary)]'
       }`}
     >
       {isRecruit ? (
@@ -41,7 +41,8 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
   return (
     <div className="space-y-3">
       {/* Title */}
-      <h2 className="text-xl font-bold text-t-primary flex items-center gap-2">
+      <h2 className="font-display text-xl font-bold text-t-primary flex items-center gap-3 tracking-tight">
+        <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
         {I18n.marketingDashboard.featuredEvents}
       </h2>
 
@@ -55,7 +56,7 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
             <button
               key={item.id ?? index}
               onClick={() => onPress(item)}
-              className="w-full rounded-2xl bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] p-4 flex items-center gap-4 hover:shadow-lg transition-all text-left group shadow-sm"
+              className="glass-card glass-card-hover w-full rounded-2xl p-4 flex items-center gap-4 transition-all text-left group"
             >
               {/* Icon */}
               <FolderIcon type={item.type as string} />
@@ -64,29 +65,29 @@ export default function FeaturedEvents({ data, onPress }: FeaturedEventsProps) {
               <div className="min-w-0 flex-1 space-y-1">
                 {/* HOT label */}
                 {hasHot && (
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-orange-500 font-[Montserrat,sans-serif]">
+                  <p className="font-display text-[10px] font-extrabold uppercase tracking-widest text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-500">
                     Hot nhất hiện nay
                   </p>
                 )}
 
                 {/* Title */}
-                <p className="text-sm font-bold text-[var(--text-primary)] font-[Montserrat,sans-serif] line-clamp-2 leading-snug">
+                <p className="font-display text-sm font-bold text-[var(--text-primary)] line-clamp-2 leading-snug">
                   {item.name}
                 </p>
 
                 {/* Expired date */}
                 {expiredDate && (
-                  <p className="text-[10px] text-gray-400 font-[Montserrat,sans-serif]">
+                  <p className="text-[10px] text-[var(--text-muted)]">
                     {`${I18n.marketingDashboard.expired}: ${format(expiredDate, 'dd/MM/yyyy')}`}
                   </p>
                 )}
 
                 {/* Type */}
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 font-[Montserrat,sans-serif] flex items-center gap-1.5">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
                   {isRecruit
                     ? I18n.marketingDashboard.teamDevelopment
                     : I18n.marketingDashboard.boostSales}
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500" />
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--primary)] shadow-[var(--glow-primary)]" />
                 </p>
               </div>
             </button>

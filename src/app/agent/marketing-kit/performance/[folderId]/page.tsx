@@ -129,7 +129,8 @@ export default function FolderPerformancePage() {
 
         {/* Alias list section */}
         <section>
-          <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">
+          <h3 className="font-display text-base font-bold text-[var(--text-primary)] mb-4 tracking-tight flex items-center gap-3">
+            <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
             {I18n.marketingDashboard.imageCatalog}
           </h3>
 
@@ -145,7 +146,7 @@ export default function FolderPerformancePage() {
             {sortedAliases.map((alias) => (
               <div
                 key={alias.id}
-                className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl p-4 flex flex-col md:flex-row gap-6 hover:bg-[var(--surface-hover)] transition-all theme-transition"
+                className="glass-card glass-card-hover rounded-2xl p-4 flex flex-col md:flex-row gap-6 theme-transition"
               >
                 {/* Left: image + name */}
                 <div className="w-full md:w-32 h-40 md:h-32 bg-[var(--surface-hover)] rounded-xl flex items-center justify-center overflow-hidden shrink-0 relative border border-[var(--border)]">
@@ -156,12 +157,12 @@ export default function FolderPerformancePage() {
                       className="w-full h-full object-contain"
                     />
                   ) : (
-                    <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2">
-                    <p className="text-[10px] text-white font-medium truncate text-center">{alias.name}</p>
+                  <div className="absolute bottom-0 left-0 right-0 bg-[var(--background)]/70 backdrop-blur-sm p-2">
+                    <p className="text-[10px] text-[var(--text-primary)] font-semibold truncate text-center">{alias.name}</p>
                   </div>
                 </div>
 
@@ -169,16 +170,16 @@ export default function FolderPerformancePage() {
                 <div className="flex-1 flex flex-col">
                   <div className="flex flex-col sm:flex-row gap-4 mb-4 md:mb-auto">
                     <div className="flex-1">
-                      <span className="text-orange-500 font-bold text-xl">
+                      <span className="font-display text-[var(--primary)] font-bold text-xl">
                         {numberWithCommasDot(alias.count)}
                       </span>
                       <p className="text-xs text-[var(--text-muted)] font-medium">
                         {I18n.marketingDashboard.interactions}
                       </p>
                     </div>
-                    <div className="h-px w-full sm:w-px sm:h-12 bg-[var(--border)]" />
+                    <div className="h-px w-full sm:w-px sm:h-12 bg-[var(--glass-border)]" />
                     <div className="flex-1">
-                      <span className="text-orange-500 font-bold text-xl">
+                      <span className={`font-display font-bold text-xl ${isSale ? 'text-[var(--accent-rose)]' : 'text-[var(--accent-violet)]'}`}>
                         {numberWithCommasDot(alias.sum)}
                       </span>
                       <p className="text-xs text-[var(--text-muted)] font-medium">
@@ -188,14 +189,14 @@ export default function FolderPerformancePage() {
                       </p>
                     </div>
                   </div>
-                  <div className="mt-4 border-t border-[var(--border)] pt-4 flex justify-end md:border-t-0 md:pt-0 md:mt-0">
+                  <div className="mt-4 border-t border-[var(--glass-border)] pt-4 flex justify-end md:border-t-0 md:pt-0 md:mt-0">
                     <button
                       onClick={() =>
                         router.push(
                           `/agent/marketing-kit/performance/${folderId}/${alias.id}?timeLine=${timeLine}&from=${periods.from}&to=${periods.to}`
                         )
                       }
-                      className="px-6 py-2 rounded-xl border border-orange-500 text-orange-400 font-semibold hover:bg-orange-500/10 transition-colors w-full sm:w-auto text-sm"
+                      className="px-6 py-2 rounded-xl border border-[var(--primary)]/60 text-[var(--primary)] font-bold hover:bg-[var(--primary)]/10 hover:border-[var(--primary)] hover:shadow-[var(--glow-primary)] transition-all w-full sm:w-auto text-sm"
                     >
                       {I18n.marketingDashboard.imagePerformance}
                     </button>

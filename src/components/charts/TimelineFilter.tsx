@@ -19,12 +19,13 @@ export default function TimelineFilter({ selected, onChange, className = '' }: T
   return (
     <div className={className}>
       {/* Header: Tổng quan hoạt động */}
-      <h3 className="text-base font-bold text-[var(--text-primary)] mb-4">
+      <h3 className="font-display text-base font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2 tracking-tight">
+        <span className="w-1 h-4 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
         {I18n.marketingDashboard.overviewOfActivities}
       </h3>
 
       {/* Time tabs */}
-      <div className="flex bg-[var(--surface)] p-1.5 rounded-xl backdrop-blur-md border border-[var(--border)] shadow-inner mb-4 theme-transition">
+      <div className="flex glass-card p-1.5 rounded-xl mb-4 theme-transition">
         {TABS_TIME.map((tab) => (
           <button
             key={tab.value}
@@ -32,7 +33,7 @@ export default function TimelineFilter({ selected, onChange, className = '' }: T
             onClick={() => onChange(tab.value)}
             className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
               selected === tab.value
-                ? 'bg-[var(--surface-hover)] text-[var(--primary)] shadow-md border border-[var(--border)]'
+                ? 'bg-[var(--nav-active-bg)] text-[var(--primary)] border border-[var(--nav-active-border)] shadow-[var(--glow-primary)]'
                 : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
             }`}
           >

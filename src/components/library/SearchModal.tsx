@@ -14,7 +14,6 @@ interface SearchModalProps {
 }
 
 export default function SearchModal({ folders, isOpen, onClose, onSelect }: SearchModalProps) {
-  console.log("🚀 ~ SearchModal ~ folders:", folders)
   const [searchText, setSearchText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const allTemplates = folders.flatMap((f) => f.templates);
@@ -59,9 +58,10 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
         className="w-full h-[90vh] md:h-auto md:max-h-[85vh] max-w-5xl glass-card md:shadow-2xl rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col theme-transition"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-[var(--primary)]/60 to-transparent" />
         {/* Header */}
         <div className="flex justify-between items-center p-5 md:p-6 border-b border-[var(--border)]">
-          <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-wide">
+          <h2 className="font-display text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
             {I18n.search} mẫu thiết kế
           </h2>
           <button
@@ -87,12 +87,12 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value.slice(0, 100))}
                 placeholder="Nhập tên mẫu, ví dụ: 'sức khỏe', 'tuyển dụng'..."
-                className="w-full pl-12 pr-4 py-3.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]/50 focus:ring-1 focus:ring-[var(--primary)]/50 transition-all text-base backdrop-blur-md"
+                className="w-full pl-12 pr-4 py-3.5 bg-[var(--input-bg)] border border-[var(--glass-border)] rounded-xl text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--nav-active-border)] focus:shadow-[var(--glow-primary)] transition-all text-base backdrop-blur-xl"
               />
             </div>
             <button
               onClick={() => inputRef.current?.focus()}
-              className="px-8 py-3.5 bg-linear-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 text-white font-semibold rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap"
+              className="px-8 py-3.5 bg-linear-to-r from-orange-400 to-rose-500 hover:brightness-110 text-white font-bold rounded-xl shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all whitespace-nowrap"
             >
               {I18n.search}
             </button>

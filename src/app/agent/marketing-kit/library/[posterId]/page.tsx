@@ -52,17 +52,17 @@ export default function FolderDetailPage() {
           <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <h2 className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-rose-400 line-clamp-1">
+          <h2 className="font-display text-lg md:text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-rose-500 line-clamp-1 tracking-tight">
             {folder.name}
           </h2>
         </button>
 
         {/* Grid / Card View Toggle */}
-        <div className="flex bg-[var(--surface)] p-1 rounded-xl backdrop-blur-md border border-[var(--border)] self-end md:self-auto shadow-inner theme-transition">
+        <div className="flex glass-card p-1 rounded-xl self-end md:self-auto theme-transition">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'grid'
-                ? 'bg-linear-to-r from-orange-500/80 to-rose-500/80 text-white shadow-md'
+                ? 'bg-linear-to-r from-orange-400 to-rose-500 text-white shadow-[var(--glow-primary)]'
                 : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
               }`}
           >
@@ -74,7 +74,7 @@ export default function FolderDetailPage() {
           <button
             onClick={() => setViewMode('list')}
             className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'list'
-                ? 'bg-linear-to-r from-orange-500/80 to-rose-500/80 text-white shadow-md'
+                ? 'bg-linear-to-r from-orange-400 to-rose-500 text-white shadow-[var(--glow-primary)]'
                 : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
               }`}
           >

@@ -41,23 +41,24 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen flex theme-transition relative">
-      {/* Background gradient blobs */}
+      {/* Aurora background */}
       <div className="fixed inset-0 z-0 overflow-hidden bg-[var(--background)]">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[var(--blob-1)] blur-[120px] gradient-blob" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[var(--blob-2)] blur-[150px] gradient-blob" />
-        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-[var(--blob-3)] blur-[100px] gradient-blob" />
+        <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[var(--blob-1)] blur-[140px] gradient-blob animate-aurora-1" />
+        <div className="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] rounded-full bg-[var(--blob-2)] blur-[160px] gradient-blob animate-aurora-2" />
+        <div className="absolute top-[15%] right-[15%] w-[40%] h-[40%] rounded-full bg-[var(--blob-3)] blur-[120px] gradient-blob animate-aurora-3" />
+        <div className="noise-overlay" />
       </div>
 
       {/* Sidebar */}
       <aside className="w-64 bg-[var(--sidebar-bg)] backdrop-blur-2xl border-r border-[var(--border)] flex flex-col sticky top-0 h-screen z-10 theme-transition">
         {/* Logo */}
         <div className="h-14 flex items-center gap-3 px-6 border-b border-[var(--border)]">
-          <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-linear-to-br from-orange-400 to-rose-400 shadow-[var(--glow-primary)]">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-lg font-semibold text-[var(--text-primary)]">Admin Portal</span>
+          <span className="font-display text-lg font-bold text-[var(--text-primary)] tracking-tight">Admin Portal</span>
         </div>
 
         {/* Nav */}
@@ -68,10 +69,10 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 mx-3 my-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all border ${
                   isActive
-                    ? 'bg-[var(--primary-light)] text-[var(--primary)] border-r-2 border-[var(--primary)]'
-                    : 'text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]'
+                    ? 'bg-[var(--nav-active-bg)] border-[var(--nav-active-border)] text-[var(--primary)] shadow-[var(--glow-primary)]'
+                    : 'border-transparent text-[var(--text-secondary)] hover:bg-[var(--nav-hover-bg)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 <span className={isActive ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}>{link.icon}</span>

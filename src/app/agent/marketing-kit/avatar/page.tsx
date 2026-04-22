@@ -132,7 +132,7 @@ export default function AvatarManagementPage() {
     switch (status) {
       case AvatarStatusOption.Reviewed:
         return (
-          <div className="absolute top-1 right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+          <div className="absolute top-1 right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-[var(--background)] flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.6)]">
             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
@@ -140,7 +140,7 @@ export default function AvatarManagementPage() {
         );
       case AvatarStatusOption.Waiting:
         return (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-[9px] font-medium text-amber-400 whitespace-nowrap flex items-center gap-1 border border-white/10">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-[var(--background)]/80 backdrop-blur-md px-2 py-0.5 rounded text-[9px] font-semibold text-amber-400 whitespace-nowrap flex items-center gap-1 border border-amber-500/30">
             <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="10" strokeWidth={2} />
               <path strokeLinecap="round" strokeWidth={2} d="M12 8v4l3 3" />
@@ -150,7 +150,7 @@ export default function AvatarManagementPage() {
         );
       case AvatarStatusOption.Rejected:
         return (
-          <div className="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+          <div className="absolute top-1 right-1 w-6 h-6 bg-[var(--accent-rose)] rounded-full border-2 border-[var(--background)] flex items-center justify-center shadow-[var(--glow-rose)]">
             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -234,7 +234,7 @@ export default function AvatarManagementPage() {
                     <div
                       className={`w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-[3px] transition-all ${
                         isSelected
-                          ? 'border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.3)]'
+                          ? 'border-[var(--primary)] shadow-[var(--glow-primary)]'
                           : 'border-transparent group-hover:border-white/30'
                       }`}
                     >
@@ -279,19 +279,19 @@ export default function AvatarManagementPage() {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="w-full aspect-square rounded-full border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center cursor-pointer hover:border-orange-500 hover:bg-orange-500/5 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full aspect-square rounded-full border-2 border-dashed border-[var(--glass-border)] flex flex-col items-center justify-center cursor-pointer hover:border-[var(--primary)] hover:shadow-[var(--glow-primary)] hover:bg-[var(--primary)]/5 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUploading ? (
-                    <svg className="w-8 h-8 text-slate-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-[var(--text-muted)] animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
                   ) : (
                     <>
-                      <svg className="w-8 h-8 text-slate-500 group-hover:text-orange-500 transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
-                      <span className="text-[10px] text-slate-500 group-hover:text-orange-400 font-medium">Tải lên</span>
+                      <span className="text-[10px] text-[var(--text-muted)] group-hover:text-[var(--primary)] font-semibold">Tải lên</span>
                     </>
                   )}
                 </button>
@@ -326,15 +326,15 @@ export default function AvatarManagementPage() {
                     {/* Border ring */}
                     <div className={`absolute inset-0 rounded-full border-[3px] transition-colors duration-300 ${
                       isSelectedForUse
-                        ? 'border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.3)]'
+                        ? 'border-[var(--primary)] shadow-[var(--glow-primary)]'
                         : isSelectedForDelete
-                          ? 'border-rose-500'
+                          ? 'border-[var(--accent-rose)] shadow-[var(--glow-rose)]'
                           : 'border-transparent'
                     }`} />
 
                     {/* Checkmark for selected as active */}
                     {isSelectedForUse && (
-                      <div className="absolute top-2 right-2 w-6 h-6 bg-orange-500 rounded-full border-2 border-slate-900 flex items-center justify-center shadow-sm">
+                      <div className="absolute top-2 right-2 w-6 h-6 bg-linear-to-br from-orange-400 to-rose-500 rounded-full border-2 border-[var(--background)] flex items-center justify-center shadow-[var(--glow-primary)]">
                         <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
@@ -343,8 +343,8 @@ export default function AvatarManagementPage() {
 
                     {/* Checkmark for delete selection */}
                     {isSelectedForDelete && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-rose-500/20 backdrop-blur-[2px]">
-                        <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center shadow-lg">
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--accent-rose)]/20 backdrop-blur-[2px]">
+                        <div className="w-10 h-10 bg-[var(--accent-rose)] rounded-full flex items-center justify-center shadow-[var(--glow-rose)]">
                           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
@@ -364,7 +364,7 @@ export default function AvatarManagementPage() {
 
       {/* Footer: Enter delete mode button */}
       {yourAvatars.length > 0 && !isDeleteMode && yourAvatars.some((a) => a.approved) && (
-        <div className="p-4 md:p-6 flex justify-center sticky bottom-0 bg-linear-to-t from-slate-950 to-transparent pointer-events-none">
+        <div className="p-4 md:p-6 flex justify-center sticky bottom-0 bg-linear-to-t from-[var(--background)] to-transparent pointer-events-none">
           <button
             onClick={() => {
               setIsDeleteMode(true);
@@ -376,7 +376,7 @@ export default function AvatarManagementPage() {
                 })),
               );
             }}
-            className="pointer-events-auto flex items-center px-6 py-2.5 bg-[var(--surface)] border border-[var(--border)] hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 text-[var(--text-secondary)] rounded-full transition-all text-sm font-medium shadow-lg backdrop-blur-md"
+            className="pointer-events-auto flex items-center px-6 py-2.5 glass-card hover:border-[var(--accent-rose)]/40 hover:text-[var(--accent-rose)] hover:shadow-[var(--glow-rose)] text-[var(--text-secondary)] rounded-full transition-all text-sm font-semibold"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -388,18 +388,18 @@ export default function AvatarManagementPage() {
 
       {/* Floating action bar in delete mode */}
       {isDeleteMode && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 p-2 bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-2xl z-30">
-          <span className="text-sm font-medium text-[var(--text-primary)] px-4">
-            Đã chọn <span className="text-rose-400">{selectedDeleteCount}</span> ảnh
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 p-2 glass-card rounded-2xl z-30">
+          <span className="text-sm font-semibold text-[var(--text-primary)] px-4">
+            Đã chọn <span className="text-[var(--accent-rose)]">{selectedDeleteCount}</span> ảnh
           </span>
-          <div className="w-px h-6 bg-[var(--border)]" />
+          <div className="w-px h-6 bg-[var(--glass-border)]" />
           <button
             onClick={() => setDeleteConfirmOpen(true)}
             disabled={selectedDeleteCount === 0}
             className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${
               selectedDeleteCount > 0
-                ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/25 hover:bg-rose-600 hover:-translate-y-0.5'
-                : 'bg-white/5 text-slate-500 cursor-not-allowed'
+                ? 'bg-[var(--accent-rose)] text-white shadow-[var(--glow-rose)] hover:brightness-110 hover:-translate-y-0.5'
+                : 'bg-[var(--surface-hover)] text-[var(--text-muted)] cursor-not-allowed'
             }`}
           >
             Xóa ngay

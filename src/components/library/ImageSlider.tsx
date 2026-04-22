@@ -98,7 +98,8 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
   return (
     <div className="py-6 space-y-4">
       {/* Section title */}
-      <h2 className="text-xl font-bold text-[var(--text-primary)] px-4 flex items-center gap-2">
+      <h2 className="font-display text-xl font-bold text-[var(--text-primary)] px-4 flex items-center gap-3 tracking-tight">
+        <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
         {I18n.marketingDashboard.topUsedPosters}
       </h2>
 
@@ -121,7 +122,7 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
               <div
                 key={item.id ?? index}
                 style={{ width: itemWidthStyle }}
-                className="shrink-0 bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-4 cursor-pointer hover:bg-[var(--surface-hover)] hover:border-[var(--primary)]/50 transition-all group soft-shadow flex flex-col theme-transition"
+                className="glass-card glass-card-hover shrink-0 rounded-2xl p-4 cursor-pointer group flex flex-col theme-transition"
                 onClick={() => onSelect(item)}
               >
                 {/* Poster: image on top, agent footer at bottom – fixed height for uniform cards */}
@@ -144,11 +145,11 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
                     <Marquee
                       text={marqueeText}
                       className="h-3.5"
-                      textClassName="text-xs leading-[14px] text-red-500"
+                      textClassName="text-xs leading-[14px] text-rose-400"
                     />
                   )}
-                  <div className='mt-auto bg-[var(--surface-hover)] backdrop-blur-sm p-3 rounded-xl border border-[var(--border)] group-hover:bg-[var(--surface)] transition-colors'>
-                    <h3 className="text-[var(--text-primary)] font-semibold truncate group-hover:text-[var(--primary)] transition-colors">{item.name}</h3>
+                  <div className='mt-auto bg-[var(--surface-hover)] backdrop-blur-sm p-3 rounded-xl border border-[var(--glass-border)] group-hover:border-[var(--border-bright)] transition-colors'>
+                    <h3 className="font-display text-[var(--text-primary)] font-bold truncate group-hover:text-[var(--primary)] transition-colors">{item.name}</h3>
                   </div>
                 </div>
               </div>
@@ -164,7 +165,7 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
             <button
               key={i}
               onClick={() => goTo(i)}
-              className={`w-2 h-2 rounded-full transition-colors ${i === displayIndex ? 'bg-[var(--primary)]' : 'bg-[var(--surface-hover)]'
+              className={`h-2 rounded-full transition-all ${i === displayIndex ? 'w-6 bg-linear-to-r from-orange-400 to-rose-500 shadow-[var(--glow-primary)]' : 'w-2 bg-[var(--surface-hover)]'
                 }`}
             />
           ))}

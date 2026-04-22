@@ -90,21 +90,21 @@ function AliasPerformanceContent() {
       <div className="flex flex-col gap-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-slate-300 hover:text-white transition-colors group w-fit"
+          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group w-fit"
         >
           <svg
-            className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400"
+            className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-[var(--primary)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <h2 className="text-lg md:text-xl font-bold text-white line-clamp-1">
+          <h2 className="font-display text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1 tracking-tight">
             {data.name || I18n.marketingDashboard.imagePerformance}
           </h2>
         </button>
-        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 ml-7">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] ml-7">
           <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -120,7 +120,7 @@ function AliasPerformanceContent() {
         {/* Image preview */}
         {data.imageLink && (
           <div className="flex justify-center">
-            <div className="w-full max-w-xs bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+            <div className="w-full max-w-xs glass-card rounded-2xl overflow-hidden">
               <div className="aspect-4/5 w-full">
                 <img
                   src={`${CDN_URL}${data.imageLink}`}
@@ -128,8 +128,8 @@ function AliasPerformanceContent() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="px-4 py-3 border-t border-white/10">
-                <p className="text-sm text-white font-semibold text-center truncate">{data.name}</p>
+              <div className="px-4 py-3 border-t border-[var(--glass-border)]">
+                <p className="font-display text-sm text-[var(--text-primary)] font-bold text-center truncate">{data.name}</p>
               </div>
             </div>
           </div>

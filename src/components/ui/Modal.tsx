@@ -37,12 +37,13 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className={`relative bg-[var(--surface)] backdrop-blur-xl rounded-xl soft-shadow w-full theme-transition ${sizeClasses[size]} mx-4 max-h-[90vh] overflow-y-auto`}>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className={`glass-card relative rounded-2xl w-full theme-transition ${sizeClasses[size]} mx-4 max-h-[90vh] overflow-y-auto`}>
+        <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-linear-to-r from-transparent via-[var(--primary)]/50 to-transparent" />
         {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-            <h3 className="text-lg font-semibold text-[var(--text-primary)]">{title}</h3>
-            <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+            <h3 className="font-display text-lg font-bold text-[var(--text-primary)] tracking-tight">{title}</h3>
+            <button onClick={onClose} className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>

@@ -145,16 +145,18 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
-      {/* Background blobs */}
+      {/* Aurora background */}
       <div className="fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-(--blob-1) blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-(--blob-2) blur-[150px]" />
-        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-(--blob-3) blur-[100px]" />
+        <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] rounded-full bg-(--blob-1) blur-[140px] gradient-blob animate-aurora-1" />
+        <div className="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] rounded-full bg-(--blob-2) blur-[160px] gradient-blob animate-aurora-2" />
+        <div className="absolute top-[15%] right-[15%] w-[40%] h-[40%] rounded-full bg-(--blob-3) blur-[120px] gradient-blob animate-aurora-3" />
+        <div className="noise-overlay" />
       </div>
 
-      <div className="w-full max-w-md bg-(--glass-bg) backdrop-blur-xl border border-(--glass-border) shadow-2xl rounded-3xl p-8 relative z-10 overflow-hidden theme-transition">
+      <div className="glass-card w-full max-w-md rounded-3xl p-8 relative z-10 overflow-hidden theme-transition">
         {/* Decorative glow */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-orange-400 to-rose-400 opacity-20 rounded-bl-full blur-2xl" />
+        <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-orange-400 to-rose-400 opacity-30 rounded-bl-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[var(--accent-violet)] opacity-20 rounded-full blur-3xl pointer-events-none" />
 
         {/* Header – Register button */}
         {/* <div className="flex justify-end mb-6 relative z-10">
@@ -183,7 +185,7 @@ export default function LoginPage() {
               }}
             />
           </div>
-          <h1 className="text-3xl font-bold text-t-primary tracking-tight">Marketing Kit</h1>
+          <h1 className="font-display text-3xl font-black text-t-primary tracking-tight">Marketing Kit</h1>
           <p className="text-t-secondary mt-2 font-medium text-sm">{I18n.marketingDashboard.tutorialDesc}</p>
         </div>
 

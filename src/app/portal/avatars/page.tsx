@@ -76,9 +76,9 @@ export default function PortalAvatarsPage() {
   const statusBadge = (avatar: AvatarData) => {
     const status = getStatus(avatar);
     const styles: Record<string, string> = {
-      waiting: 'bg-yellow-100 text-yellow-700',
-      approved: 'bg-green-100 text-green-700',
-      rejected: 'bg-red-100 text-red-700',
+      waiting: 'bg-amber-500/15 text-amber-400 border border-amber-500/40',
+      approved: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/40',
+      rejected: 'bg-[var(--accent-rose)]/15 text-[var(--accent-rose)] border border-[var(--accent-rose)]/40',
     };
     const labels: Record<string, string> = {
       waiting: I18n.portal.waiting,
@@ -86,7 +86,7 @@ export default function PortalAvatarsPage() {
       rejected: I18n.portal.rejected,
     };
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status]}`}>
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider ${styles[status]}`}>
         {labels[status]}
       </span>
     );
@@ -96,7 +96,10 @@ export default function PortalAvatarsPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{I18n.portal.avatarApproval}</h1>
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-3">
+          <span className="w-1.5 h-7 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
+          {I18n.portal.avatarApproval}
+        </h1>
       </div>
 
       {/* Filter tabs */}
@@ -105,10 +108,10 @@ export default function PortalAvatarsPage() {
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
               filter === tab.id
-                ? 'bg-[#FA875B] text-white'
-                : 'bg-white text-gray-600 border border-gray-300 hover:border-[#FA875B]'
+                ? 'bg-linear-to-r from-orange-400 to-rose-500 text-white shadow-[var(--glow-primary)]'
+                : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] border border-[var(--glass-border)] hover:border-[var(--border-bright)]'
             }`}
           >
             {tab.label} ({tab.count})
@@ -126,10 +129,10 @@ export default function PortalAvatarsPage() {
       ) : filteredAvatars.length === 0 ? (
         <NoData />
       ) : (
-        <div className="bg-white rounded-xl border overflow-hidden">
+        <div className="glass-card rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b bg-gray-50 text-left text-sm font-medium text-gray-500">
+              <tr className="border-b border-[var(--glass-border)] bg-[var(--surface-hover)] text-left text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                 <th className="px-4 py-3">Avatar</th>
                 <th className="px-4 py-3">{I18n.portal.agentCode}</th>
                 <th className="px-4 py-3">{I18n.portal.uploadDate}</th>
@@ -139,7 +142,7 @@ export default function PortalAvatarsPage() {
             </thead>
             <tbody>
               {filteredAvatars.map((avatar) => (
-                <tr key={avatar.id} className="border-b hover:bg-gray-50">
+                <tr key={avatar.id} className="border-b border-[var(--glass-border)] hover:bg-[var(--surface-hover)] transition-colors">
                   <td className="px-4 py-3">
                     <button
                       onClick={() => setPreviewAvatar(avatar)}
@@ -148,14 +151,14 @@ export default function PortalAvatarsPage() {
                       <img
                         src={`${CDN_URL}${avatar.imageLink}`}
                         alt={avatar.agentCode}
-                        className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 hover:border-[#FA875B] transition-colors"
+                        className="w-12 h-12 rounded-full object-cover border-2 border-[var(--glass-border)] hover:border-[var(--primary)] hover:shadow-[var(--glow-primary)] transition-all"
                       />
                     </button>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm font-medium text-gray-900">{avatar.agentCode}</span>
+                    <span className="text-sm font-bold text-[var(--text-primary)]">{avatar.agentCode}</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
+                  <td className="px-4 py-3 text-sm text-[var(--text-muted)]">
                     {format(new Date(avatar.created), 'dd/MM/yyyy HH:mm')}
                   </td>
                   <td className="px-4 py-3">
@@ -200,8 +203,8 @@ export default function PortalAvatarsPage() {
               className="w-64 h-64 rounded-xl object-cover"
             />
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-900">{previewAvatar.agentCode}</p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-sm font-bold text-[var(--text-primary)]">{previewAvatar.agentCode}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 {format(new Date(previewAvatar.created), 'dd/MM/yyyy HH:mm')}
               </p>
               <div className="mt-2">{statusBadge(previewAvatar)}</div>

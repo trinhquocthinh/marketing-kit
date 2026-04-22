@@ -43,9 +43,9 @@ function SortableFolderRow({
   };
 
   return (
-    <tr ref={setNodeRef} style={style} className="border-b hover:bg-gray-50">
+    <tr ref={setNodeRef} style={style} className="border-b border-[var(--glass-border)] hover:bg-[var(--surface-hover)] transition-colors">
       <td className="px-4 py-3 w-10">
-        <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600">
+        <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-[var(--text-muted)] hover:text-[var(--text-primary)]">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
           </svg>
@@ -60,15 +60,15 @@ function SortableFolderRow({
               className="w-10 h-10 rounded object-cover"
             />
           )}
-          <span className="font-medium text-gray-900">{folder.name}</span>
+          <span className="font-display font-bold text-[var(--text-primary)]">{folder.name}</span>
         </div>
       </td>
       <td className="px-4 py-3">
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
             folder.type === TypeEnum.SALE || folder.type === StatusEnum.SALE
-              ? 'bg-green-100 text-green-700'
-              : 'bg-blue-100 text-blue-700'
+              ? 'bg-[var(--primary)]/15 text-[var(--primary)] border-[var(--primary)]/40'
+              : 'bg-[var(--accent-violet)]/15 text-[var(--accent-violet)] border-[var(--accent-violet)]/40'
           }`}
         >
           {folder.type === TypeEnum.SALE || folder.type === StatusEnum.SALE
@@ -76,14 +76,14 @@ function SortableFolderRow({
             : I18n.marketingDashboard.teamDevelopment}
         </span>
       </td>
-      <td className="px-4 py-3 text-sm text-gray-500">
+      <td className="px-4 py-3 text-sm text-[var(--text-muted)]">
         {folder.templates?.length ?? 0} {I18n.portal.posters.toLowerCase()}
       </td>
-      <td className="px-4 py-3 text-sm text-gray-500">{folder.order ?? '-'}</td>
+      <td className="px-4 py-3 text-sm text-[var(--text-muted)]">{folder.order ?? '-'}</td>
       <td className="px-4 py-3">
         <button
           onClick={() => onEdit(folder)}
-          className="text-[#FA875B] hover:text-[#e87a50] text-sm font-medium"
+          className="text-[var(--primary)] hover:brightness-125 text-sm font-bold"
         >
           {I18n.edit}
         </button>
@@ -162,12 +162,15 @@ export default function PortalFoldersPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{I18n.portal.folders}</h1>
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-3">
+          <span className="w-1.5 h-7 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
+          {I18n.portal.folders}
+        </h1>
         <Button onClick={openCreateModal}>{I18n.portal.createFolder}</Button>
       </div>
 
       {/* Hint */}
-      <p className="text-sm text-gray-500 mb-4 flex items-center gap-2">
+      <p className="text-sm text-[var(--text-muted)] mb-4 flex items-center gap-2">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -184,11 +187,11 @@ export default function PortalFoldersPage() {
       ) : orderedFolders.length === 0 ? (
         <NoData />
       ) : (
-        <div className="bg-white rounded-xl border overflow-hidden">
+        <div className="glass-card rounded-xl overflow-hidden">
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-gray-50 text-left text-sm font-medium text-gray-500">
+                <tr className="border-b border-[var(--glass-border)] bg-[var(--surface-hover)] text-left text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   <th className="px-4 py-3 w-10"></th>
                   <th className="px-4 py-3">{I18n.portal.folderName}</th>
                   <th className="px-4 py-3">{I18n.portal.folderType}</th>
@@ -219,7 +222,7 @@ export default function PortalFoldersPage() {
             placeholder={I18n.portal.folderName}
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{I18n.portal.folderType}</label>
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.folderType}</label>
             <Dropdown
               options={typeOptions}
               onSelect={(opt) => setFormType(opt.id as TypeEnum)}

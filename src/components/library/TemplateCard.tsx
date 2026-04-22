@@ -21,9 +21,9 @@ export default function TemplateCard({ item, onClick }: TemplateCardProps) {
       onClick={onClick}
       className={`group text-left transition-all ${isExpired ? 'opacity-50 grayscale' : ''}`}
     >
-      <div className="relative border border-[var(--border)] rounded-2xl overflow-hidden bg-[var(--surface)] backdrop-blur-md theme-transition">
+      <div className="glass-card glass-card-hover relative rounded-2xl overflow-hidden theme-transition">
         {marqueeText && (
-          <div className="absolute top-1 left-1 z-10 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded">
+          <div className="absolute top-1 left-1 z-10 bg-linear-to-r from-rose-500 to-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-[var(--glow-rose)]">
             <Marquee text={marqueeText} minChars={8} />
           </div>
         )}
@@ -32,7 +32,7 @@ export default function TemplateCard({ item, onClick }: TemplateCardProps) {
             src={`${CDN_URL}${item.imageLink}`}
             alt={item.name}
             fill
-            className="object-contain"
+            className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
           {/* Footer preview */}
@@ -44,7 +44,7 @@ export default function TemplateCard({ item, onClick }: TemplateCardProps) {
           )}
         </div>
       </div>
-      <p className="mt-1.5 text-xs font-semibold text-[var(--text-primary)] text-center line-clamp-2 group-hover:text-[var(--primary)] transition-colors">
+      <p className="mt-2 text-xs font-semibold text-[var(--text-primary)] text-center line-clamp-2 group-hover:text-[var(--primary)] transition-colors">
         {item.name}
       </p>
       {item.validTo && (

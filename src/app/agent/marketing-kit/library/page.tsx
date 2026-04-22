@@ -118,9 +118,9 @@ export default function LibraryPage() {
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Marquee effect for Marketing Kit label (from BRD rule 3.2.1) */}
 
-        <div className="mb-8 relative bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl h-12 flex items-center soft-shadow overflow-hidden theme-transition">
-          <div className="absolute left-0 top-0 bottom-0 w-36 bg-linear-to-r from-[var(--background)]/95 via-[var(--background)]/80 to-transparent z-10 flex items-center pl-3">
-            <span className="bg-linear-to-r from-orange-500 to-rose-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.4)] whitespace-nowrap flex items-center gap-1.5">
+        <div className="mb-8 relative glass-card rounded-2xl h-12 flex items-center overflow-hidden theme-transition">
+          <div className="absolute left-0 top-0 bottom-0 w-36 bg-linear-to-r from-[var(--background)] via-[var(--background)]/80 to-transparent z-10 flex items-center pl-3">
+            <span className="bg-linear-to-r from-orange-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-[var(--glow-primary)] whitespace-nowrap flex items-center gap-1.5">
               <span className="animate-pulse">🔥</span> THÔNG BÁO
             </span>
           </div>
@@ -131,7 +131,7 @@ export default function LibraryPage() {
               </p>
             </div>
           </div>
-          <div className="absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l from-[var(--background)]/90 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l from-[var(--background)] to-transparent z-10 pointer-events-none"></div>
         </div>
 
         {/* Top Used Image Carousel – "Dùng nhiều nhất" */}
@@ -142,9 +142,10 @@ export default function LibraryPage() {
         )}
 
         {/* Filter & Sort + Search */}
-        <section className="flex flex-col md:flex-row gap-4 justify-between items-center bg-[var(--surface)] backdrop-blur-sm p-4 rounded-2xl border border-[var(--border)] overflow-visible theme-transition">
+        <section className="flex flex-col md:flex-row gap-4 justify-between items-center glass-card p-4 rounded-2xl overflow-visible theme-transition">
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            <h2 className="font-display text-xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-3">
+              <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
               {I18n.marketingDashboard.folderTitle}
             </h2>
           </div>
@@ -171,7 +172,7 @@ export default function LibraryPage() {
             </div>
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center justify-center p-1.5 px-4 bg-[var(--surface-hover)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] hover:bg-[var(--surface)] transition-colors"
+              className="flex items-center justify-center p-1.5 px-4 bg-[var(--input-bg)] border border-[var(--glass-border)] hover:border-[var(--border-bright)] rounded-lg text-[var(--text-primary)] hover:shadow-[var(--glow-primary)] transition-all"
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

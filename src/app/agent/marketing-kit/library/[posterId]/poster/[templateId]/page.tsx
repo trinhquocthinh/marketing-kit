@@ -318,7 +318,7 @@ export default function PosterDetailPage() {
           {/* Glassmorphism poster frame */}
           <div
             ref={previewContainerRef}
-            className="w-full max-w-md bg-[var(--surface)] backdrop-blur-md rounded-2xl border border-[var(--border)] shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative overflow-auto p-4 theme-transition"
+            className="w-full max-w-md glass-card rounded-2xl relative overflow-auto p-4 theme-transition"
           >
             <div
               className="w-full rounded-xl relative overflow-hidden"
@@ -385,7 +385,7 @@ export default function PosterDetailPage() {
                   onLoad={() => setImageLoaded(true)}
                 />
               </div>
-              <div className="absolute bottom-0 right-0 p-2 bg-linear-to-r from-orange-500 to-rose-500 rounded-full text-white shadow-lg hover:scale-110 transition-transform border-2 border-slate-900">
+              <div className="absolute bottom-0 right-0 p-2 bg-linear-to-r from-orange-400 to-rose-500 rounded-full text-white shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] hover:scale-110 transition-all border-2 border-[var(--background)]">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
                   <circle cx="12" cy="13" r="3"/>
@@ -453,7 +453,7 @@ export default function PosterDetailPage() {
             <button
               disabled={isSaving || !imageLoaded}
               onClick={handleSave}
-              className="flex-1 py-4 px-6 bg-linear-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 rounded-xl text-white font-bold shadow-lg hover:shadow-orange-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-4 px-6 bg-linear-to-r from-orange-400 to-rose-500 hover:brightness-110 rounded-xl text-white font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? (
                 <span className="flex items-center justify-center gap-2">
@@ -498,7 +498,7 @@ export default function PosterDetailPage() {
         <button
           disabled={isSaving || !imageLoaded}
           onClick={handleSave}
-          className="flex-[0.6] py-3.5 px-4 bg-linear-to-r from-orange-500 to-rose-500 rounded-xl text-white font-bold shadow-lg hover:shadow-orange-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-[0.6] py-3.5 px-4 bg-linear-to-r from-orange-400 to-rose-500 hover:brightness-110 rounded-xl text-white font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSaving ? (
             <span className="flex items-center justify-center gap-2">
@@ -551,10 +551,10 @@ export default function PosterDetailPage() {
 
       {/* Full-screen loading overlay */}
       {isSaving && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-slate-800/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-3 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--background)]/60 backdrop-blur-sm">
+          <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-3">
             <svg
-              className="animate-spin h-8 w-8 text-orange-400"
+              className="animate-spin h-8 w-8 text-[var(--primary)]"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -572,7 +572,7 @@ export default function PosterDetailPage() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
               />
             </svg>
-            <p className="text-sm text-slate-200">{I18n.loading}</p>
+            <p className="text-sm text-[var(--text-secondary)]">{I18n.loading}</p>
           </div>
         </div>
       )}

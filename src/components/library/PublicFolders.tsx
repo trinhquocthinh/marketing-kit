@@ -17,7 +17,8 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
   return (
     <div className="space-y-3">
       {/* Title */}
-      <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+      <h2 className="font-display text-xl font-bold text-[var(--text-primary)] flex items-center gap-3 tracking-tight">
+        <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-[var(--accent-violet)] to-[var(--accent-rose)] shadow-[var(--glow-violet)]" />
         {I18n.marketingDashboard.publicFolders}
       </h2>
 
@@ -31,14 +32,14 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
             <button
               key={item.id ?? index}
               onClick={() => onPress(item)}
-              className="rounded-2xl bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] py-5 px-4 flex items-center justify-between text-left hover:bg-[var(--surface-hover)] transition-all hover:-translate-y-1 relative group theme-transition"
+              className="glass-card glass-card-hover rounded-2xl py-5 px-4 flex items-center justify-between text-left relative group theme-transition"
             >
               <div className='absolute top-0 right-8 w-16 h-3 bg-[var(--surface-hover)] rounded-b-lg' />
               {/* Left content – 80% width matching RN */}
               <div className="flex-1 min-w-0 space-y-1 w-[80%]">
                 {/* Topic label row + marquee + HOT */}
                 <div className="flex items-center gap-1.25">
-                  <span className="min-w-7.5 text-[9px] text-[var(--text-muted)] font-[Montserrat,sans-serif]">
+                  <span className="min-w-7.5 text-[9px] text-[var(--text-muted)]">
                     {I18n.marketingDashboard.topic}
                   </span>
                   {marqueeLabel && (
@@ -54,13 +55,13 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
                 </div>
 
                 {/* Folder name – SmallNext(13) SemiBold */}
-                <p className="text-[13px] font-semibold text-[var(--text-primary)] font-[Montserrat,sans-serif] line-clamp-2">
+                <p className="font-display text-[13px] font-bold text-[var(--text-primary)] line-clamp-2">
                   {item.name}
                 </p>
 
-                {/* Type badge – ExtraSmallNext(9), HalloweenOrangeBold or NewCar */}
+                {/* Type badge */}
                 <p
-                  className={`text-[9px] font-semibold font-[Montserrat,sans-serif] ${item.type === TypeEnum.RECRUIT ? 'text-blue-300' : 'text-orange-300'
+                  className={`text-[9px] font-semibold uppercase tracking-wider ${item.type === TypeEnum.RECRUIT ? 'text-[var(--accent-violet)]' : 'text-[var(--primary)]'
                     }`}
                 >
                   {item.type === TypeEnum.SALE
@@ -70,7 +71,7 @@ export default function PublicFolders({ data, onPress }: PublicFoldersProps) {
               </div>
 
               {/* Arrow */}
-              <div className="shrink-0 w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-linear-to-br from-orange-400 to-rose-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[var(--glow-primary)]">
                 <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>

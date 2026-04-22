@@ -115,7 +115,10 @@ export default function PortalPostersPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{I18n.portal.posters}</h1>
+        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-3">
+          <span className="w-1.5 h-7 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
+          {I18n.portal.posters}
+        </h1>
         <Button onClick={openCreateModal}>{I18n.portal.createPoster}</Button>
       </div>
 
@@ -143,7 +146,7 @@ export default function PortalPostersPage() {
             return (
               <div
                 key={poster.id}
-                className={`bg-white rounded-xl border overflow-hidden group cursor-pointer hover:shadow-md transition-shadow ${expired ? 'opacity-60' : ''}`}
+                className={`glass-card glass-card-hover rounded-xl overflow-hidden group cursor-pointer ${expired ? 'opacity-60' : ''}`}
                 onClick={() => openEditModal(poster)}
               >
                 <div className="aspect-[3/4] relative">
@@ -153,21 +156,21 @@ export default function PortalPostersPage() {
                     className="w-full h-full object-cover"
                   />
                   {expired && (
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                      <span className="text-white text-sm font-medium bg-red-500 px-3 py-1 rounded-full">
+                    <div className="absolute inset-0 bg-[var(--background)]/60 backdrop-blur-sm flex items-center justify-center">
+                      <span className="text-[var(--accent-rose)] text-sm font-bold bg-[var(--accent-rose)]/15 border border-[var(--accent-rose)]/40 px-3 py-1 rounded-full shadow-[var(--glow-rose)]">
                         {I18n.marketingDashboard.expired}
                       </span>
                     </div>
                   )}
                   {poster.labels?.some((l) => l.type === LabelEnum.HOT) && !expired && (
-                    <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                    <span className="absolute top-2 right-2 bg-linear-to-r from-orange-400 to-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-[var(--glow-primary)]">
                       HOT
                     </span>
                   )}
                 </div>
                 <div className="p-3">
-                  <Marquee text={poster.name} minChars={20} className="text-sm font-medium text-gray-900" />
-                  <p className="text-xs text-gray-500 mt-1">{poster.folderName}</p>
+                  <Marquee text={poster.name} minChars={20} className="text-sm font-semibold text-[var(--text-primary)]" />
+                  <p className="text-xs text-[var(--text-muted)] mt-1">{poster.folderName}</p>
                 </div>
               </div>
             );
@@ -180,15 +183,15 @@ export default function PortalPostersPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left: Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{I18n.portal.uploadImage}</label>
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">{I18n.portal.uploadImage}</label>
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="aspect-[3/4] border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-[#FA875B] transition-colors overflow-hidden"
+              className="aspect-[3/4] border-2 border-dashed border-[var(--glass-border)] rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--primary)] hover:shadow-[var(--glow-primary)] transition-all overflow-hidden"
             >
               {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
               ) : (
-                <div className="text-center text-gray-400">
+                <div className="text-center text-[var(--text-muted)]">
                   <svg className="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
@@ -215,7 +218,7 @@ export default function PortalPostersPage() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{I18n.portal.posterFolder}</label>
+              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.posterFolder}</label>
               <Dropdown
                 options={folders.map((f) => ({ id: String(f.id), title: f.name, isSelected: formFolderId === f.id }))}
                 onSelect={(opt) => setFormFolderId(Number(opt.id))}
@@ -223,11 +226,11 @@ export default function PortalPostersPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-gray-700">{I18n.portal.posterEditable}</label>
+              <label className="text-sm font-semibold text-[var(--text-secondary)]">{I18n.portal.posterEditable}</label>
               <button
                 type="button"
                 onClick={() => setFormEditable(!formEditable)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formEditable ? 'bg-[#FA875B]' : 'bg-gray-300'}`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all ${formEditable ? 'bg-linear-to-r from-orange-400 to-rose-500 shadow-[var(--glow-primary)]' : 'bg-[var(--surface-hover)]'}`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formEditable ? 'translate-x-6' : 'translate-x-1'}`}
@@ -237,28 +240,28 @@ export default function PortalPostersPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{I18n.portal.posterValidFrom}</label>
+                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.posterValidFrom}</label>
                 <input
                   type="date"
                   value={formValidFrom}
                   onChange={(e) => setFormValidFrom(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FA875B]/50 focus:border-[#FA875B]"
+                  className="w-full px-3 py-2 bg-[var(--surface-hover)] border border-[var(--glass-border)] rounded-lg text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] focus:shadow-[var(--glow-primary)]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{I18n.portal.posterValidTo}</label>
+                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.posterValidTo}</label>
                 <input
                   type="date"
                   value={formValidTo}
                   onChange={(e) => setFormValidTo(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FA875B]/50 focus:border-[#FA875B]"
+                  className="w-full px-3 py-2 bg-[var(--surface-hover)] border border-[var(--glass-border)] rounded-lg text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] focus:shadow-[var(--glow-primary)]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{I18n.portal.footerColor}</label>
+                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.footerColor}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -266,11 +269,11 @@ export default function PortalPostersPage() {
                     onChange={(e) => setFormFooterColor(e.target.value)}
                     className="w-8 h-8 rounded cursor-pointer border-0"
                   />
-                  <span className="text-sm text-gray-500">{formFooterColor}</span>
+                  <span className="text-sm text-[var(--text-muted)]">{formFooterColor}</span>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{I18n.portal.characterColor}</label>
+                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.characterColor}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -278,24 +281,24 @@ export default function PortalPostersPage() {
                     onChange={(e) => setFormCharacterColor(e.target.value)}
                     className="w-8 h-8 rounded cursor-pointer border-0"
                   />
-                  <span className="text-sm text-gray-500">{formCharacterColor}</span>
+                  <span className="text-sm text-[var(--text-muted)]">{formCharacterColor}</span>
                 </div>
               </div>
             </div>
 
             {/* Labels */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{I18n.portal.posterLabels}</label>
+              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.posterLabels}</label>
               <div className="flex gap-2">
                 {labelOptions.map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
                     onClick={() => toggleLabel(opt.value)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
                       formLabels.includes(opt.value)
-                        ? 'bg-[#FA875B] text-white border-[#FA875B]'
-                        : 'bg-white text-gray-600 border-gray-300 hover:border-[#FA875B]'
+                        ? 'bg-linear-to-r from-orange-400 to-rose-500 text-white border-transparent shadow-[var(--glow-primary)]'
+                        : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] border-[var(--glass-border)] hover:border-[var(--border-bright)]'
                     }`}
                   >
                     {opt.label}

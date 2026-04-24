@@ -1,9 +1,9 @@
 'use client';
 
-import { TABS_TIME } from '@/lib/constants';
-import { TimeLineEnum } from '@/types/enums';
-import { getTimeLine, formatDateToString } from '@/lib/marketing-dashboard.utils';
 import { I18n } from '@/i18n';
+import { TABS_TIME } from '@/lib/constants';
+import { formatDateToString, getTimeLine } from '@/lib/marketing-dashboard.utils';
+import { type TimeLineEnum } from '@/types/enums';
 
 interface TimelineFilterProps {
   selected: TimeLineEnum;
@@ -11,43 +11,60 @@ interface TimelineFilterProps {
   className?: string;
 }
 
-export default function TimelineFilter({ selected, onChange, className = '' }: TimelineFilterProps) {
+export default function TimelineFilter({
+  selected,
+  onChange,
+  className = '',
+}: TimelineFilterProps) {
   const periods = getTimeLine(selected);
   const fromDate = new Date(periods.from);
   const toDate = new Date(periods.to);
 
   return (
     <div className={className}>
-      {/* Header: Tổng quan hoạt động */}
-      <h3 className="font-display text-base font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2 tracking-tight">
-        <span className="w-1 h-4 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
+      <h3 className="mb-4 text-base font-black tracking-wide text-[var(--text-strong)]">
         {I18n.marketingDashboard.overviewOfActivities}
       </h3>
 
-      {/* Time tabs */}
-      <div className="flex glass-card p-1.5 rounded-xl mb-4 theme-transition">
-        {TABS_TIME.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => onChange(tab.value)}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-              selected === tab.value
-                ? 'bg-[var(--nav-active-bg)] text-[var(--primary)] border border-[var(--nav-active-border)] shadow-[var(--glow-primary)]'
-                : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-            }`}
-          >
-            {tab.name}
-          </button>
-        ))}
+      {/* Time tabs - pill toggle */}
+      <div className="mb-4 flex gap-1 rounded-full bg-[var(--surface-glass-alt)] p-1 shadow-inner-soft">
+        {TABS_TIME.map((tab) => {
+          const isActive = selected === tab.value;
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => onChange(tab.value)}
+              className={`flex-1 rounded-full py-2 text-[10px] font-black tracking-widest uppercase transition-all duration-300 ${
+                isActive
+                  ? 'text-white shadow-[var(--shadow-glow-primary)]'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-strong)]'
+              }`}
+              style={
+                isActive
+                  ? {
+                      background:
+                        'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+                    }
+                  : undefined
+              }
+            >
+              {tab.name}
+            </button>
+          );
+        })}
       </div>
 
       {/* Date range text */}
-      <p className="text-sm text-[var(--text-muted)] font-medium">
+      <p className="text-xs font-medium text-[var(--text-muted)]">
         <span>{I18n.marketingDashboard.from} </span>
-        <span className="text-[var(--text-primary)] font-bold">{formatDateToString(fromDate, 'dd/MM/yyyy')}</span>
+        <span className="font-black text-[var(--text-strong)]">
+          {formatDateToString(fromDate, 'dd/MM/yyyy')}
+        </span>
         <span> {I18n.marketingDashboard.to} </span>
-        <span className="text-[var(--text-primary)] font-bold">{formatDateToString(toDate, 'dd/MM/yyyy')}</span>
+        <span className="font-black text-[var(--text-strong)]">
+          {formatDateToString(toDate, 'dd/MM/yyyy')}
+        </span>
       </p>
     </div>
   );

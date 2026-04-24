@@ -1,6 +1,8 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios';
+
+import { useAuthStore } from '@/stores/useAuthStore';
+
 import { API_BASE_URL } from './api.config';
-import { store } from './store';
 
 export interface HttpResult<T> {
   isSuccess: boolean;
@@ -30,7 +32,7 @@ class HttpService {
       if (isPublic) {
         delete config.headers['Authorization'];
       } else if (!config.headers['Authorization']) {
-        const token = store.getState().authentication.token;
+        const token = useAuthStore.getState().token;
         if (token) {
           config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -58,7 +60,7 @@ class HttpService {
           }
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
@@ -83,7 +85,11 @@ class HttpService {
     }
   }
 
-  async post<TData, TResponse>(url: string, data?: TData, config?: AxiosRequestConfig): Promise<HttpResult<TResponse>> {
+  async post<TData, TResponse>(
+    url: string,
+    data?: TData,
+    config?: AxiosRequestConfig,
+  ): Promise<HttpResult<TResponse>> {
     try {
       const response = await this.client.post<TResponse>(url, data, config);
       return {
@@ -96,7 +102,11 @@ class HttpService {
     }
   }
 
-  async put<TData, TResponse>(url: string, data?: TData, config?: AxiosRequestConfig): Promise<HttpResult<TResponse>> {
+  async put<TData, TResponse>(
+    url: string,
+    data?: TData,
+    config?: AxiosRequestConfig,
+  ): Promise<HttpResult<TResponse>> {
     try {
       const response = await this.client.put<TResponse>(url, data, config);
       return {

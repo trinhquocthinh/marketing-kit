@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef } from 'react';
+import { forwardRef, type InputHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -10,21 +10,25 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+          <label className="mb-2 block pl-3 text-[10px] font-black tracking-widest text-[var(--primary)] uppercase">
             {label}
           </label>
         )}
         <input
           ref={ref}
-          className={`w-full px-4 py-2.5 border rounded-xl text-sm transition-all duration-300 focus:outline-none focus:border-[var(--nav-active-border)] focus:shadow-[var(--glow-primary)] focus:bg-[var(--surface-hover)] bg-[var(--input-bg)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] backdrop-blur-xl theme-transition ${
-            error ? 'border-rose-500 shadow-[var(--glow-rose)]' : 'border-[var(--glass-border)]'
+          className={`glass-input theme-transition w-full px-5 py-3.5 text-sm font-bold ${
+            error ? '!border-[var(--danger)]' : ''
           } ${className}`}
           {...props}
         />
-        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+        {error && (
+          <p className="mt-2 pl-3 text-[10px] font-black tracking-widest text-[var(--danger)] uppercase">
+            {error}
+          </p>
+        )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = 'Input';

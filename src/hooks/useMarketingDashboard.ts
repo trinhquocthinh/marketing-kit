@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from './useStore';
-import { marketingDashboardActions } from '@/lib/slices/marketing-dashboard.slice';
+
 import { marketingDashboardService } from '@/lib/services/marketing-dashboard.service';
+import { useDashboardStore } from '@/stores/useDashboardStore';
 import type {
   AliasCreateData,
   AliasData,
@@ -12,45 +12,34 @@ import type {
   AvatarCreateData,
   AvatarDeleteBatchRequest,
   AvatarUpdateData,
-  FolderModel,
-  MyImageModel,
   PerformanceAliasRequest,
   PerformanceFolderRequest,
-  PerformanceModel,
   UploadAliasImageRequest,
   UploadAvatarImageRequest,
 } from '@/types';
 
 export function useMarketingDashboard() {
-  const dispatch = useAppDispatch();
+  // Tách selector để tránh re-render thừa — mỗi field 1 subscription
+  const isLoading = useDashboardStore((s) => s.isLoading);
+  const stage = useDashboardStore((s) => s.stage);
+  const folders = useDashboardStore((s) => s.folders);
+  const myImages = useDashboardStore((s) => s.myImages);
+  const performances = useDashboardStore((s) => s.performances);
 
-  const isLoading = useAppSelector((state) => state['marketing-dashboard'].isLoading);
-  const stage = useAppSelector((state) => state['marketing-dashboard'].stage);
-  const folders: FolderModel[] = useAppSelector((state) => state['marketing-dashboard'].folders);
-  const myImages: MyImageModel[] = useAppSelector((state) => state['marketing-dashboard'].myImages);
-  const performances: PerformanceModel[] = useAppSelector((state) => state['marketing-dashboard'].performances);
-
-  const setLoading = useCallback((val: boolean) => {
-    dispatch(marketingDashboardActions.setLoading(val));
-  }, [dispatch]);
-
-  const setStage = useCallback((val: string) => {
-    dispatch(marketingDashboardActions.setStage(val));
-  }, [dispatch]);
-
-  const resetState = useCallback(() => {
-    dispatch(marketingDashboardActions.resetState());
-  }, [dispatch]);
+  // Actions từ zustand reference stable → lấy trực tiếp (không cần useCallback wrap)
+  const setLoading = useDashboardStore((s) => s.setLoading);
+  const setStage = useDashboardStore((s) => s.setStage);
+  const setFolders = useDashboardStore((s) => s.setFolders);
+  const setPerformances = useDashboardStore((s) => s.setPerformances);
+  const resetState = useDashboardStore((s) => s.resetState);
 
   const getFolders = useCallback(async () => {
     setLoading(true);
     const result = await marketingDashboardService.getFolders();
-    if (result.data) {
-      dispatch(marketingDashboardActions.setFolders(result.data));
-    }
+    if (result.data) setFolders(result.data);
     setLoading(false);
     return result;
-  }, [dispatch, setLoading]);
+  }, [setFolders, setLoading]);
 
   const getAlias = useCallback(async (): Promise<ApiResponse<AliasData[]>> => {
     return marketingDashboardService.getAlias();
@@ -60,17 +49,26 @@ export function useMarketingDashboard() {
     return marketingDashboardService.getAliasDetail(aliasId);
   }, []);
 
-  const createAlias = useCallback(async (data: AliasCreateData): Promise<ApiResponse<AliasData>> => {
-    return marketingDashboardService.createAlias(data);
-  }, []);
+  const createAlias = useCallback(
+    async (data: AliasCreateData): Promise<ApiResponse<AliasData>> => {
+      return marketingDashboardService.createAlias(data);
+    },
+    [],
+  );
 
-  const updateAlias = useCallback(async (aliasId: number, data: AliasUpdateData): Promise<ApiResponse<AliasData>> => {
-    return marketingDashboardService.updateAlias(aliasId, data);
-  }, []);
+  const updateAlias = useCallback(
+    async (aliasId: number, data: AliasUpdateData): Promise<ApiResponse<AliasData>> => {
+      return marketingDashboardService.updateAlias(aliasId, data);
+    },
+    [],
+  );
 
-  const uploadAliasImage = useCallback(async (data: UploadAliasImageRequest): Promise<ApiResponse<string>> => {
-    return marketingDashboardService.uploadAliasImage(data);
-  }, []);
+  const uploadAliasImage = useCallback(
+    async (data: UploadAliasImageRequest): Promise<ApiResponse<string>> => {
+      return marketingDashboardService.uploadAliasImage(data);
+    },
+    [],
+  );
 
   const getAvatar = useCallback(async () => {
     return marketingDashboardService.getAvatar();
@@ -95,12 +93,10 @@ export function useMarketingDashboard() {
   const getPerformanceOverview = useCallback(async () => {
     setLoading(true);
     const result = await marketingDashboardService.getPerformanceOverview();
-    if (result.data?.folders) {
-      dispatch(marketingDashboardActions.setPerformances(result.data.folders));
-    }
+    if (result.data?.folders) setPerformances(result.data.folders);
     setLoading(false);
     return result;
-  }, [dispatch, setLoading]);
+  }, [setLoading, setPerformances]);
 
   const getPerformanceFolder = useCallback(async (request: PerformanceFolderRequest) => {
     return marketingDashboardService.getPerformanceFolder(request);

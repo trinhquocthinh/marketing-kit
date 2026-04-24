@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+import { Copy, Download, Heart, ImageIcon, Share2, Sparkles } from 'lucide-react';
+
+import Button from '@/components/ui/Button';
+import NoData from '@/components/ui/NoData';
+import Skeleton from '@/components/ui/Skeleton';
+import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
 import { I18n } from '@/i18n';
 import { CDN_URL } from '@/lib/api.config';
-import { LabelEnum } from '@/types/enums';
-import type { AliasData } from '@/types';
-import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
 import { generateMktLink, isExpiredDate } from '@/lib/marketing-dashboard.utils';
-import Skeleton from '@/components/ui/Skeleton';
-import NoData from '@/components/ui/NoData';
+import type { AliasData } from '@/types';
+import { LabelEnum } from '@/types/enums';
 
 type FilterMode = 'all' | 'favorites';
 
@@ -29,7 +33,11 @@ export default function MyImagesPage() {
 
   const favorites = aliasList
     .filter((a) => a.labels?.some((l) => l.type === LabelEnum.FAVORITE))
-    .sort((a, b) => new Date(b.priorityAt || b.created!).getTime() - new Date(a.priorityAt || a.created!).getTime());
+    .sort(
+      (a, b) =>
+        new Date(b.priorityAt || b.created!).getTime() -
+        new Date(a.priorityAt || a.created!).getTime(),
+    );
 
   const allSorted = [...aliasList].sort(
     (a, b) => new Date(b.created!).getTime() - new Date(a.created!).getTime(),
@@ -44,26 +52,24 @@ export default function MyImagesPage() {
       : [...(alias.labels || []), { type: LabelEnum.FAVORITE, value: '' }];
 
     // Optimistic update
-    setAliasList((prev) =>
-      prev.map((a) => (a.id === alias.id ? { ...a, labels: newLabels } : a)),
-    );
+    setAliasList((prev) => prev.map((a) => (a.id === alias.id ? { ...a, labels: newLabels } : a)));
 
     const res = await updateAlias(alias.id, { ...alias, labels: newLabels });
     if (res?.data) {
-      setAliasList((prev) =>
-        prev.map((a) => (a.id === res.data!.id ? res.data! : a)),
-      );
+      setAliasList((prev) => prev.map((a) => (a.id === res.data!.id ? res.data! : a)));
     }
   };
 
   const handleCopyLink = async (alias: AliasData) => {
     const link = generateMktLink(alias);
+    if (!link) return;
     await navigator.clipboard.writeText(link);
     alert(I18n.marketingDashboard.linkCopied);
   };
 
   const handleShare = async (alias: AliasData) => {
     const link = generateMktLink(alias);
+    if (!link) return;
     if (navigator.share) {
       await navigator.share({ title: alias.name, url: link });
     } else {
@@ -74,12 +80,12 @@ export default function MyImagesPage() {
 
   const handleDownload = (alias: AliasData) => {
     if (!alias.imageLink) return;
-    const url = `${CDN_URL}${alias.imageLink}`;
+    const imageUrl = `${CDN_URL}${alias.imageLink}`;
+    const filename = `${alias.name || 'poster'}.jpg`;
+    const proxyUrl = `/api/download?url=${encodeURIComponent(imageUrl)}&filename=${encodeURIComponent(filename)}`;
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `${alias.name || 'poster'}.jpg`;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
+    a.href = proxyUrl;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -87,15 +93,12 @@ export default function MyImagesPage() {
 
   if (isLoading && aliasList.length === 0) {
     return (
-      <div className="space-y-6 p-4 md:p-8">
-        <Skeleton className="h-8 w-64 bg-white/10 rounded-lg" />
-        <Skeleton className="h-12 w-80 bg-white/5 rounded-xl" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="space-y-6">
+        <Skeleton className="h-14 w-80" />
+        <Skeleton className="h-14 w-96" />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="space-y-0">
-              <Skeleton className="aspect-4/5 rounded-t-2xl bg-white/5" />
-              <Skeleton className="h-16 rounded-b-2xl bg-white/5" />
-            </div>
+            <Skeleton key={i} className="aspect-[4/5]" />
           ))}
         </div>
       </div>
@@ -103,65 +106,76 @@ export default function MyImagesPage() {
   }
 
   if (aliasList.length === 0 && !isLoading) {
-    return <NoData message={I18n.noData} />;
+    return (
+      <div className="glass-bento flex min-h-[60vh] items-center justify-center">
+        <NoData message={I18n.noData} />
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="animate-bento-fade-up space-y-6 pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-3">
-          <span className="w-1.5 h-7 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
-          {I18n.marketingDashboard.myPictures}
-        </h2>
-        <button
+      <div className="glass-bento flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <p className="bento-eyebrow mb-1.5">Bộ sưu tập</p>
+          <h2 className="text-2xl font-black tracking-wide text-[var(--text-strong)]">
+            {I18n.marketingDashboard.myPictures}
+          </h2>
+        </div>
+        <Button
+          variant="primary"
           onClick={() => router.push('/agent/marketing-kit/library')}
-          className="px-5 py-2.5 bg-linear-to-r from-orange-400 to-rose-500 rounded-xl text-white font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] hover:brightness-110 transition-all w-full sm:w-auto text-sm"
+          className="w-full gap-2 sm:w-auto"
         >
-          + {I18n.marketingDashboard.createNew}
-        </button>
+          <Sparkles className="h-4 w-4" strokeWidth={2.5} />
+          {I18n.marketingDashboard.createNew}
+        </Button>
       </div>
 
       {/* Filter Toggle */}
-      <div className="flex glass-card p-1.5 rounded-xl w-fit theme-transition">
-        <button
-          onClick={() => setFilter('all')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-            filter === 'all'
-              ? 'bg-[var(--nav-active-bg)] text-[var(--primary)] border border-[var(--nav-active-border)] shadow-[var(--glow-primary)]'
-              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          {I18n.marketingDashboard.myPictures} ({aliasList.length})
-        </button>
-        <button
-          onClick={() => setFilter('favorites')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-            filter === 'favorites'
-              ? 'bg-[var(--accent-rose)]/15 text-[var(--accent-rose)] border border-[var(--accent-rose)]/40 shadow-[var(--glow-rose)]'
-              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-          }`}
-        >
-          <svg
-            className={`w-4 h-4 ${filter === 'favorites' ? 'fill-[var(--accent-rose)]' : ''}`}
-            fill={filter === 'favorites' ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-          {I18n.marketingDashboard.favorite} ({favorites.length})
-        </button>
+      <div className="flex w-fit rounded-full bg-[var(--surface-glass-alt)] p-1">
+        {(
+          [
+            { mode: 'all' as const, Icon: ImageIcon, label: I18n.marketingDashboard.myPictures, count: aliasList.length },
+            { mode: 'favorites' as const, Icon: Heart, label: I18n.marketingDashboard.favorite, count: favorites.length },
+          ]
+        ).map(({ mode, Icon, label, count }) => {
+          const active = filter === mode;
+          return (
+            <button
+              key={mode}
+              onClick={() => setFilter(mode)}
+              className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black tracking-widest uppercase transition-all ${
+                active
+                  ? 'text-white shadow-[var(--shadow-glow-primary)]'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-strong)]'
+              }`}
+              style={
+                active
+                  ? { background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)' }
+                  : undefined
+              }
+            >
+              <Icon
+                className="h-4 w-4"
+                strokeWidth={2.5}
+                fill={mode === 'favorites' && active ? 'currentColor' : 'none'}
+              />
+              <span>{label}</span>
+              <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px]">{count}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Grid */}
       {filteredAliases.length === 0 ? (
-        <NoData message={filter === 'favorites' ? 'Chưa có ảnh yêu thích' : I18n.noData} />
+        <div className="glass-bento flex min-h-[40vh] items-center justify-center">
+          <NoData message={filter === 'favorites' ? 'Chưa có ảnh yêu thích' : I18n.noData} />
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredAliases.map((alias) => (
             <AliasCard
               key={alias.id}
@@ -188,95 +202,91 @@ interface AliasCardProps {
   onClick: () => void;
 }
 
-function AliasCard({ alias, onFavorite, onCopyLink, onShare, onDownload, onClick }: AliasCardProps) {
+function AliasCard({
+  alias,
+  onFavorite,
+  onCopyLink,
+  onShare,
+  onDownload,
+  onClick,
+}: AliasCardProps) {
   const expired = alias.validTo ? isExpiredDate(alias.validTo) : false;
   const isFav = alias.labels?.some((l) => l.type === LabelEnum.FAVORITE);
 
   return (
-    <div className="glass-card glass-card-hover rounded-2xl overflow-hidden flex flex-col group theme-transition">
+    <div className="glass-bento glass-shine group flex flex-col overflow-hidden !p-0 transition-all hover:-translate-y-1">
       {/* Image Container */}
-      <button onClick={onClick} className="relative aspect-4/5 bg-linear-to-br from-[var(--surface-hover)] to-[var(--surface)] flex items-center justify-center overflow-hidden cursor-pointer p-4 w-full">
-        <div className="w-full h-full bg-[var(--surface-hover)] rounded-xl border border-[var(--glass-border)] flex items-center justify-center group-hover:scale-[1.03] transition-transform duration-500 relative overflow-hidden">
+      <button
+        onClick={onClick}
+        className="relative flex aspect-[4/5] w-full cursor-pointer items-center justify-center overflow-hidden p-4"
+      >
+        <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[var(--radius-bento-sm)] bg-[var(--surface-glass-alt)] transition-transform duration-500 group-hover:scale-[1.02]">
           {alias.imageLink ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={`${CDN_URL}${alias.imageLink}`}
               alt={alias.name || 'Alias'}
-              className="w-full h-full object-contain"
+              className="h-full w-full object-contain"
             />
           ) : (
-            <svg className="w-16 h-16 text-[var(--text-muted)]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+            <ImageIcon className="h-16 w-16 text-[var(--text-muted)]" strokeWidth={1.25} />
           )}
         </div>
 
-        {/* Expired badge */}
         {expired && (
-          <div className="absolute top-3 left-3 bg-[var(--accent-rose)]/20 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[var(--accent-rose)] border border-[var(--accent-rose)]/40 shadow-[var(--glow-rose)]">
+          <div className="absolute top-3 left-3 rounded-full bg-[var(--surface-glass)] px-3 py-1 text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase shadow-[var(--shadow-glass-sm)]">
             {I18n.marketingDashboard.expired}
           </div>
         )}
       </button>
 
       {/* Info Section */}
-      <div className="p-4 bg-[var(--surface-hover)] flex flex-col gap-1 border-t border-[var(--glass-border)]">
-        <h3 className="font-display text-[var(--text-primary)] font-bold text-sm line-clamp-1 group-hover:text-[var(--primary)] transition-colors">
+      <div className="flex flex-col gap-1 border-t border-[var(--surface-glass-border)] px-4 py-3">
+        <h3 className="line-clamp-1 text-sm font-black tracking-wide text-[var(--text-strong)] transition-colors group-hover:text-[var(--primary)]">
           {alias.name}
         </h3>
         {alias.created && (
-          <p className="text-xs text-[var(--text-muted)] font-medium">
+          <p className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
             {new Date(alias.created).toLocaleDateString('vi-VN')}
           </p>
         )}
       </div>
 
       {/* Action Bar */}
-      <div className="flex items-center justify-between px-2 py-2 bg-[var(--input-bg)] border-t border-[var(--glass-border)]">
+      <div className="flex items-center justify-between border-t border-[var(--surface-glass-border)] bg-[var(--surface-glass-alt)] px-2 py-2">
         <button
           onClick={onFavorite}
-          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors group/btn"
+          className="rounded-full p-2.5 transition-all hover:scale-110 hover:bg-[var(--surface-glass)]"
           title={I18n.marketingDashboard.favorite}
         >
-          <svg
-            className={`w-4.5 h-4.5 transition-colors ${
-              isFav
-                ? 'text-[var(--accent-rose)] fill-[var(--accent-rose)] group-hover/btn:fill-transparent'
-                : 'text-[var(--text-muted)] group-hover/btn:text-[var(--accent-rose)]'
+          <Heart
+            className={`h-4 w-4 transition-colors ${
+              isFav ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'
             }`}
             fill={isFav ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
+            strokeWidth={2.5}
+          />
         </button>
         <button
           onClick={onDownload}
-          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-[var(--text-muted)] hover:text-[var(--primary)]"
+          className="rounded-full p-2.5 text-[var(--text-muted)] transition-all hover:scale-110 hover:bg-[var(--surface-glass)] hover:text-[var(--primary)]"
           title={I18n.marketingDashboard.download}
         >
-          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
+          <Download className="h-4 w-4" strokeWidth={2.5} />
         </button>
         <button
           onClick={onCopyLink}
-          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-[var(--text-muted)] hover:text-[var(--primary)]"
+          className="rounded-full p-2.5 text-[var(--text-muted)] transition-all hover:scale-110 hover:bg-[var(--surface-glass)] hover:text-[var(--primary)]"
           title={I18n.marketingDashboard.copyLink}
         >
-          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-          </svg>
+          <Copy className="h-4 w-4" strokeWidth={2.5} />
         </button>
         <button
           onClick={onShare}
-          className="p-2.5 rounded-lg hover:bg-[var(--surface-hover)] transition-colors text-[var(--text-muted)] hover:text-[var(--primary)]"
+          className="rounded-full p-2.5 text-[var(--text-muted)] transition-all hover:scale-110 hover:bg-[var(--surface-glass)] hover:text-[var(--primary)]"
           title={I18n.marketingDashboard.share}
         >
-          <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-          </svg>
+          <Share2 className="h-4 w-4" strokeWidth={2.5} />
         </button>
       </div>
     </div>

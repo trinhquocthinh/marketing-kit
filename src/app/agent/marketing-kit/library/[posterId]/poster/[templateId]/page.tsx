@@ -1,23 +1,25 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+
+import { ArrowLeft, Camera, Loader2, Minus, Plus, ZoomIn, ZoomOut } from 'lucide-react';
+
+import BannerWithFooter from '@/components/posters/BannerWithFooter';
+import { loadExportPoster } from '@/components/posters/PosterCanvas.lazy';
+import Skeleton from '@/components/ui/Skeleton';
+import { useCanvasEditor } from '@/hooks/useCanvasEditor';
+import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
 import { I18n } from '@/i18n';
 import { CDN_URL } from '@/lib/api.config';
-import { LabelEnum } from '@/types/enums';
+import { generateMktLink, generateUniqueAliasName } from '@/lib/marketing-dashboard.utils';
 import type { AliasData, AvatarData, GroupTemplateModel } from '@/types';
-import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
-import {
-  generateMktLink,
-  generateUniqueAliasName,
-} from '@/lib/marketing-dashboard.utils';
-import { exportPosterAsBlob } from '@/components/posters/PosterCanvas';
-import BannerWithFooter from '@/components/posters/BannerWithFooter';
-import Skeleton from '@/components/ui/Skeleton';
+import { LabelEnum } from '@/types/enums';
 
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 3;
 const ZOOM_STEP = 0.25;
+const brandGradient = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
 
 export default function PosterDetailPage() {
   const router = useRouter();
@@ -25,17 +27,10 @@ export default function PosterDetailPage() {
   const folderId = Number(params.posterId);
   const templateId = Number(params.templateId);
 
-  const {
-    folders,
-    createAlias,
-    updateAlias,
-    uploadAliasImage,
-    getAlias,
-    getAvatar,
-  } = useMarketingDashboard();
+  const { folders, createAlias, updateAlias, uploadAliasImage, getAlias, getAvatar } =
+    useMarketingDashboard();
 
-  // Refs
-  const canvasExportRef = useRef<HTMLDivElement>(null);
+  // Refs (không thuộc hook — scoped cho review/preview layout)
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const reviewContainerRef = useRef<HTMLDivElement>(null);
 
@@ -43,16 +38,29 @@ export default function PosterDetailPage() {
   const [previewWidth, setPreviewWidth] = useState(0);
   const [reviewWidth, setReviewWidth] = useState(0);
 
-  // Form state
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  // ── Hook: gộp form name/phone + avatar + qr + zoom + exportRef ──
+  const {
+    exportRef: canvasExportRef,
+    name,
+    setName,
+    phone,
+    setPhone,
+    avatarUrl,
+    setAvatarUrl,
+    qrUrl,
+    setQrUrl,
+    zoom,
+    zoomIn,
+    zoomOut,
+    canZoomIn,
+    canZoomOut,
+  } = useCanvasEditor({ initialAvatarUrl: '/images/default-avatar.svg' });
+
+  // Form state riêng cho page
   const [aliasName, setAliasName] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('/images/default-avatar.svg');
-  const [qrUrl, setQrUrl] = useState('');
   const [imageLoaded, setImageLoaded] = useState(false);
 
   // UI state
-  const [zoom, setZoom] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [isReviewing, setIsReviewing] = useState(false);
   const [reviewZoom, setReviewZoom] = useState(1);
@@ -92,16 +100,14 @@ export default function PosterDetailPage() {
   // Load defaults
   useEffect(() => {
     if (template) {
-      setAliasName(template.name);
+      Promise.resolve().then(() => setAliasName(template.name));
     }
   }, [template]);
 
   useEffect(() => {
     getAvatar().then((res) => {
       if (res?.data) {
-        const defaultAvatar = (res.data as AvatarData[]).find(
-          (a) => a.isDefault,
-        );
+        const defaultAvatar = (res.data as AvatarData[]).find((a) => a.isDefault);
         if (defaultAvatar?.imageLink) {
           setAvatarUrl(`${CDN_URL}${defaultAvatar.imageLink}`);
         }
@@ -128,11 +134,7 @@ export default function PosterDetailPage() {
       // 1. Get existing aliases to generate unique name
       const aliasRes = await getAlias();
       const aliasList: AliasData[] = aliasRes?.data || [];
-      const uniqueName = generateUniqueAliasName(
-        aliasName,
-        aliasList,
-        template.name,
-      );
+      const uniqueName = generateUniqueAliasName(aliasName, aliasList, template.name);
 
       if (!uniqueName) {
         alert(I18n.marketingDashboard.generateAlias.failure.title);
@@ -156,13 +158,14 @@ export default function PosterDetailPage() {
 
       // 3. Generate QR link and set for export canvas
       const mktLink = generateMktLink(aliasData);
-      setQrUrl(mktLink);
+      setQrUrl(mktLink ?? '');
 
       // Wait for QR to render on the export canvas
       await new Promise((r) => setTimeout(r, 2000));
 
-      // 4. Export canvas to blob
+      // 4. Export canvas to blob (html2canvas loaded on-demand)
       if (!canvasExportRef.current) throw new Error('Canvas not ready');
+      const exportPosterAsBlob = await loadExportPoster();
       const blob = await exportPosterAsBlob(canvasExportRef.current);
 
       // 5. Upload image
@@ -204,8 +207,8 @@ export default function PosterDetailPage() {
   if (!template || !folder) {
     return (
       <div className="space-y-4 p-6">
-        <Skeleton className="h-8 w-48 bg-white/10 rounded-lg" />
-        <Skeleton className="aspect-3/4 w-full max-w-md rounded-2xl bg-white/5" />
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="aspect-3/4 w-full max-w-md" />
       </div>
     );
   }
@@ -213,27 +216,34 @@ export default function PosterDetailPage() {
   // ── Review overlay ──
   if (isReviewing) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-[var(--background)]">
+      <div className="fixed inset-0 z-50 flex flex-col bg-background">
         {/* Review header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-[var(--sidebar-bg)] backdrop-blur-xl border-b border-[var(--border)]">
+        <div className="glass-bento m-4 flex items-center justify-between rounded-full!">
           <button
             onClick={() => setIsReviewing(false)}
-            className="text-[var(--text-secondary)] text-sm font-medium hover:text-[var(--text-primary)] transition-colors"
+            className="text-[10px] font-black tracking-widest text-t-secondary uppercase transition-colors hover:text-t-strong"
           >
             {I18n.close}
           </button>
-          <span className="text-[var(--text-primary)] text-sm font-semibold">
+          <span className="text-sm font-black tracking-wide text-t-strong">
             {I18n.marketingDashboard.review}
           </span>
-          <span className="text-[var(--text-muted)] text-xs">
+          <span className="text-[10px] font-black tracking-widest text-t-muted uppercase">
             {Math.round(reviewZoom * 100)}%
           </span>
         </div>
 
         {/* Zoomable poster preview */}
-        <div ref={reviewContainerRef} className="flex-1 overflow-auto flex items-start justify-center p-4">
+        <div
+          ref={reviewContainerRef}
+          className="flex flex-1 items-start justify-center overflow-auto p-4"
+        >
           <div
-            style={{ transform: `scale(${reviewZoom})`, transformOrigin: 'top center', transition: 'transform 0.2s ease-out' }}
+            style={{
+              transform: `scale(${reviewZoom})`,
+              transformOrigin: 'top center',
+              transition: 'transform 0.2s ease-out',
+            }}
           >
             {reviewWidth > 0 && (
               <BannerWithFooter
@@ -250,27 +260,25 @@ export default function PosterDetailPage() {
         </div>
 
         {/* Zoom controls */}
-        <div className="flex items-center justify-center gap-4 px-4 py-3 bg-[var(--sidebar-bg)] backdrop-blur-xl border-t border-[var(--border)]">
+        <div className="glass-bento m-4 flex items-center justify-center gap-4 rounded-full!">
           <button
-            onClick={() =>
-              setReviewZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))
-            }
+            onClick={() => setReviewZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))}
             disabled={reviewZoom <= ZOOM_MIN}
-            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-t-muted transition-colors hover:bg-(--surface-glass-alt) hover:text-t-strong disabled:opacity-30"
+            aria-label="Zoom out"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6"/></svg>
+            <ZoomOut className="h-4 w-4" strokeWidth={2.5} />
           </button>
-          <span className="text-sm font-medium text-[var(--text-secondary)] w-12 text-center">
+          <span className="w-12 text-center text-[10px] font-black tracking-widest text-t-secondary uppercase">
             {Math.round(reviewZoom * 100)}%
           </span>
           <button
-            onClick={() =>
-              setReviewZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))
-            }
+            onClick={() => setReviewZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))}
             disabled={reviewZoom >= ZOOM_MAX}
-            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-t-muted transition-colors hover:bg-(--surface-glass-alt) hover:text-t-strong disabled:opacity-30"
+            aria-label="Zoom in"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6M11 8v6"/></svg>
+            <ZoomIn className="h-4 w-4" strokeWidth={2.5} />
           </button>
         </div>
       </div>
@@ -278,61 +286,60 @@ export default function PosterDetailPage() {
   }
 
   return (
-    <div className="flex flex-col pb-32 lg:pb-10 h-full">
+    <div className="animate-bento-fade-up flex h-full flex-col pb-32 lg:pb-10">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 mb-6 sticky top-0 z-10 bg-[var(--sidebar-bg)] backdrop-blur-xl p-4 md:p-6 -mx-4 md:-mx-8 border-b border-[var(--border)] shadow-sm theme-transition">
+      <div className="glass-bento sticky top-0 z-10 -mx-0 mb-6 flex items-center justify-between gap-4 md:-mx-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
+          className="group flex items-center gap-3"
         >
-          <svg
-            className="w-5 h-5 mr-2 text-orange-400 group-hover:-translate-x-1 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          <span
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-(--shadow-glow-primary) transition-transform group-hover:scale-105"
+            style={{ background: brandGradient }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
+            <ArrowLeft
+              className="h-5 w-5 transition-transform group-hover:-translate-x-0.5"
+              strokeWidth={2.5}
             />
-          </svg>
-          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1">
-            {template.name}
-          </h2>
+          </span>
+          <div className="text-left">
+            <p className="bento-eyebrow">Chỉnh sửa</p>
+            <h2 className="line-clamp-1 text-lg font-black tracking-wide text-t-strong md:text-xl">
+              {template.name}
+            </h2>
+          </div>
         </button>
         <button
           onClick={() => router.back()}
-          className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors hidden sm:block"
+          className="hidden text-[10px] font-black tracking-widest text-t-muted uppercase transition-colors hover:text-t-strong sm:block"
         >
           {I18n.close}
         </button>
       </div>
 
       {/* Main Content Area - Responsive Split Layout */}
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 flex-1 px-4 md:px-0">
-
+      <div className="flex flex-1 flex-col gap-8 px-4 md:px-0 lg:flex-row lg:gap-12">
         {/* LEFT COLUMN: Poster Preview */}
-        <div className="w-full lg:w-[55%] flex flex-col items-center">
-          {/* Glassmorphism poster frame */}
+        <div className="flex w-full flex-col items-center lg:w-[55%]">
+          {/* Glass-bento poster frame */}
           <div
             ref={previewContainerRef}
-            className="w-full max-w-md glass-card rounded-2xl relative overflow-auto p-4 theme-transition"
+            className="glass-bento glass-shine relative w-full max-w-md overflow-auto p-4!"
           >
             <div
-              className="w-full rounded-xl relative overflow-hidden"
-              style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.2s ease-out' }}
+              className="relative w-full overflow-hidden rounded-(--radius-bento-sm)"
+              style={{
+                transform: `scale(${zoom})`,
+                transformOrigin: 'top center',
+                transition: 'transform 0.2s ease-out',
+              }}
             >
               {previewWidth > 0 && (
                 <BannerWithFooter
                   url={bannerUrl}
                   avatarUrl={avatarUrl}
                   name={name || I18n.marketingDashboard.posterFooterPlaceholder.name}
-                  phone={
-                    phone ||
-                    I18n.marketingDashboard.posterFooterPlaceholder.phone
-                  }
+                  phone={phone || I18n.marketingDashboard.posterFooterPlaceholder.phone}
                   imageMeta={template.imageMeta || {}}
                   containerWidth={previewWidth - 32}
                   onLoadSuccess={() => setImageLoaded(true)}
@@ -342,67 +349,61 @@ export default function PosterDetailPage() {
           </div>
 
           {/* Zoom controls */}
-          <div className="flex items-center gap-4 mt-6 bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] rounded-full px-4 py-2 theme-transition">
+          <div className="glass-bento mt-6 flex items-center gap-4 rounded-full! px-4! py-2!">
             <button
-              onClick={() =>
-                setZoom((z) => Math.max(ZOOM_MIN, z - ZOOM_STEP))
-              }
-              disabled={zoom <= ZOOM_MIN}
-              className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
+              onClick={zoomOut}
+              disabled={!canZoomOut}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-t-muted transition-colors hover:bg-(--surface-glass-alt) hover:text-t-strong disabled:opacity-30"
+              aria-label="Zoom out"
             >
-              <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6"/></svg>
+              <Minus className="h-4 w-4" strokeWidth={2.5} />
             </button>
-            <span className="text-sm font-medium text-[var(--text-secondary)] w-12 text-center">
+            <span className="w-12 text-center text-[10px] font-black tracking-widest text-t-secondary uppercase">
               {Math.round(zoom * 100)}%
             </span>
             <button
-              onClick={() =>
-                setZoom((z) => Math.min(ZOOM_MAX, z + ZOOM_STEP))
-              }
-              disabled={zoom >= ZOOM_MAX}
-              className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-30"
+              onClick={zoomIn}
+              disabled={!canZoomIn}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-t-muted transition-colors hover:bg-(--surface-glass-alt) hover:text-t-strong disabled:opacity-30"
+              aria-label="Zoom in"
             >
-              <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2"/><path strokeLinecap="round" strokeWidth="2" d="m21 21-4.35-4.35M8 11h6M11 8v6"/></svg>
+              <Plus className="h-4 w-4" strokeWidth={2.5} />
             </button>
           </div>
         </div>
 
         {/* RIGHT COLUMN: Form */}
-        <div className="w-full lg:w-[45%] flex flex-col">
-
+        <div className="flex w-full flex-col lg:w-[45%]">
           {/* Avatar Picker */}
-          <div className="flex justify-center lg:justify-start mb-8">
-            <button
-              onClick={() => router.push('/agent/marketing-kit/avatar')}
-              className="relative"
-            >
-              <div className="w-24 h-24 rounded-full bg-linear-to-br from-slate-700 to-slate-800 border-4 border-slate-900 shadow-xl overflow-hidden flex items-center justify-center">
+          <div className="mb-8 flex justify-center lg:justify-start">
+            <button onClick={() => router.push('/agent/marketing-kit/avatar')} className="relative">
+              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-(--surface-glass-border) bg-(--surface-glass-alt) shadow-xl">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={avatarUrl}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                   onLoad={() => setImageLoaded(true)}
                 />
               </div>
-              <div className="absolute bottom-0 right-0 p-2 bg-linear-to-r from-orange-400 to-rose-500 rounded-full text-white shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] hover:scale-110 transition-all border-2 border-[var(--background)]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                  <circle cx="12" cy="13" r="3"/>
-                </svg>
+              <div
+                className="absolute right-0 bottom-0 flex h-9 w-9 items-center justify-center rounded-full border-2 border-background text-white shadow-(--shadow-glow-primary) transition-transform hover:scale-110"
+                style={{ background: brandGradient }}
+              >
+                <Camera className="h-4 w-4" strokeWidth={2.5} />
               </div>
             </button>
           </div>
 
           {/* Form Fields */}
-          <div className="space-y-5 flex-1">
+          <div className="flex-1 space-y-5">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
-                {I18n.fullName} <span className="text-rose-500">*</span>
+              <label className="mb-2 block pl-1 text-[10px] font-black tracking-widest text-t-muted uppercase">
+                {I18n.fullName} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3.5 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
+                className="glass-input w-full px-4 py-3.5"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={I18n.fullName}
@@ -411,12 +412,12 @@ export default function PosterDetailPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
-                {I18n.phone} <span className="text-rose-500">*</span>
+              <label className="mb-2 block pl-1 text-[10px] font-black tracking-widest text-t-muted uppercase">
+                {I18n.phone} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3.5 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
+                className="glass-input w-full px-4 py-3.5"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder={I18n.phone}
@@ -425,57 +426,40 @@ export default function PosterDetailPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 pl-1">
-                {I18n.marketingDashboard.aliasName} <span className="text-rose-500">*</span>
+              <label className="mb-2 block pl-1 text-[10px] font-black tracking-widest text-t-muted uppercase">
+                {I18n.marketingDashboard.aliasName} <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-3.5 bg-[var(--input-bg)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all backdrop-blur-sm"
+                className="glass-input w-full px-4 py-3.5"
                 value={aliasName}
                 onChange={(e) => setAliasName(e.target.value)}
                 placeholder={I18n.marketingDashboard.aliasName}
               />
-              <p className="text-xs text-[var(--text-muted)] mt-2 pl-1">
+              <p className="mt-2 mb-2 pl-1 text-xs font-medium text-t-muted">
                 {I18n.marketingDashboard.aliasNameDesc}
               </p>
             </div>
           </div>
 
           {/* Action Buttons (Inline on Desktop) */}
-          <div className="hidden lg:flex gap-4 mt-10">
+          <div className="mt-10 hidden gap-4 lg:flex">
             <button
               disabled={isSaving || !imageLoaded}
               onClick={handleReview}
-              className="flex-1 py-4 px-6 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] font-semibold hover:bg-[var(--surface-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="glass-bento-interactive flex-1 rounded-full! px-6! py-4! text-[10px] font-black tracking-widest text-t-strong uppercase disabled:cursor-not-allowed disabled:opacity-50"
             >
               {I18n.marketingDashboard.review}
             </button>
             <button
               disabled={isSaving || !imageLoaded}
               onClick={handleSave}
-              className="flex-1 py-4 px-6 bg-linear-to-r from-orange-400 to-rose-500 hover:brightness-110 rounded-xl text-white font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-brand-glow flex-1 rounded-full px-6 py-4 text-[10px] font-black tracking-widest text-white uppercase disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: brandGradient }}
             >
               {isSaving ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg
-                    className="animate-spin h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   {I18n.loading}
                 </span>
               ) : (
@@ -487,40 +471,23 @@ export default function PosterDetailPage() {
       </div>
 
       {/* Action Buttons (Sticky Bottom on Mobile) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[var(--sidebar-bg)] backdrop-blur-xl border-t border-[var(--border)] z-20 flex gap-3 safe-pb">
+      <div className="safe-pb glass-bento fixed md:right-4 md:bottom-4 md:left-4 mx-4 md:mx-0 z-20 flex gap-3 rounded-full! p-3! lg:hidden">
         <button
           disabled={isSaving || !imageLoaded}
           onClick={handleReview}
-          className="flex-[0.4] py-3.5 px-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] font-semibold hover:bg-[var(--surface-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-[0.4] rounded-full bg-(--surface-glass-alt) px-4 py-3 text-[10px] font-black tracking-widest text-t-strong uppercase transition-colors hover:bg-surface-glass disabled:cursor-not-allowed disabled:opacity-50"
         >
           {I18n.marketingDashboard.review}
         </button>
         <button
           disabled={isSaving || !imageLoaded}
           onClick={handleSave}
-          className="flex-[0.6] py-3.5 px-4 bg-linear-to-r from-orange-400 to-rose-500 hover:brightness-110 rounded-xl text-white font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-brand-glow flex-[0.6] rounded-full px-4 py-3 text-[10px] font-black tracking-widest text-white uppercase disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ background: brandGradient }}
         >
           {isSaving ? (
             <span className="flex items-center justify-center gap-2">
-              <svg
-                className="animate-spin h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
+              <Loader2 className="h-4 w-4 animate-spin" />
               {I18n.loading}
             </span>
           ) : (
@@ -530,9 +497,13 @@ export default function PosterDetailPage() {
       </div>
 
       {/* Safe area helper for iOS */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .safe-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
-      `}}/>
+      `,
+        }}
+      />
 
       {/* Off-screen export canvas (with real QR when saving) */}
       {qrUrl && (
@@ -551,28 +522,12 @@ export default function PosterDetailPage() {
 
       {/* Full-screen loading overlay */}
       {isSaving && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--background)]/60 backdrop-blur-sm">
-          <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-3">
-            <svg
-              className="animate-spin h-8 w-8 text-[var(--primary)]"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-            <p className="text-sm text-[var(--text-secondary)]">{I18n.loading}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="glass-bento glass-shine flex flex-col items-center gap-3 shadow-2xl">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-[10px] font-black tracking-widest text-t-strong uppercase">
+              {I18n.loading}
+            </p>
           </div>
         </div>
       )}

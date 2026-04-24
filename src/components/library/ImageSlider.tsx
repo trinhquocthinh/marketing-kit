@@ -1,11 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CDN_URL } from '@/lib/api.config';
-import { I18n } from '@/i18n';
-import { LabelEnum } from '@/types/enums';
-import type { GroupTemplateModel } from '@/types';
+
 import Marquee from '@/components/animations/Marquee';
+import BentoSectionHeading from '@/components/ui/BentoSectionHeading';
+import { I18n } from '@/i18n';
+import { CDN_URL } from '@/lib/api.config';
+import type { GroupTemplateModel } from '@/types';
+import { LabelEnum } from '@/types/enums';
+
 import BannerWithFooter from '../posters/BannerWithFooter';
 
 const GAP = 16; // px – matches gap-4
@@ -84,9 +87,8 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
   const itemWidthStyle = `calc(${100 / itemsPerView}% - ${(GAP * (itemsPerView - 1)) / itemsPerView}px)`;
 
   // Per-item pixel width → content width inside card (subtract p-4 padding)
-  const itemPixelWidth = viewportWidth > 0
-    ? (viewportWidth - GAP * (itemsPerView - 1)) / itemsPerView
-    : 0;
+  const itemPixelWidth =
+    viewportWidth > 0 ? (viewportWidth - GAP * (itemsPerView - 1)) / itemsPerView : 0;
   const contentPixelWidth = Math.max(0, itemPixelWidth - CARD_PADDING);
   // Fixed aspect ratio (≈ 380:547 matching original poster + footer proportions)
   const contentPixelHeight = contentPixelWidth > 0 ? Math.round(contentPixelWidth * 1.44) : 0;
@@ -96,12 +98,8 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
   const translatePx = (displayIndex * GAP) / itemsPerView;
 
   return (
-    <div className="py-6 space-y-4">
-      {/* Section title */}
-      <h2 className="font-display text-xl font-bold text-[var(--text-primary)] px-4 flex items-center gap-3 tracking-tight">
-        <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
-        {I18n.marketingDashboard.topUsedPosters}
-      </h2>
+    <div className="space-y-4">
+      <BentoSectionHeading title={I18n.marketingDashboard.topUsedPosters} variant="accent" />
 
       {/* Carousel viewport */}
       <div
@@ -122,12 +120,12 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
               <div
                 key={item.id ?? index}
                 style={{ width: itemWidthStyle }}
-                className="glass-card glass-card-hover shrink-0 rounded-2xl p-4 cursor-pointer group flex flex-col theme-transition"
+                className="glass-bento glass-bento-interactive glass-shine group flex shrink-0 cursor-pointer flex-col !p-4"
                 onClick={() => onSelect(item)}
               >
                 {/* Poster: image on top, agent footer at bottom – fixed height for uniform cards */}
                 <div
-                  className="overflow-hidden mb-3 flex items-start justify-center"
+                  className="mb-3 flex items-start justify-center overflow-hidden"
                   style={{ height: contentPixelHeight > 0 ? contentPixelHeight : undefined }}
                 >
                   {contentPixelWidth > 0 && (
@@ -140,16 +138,18 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
                 </div>
 
                 {/* Title + marquee below card */}
-                <div className="mt-4 space-y-0.5">
+                <div className="mt-4 space-y-1.5">
                   {marqueeText && (
                     <Marquee
                       text={marqueeText}
                       className="h-3.5"
-                      textClassName="text-xs leading-[14px] text-rose-400"
+                      textClassName="text-xs leading-[14px] font-black tracking-wider text-[var(--danger)]"
                     />
                   )}
-                  <div className='mt-auto bg-[var(--surface-hover)] backdrop-blur-sm p-3 rounded-xl border border-[var(--glass-border)] group-hover:border-[var(--border-bright)] transition-colors'>
-                    <h3 className="font-display text-[var(--text-primary)] font-bold truncate group-hover:text-[var(--primary)] transition-colors">{item.name}</h3>
+                  <div className="rounded-[var(--radius-bento-sm)] bg-[var(--surface-glass-alt)] p-3">
+                    <h3 className="truncate text-sm font-black tracking-wide text-[var(--text-strong)] transition-colors group-hover:text-[var(--primary)]">
+                      {item.name}
+                    </h3>
                   </div>
                 </div>
               </div>
@@ -165,8 +165,17 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
             <button
               key={i}
               onClick={() => goTo(i)}
-              className={`h-2 rounded-full transition-all ${i === displayIndex ? 'w-6 bg-linear-to-r from-orange-400 to-rose-500 shadow-[var(--glow-primary)]' : 'w-2 bg-[var(--surface-hover)]'
-                }`}
+              aria-label={`Slide ${i + 1}`}
+              className={`h-2 rounded-full transition-all ${
+                i === displayIndex
+                  ? 'w-8 shadow-[var(--shadow-glow-primary)]'
+                  : 'w-2 bg-[var(--surface-glass-alt)]'
+              }`}
+              style={
+                i === displayIndex
+                  ? { background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)' }
+                  : undefined
+              }
             />
           ))}
         </div>
@@ -174,4 +183,3 @@ export default function ImageSlider({ mostUsedImages, onSelect }: ImageSliderPro
     </div>
   );
 }
-

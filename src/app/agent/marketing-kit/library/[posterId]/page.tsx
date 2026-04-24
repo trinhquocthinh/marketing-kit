@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { I18n } from '@/i18n';
-import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
-import type { GroupTemplateModel } from '@/types';
+import { useParams, useRouter } from 'next/navigation';
+
+import { ArrowLeft, LayoutGrid, List } from 'lucide-react';
+
 import SearchResultCard from '@/components/library/SearchResultCard';
 import TemplateListItem from '@/components/library/TemplateListItem';
-import Skeleton from '@/components/ui/Skeleton';
 import NoData from '@/components/ui/NoData';
+import Skeleton from '@/components/ui/Skeleton';
+import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
+import { I18n } from '@/i18n';
+import type { GroupTemplateModel } from '@/types';
 
 export default function FolderDetailPage() {
   const router = useRouter();
@@ -27,10 +30,10 @@ export default function FolderDetailPage() {
   if (isLoading && !folder) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <Skeleton className="h-14 w-full" />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square rounded-2xl" />
+            <Skeleton key={i} className="aspect-square" />
           ))}
         </div>
       </div>
@@ -38,59 +41,77 @@ export default function FolderDetailPage() {
   }
 
   if (!folder) {
-    return <NoData message={I18n.noData} />;
+    return (
+      <div className="glass-bento flex min-h-[60vh] items-center justify-center">
+        <NoData message={I18n.noData} />
+      </div>
+    );
   }
 
   return (
-    <div className="pb-10">
+    <div className="animate-bento-fade-up space-y-6 pb-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 sticky top-0 z-10 bg-[var(--sidebar-bg)] backdrop-blur-xl p-4 md:p-6 -mx-4 md:-mx-8 border-b border-[var(--border)] shadow-sm theme-transition">
+      <div className="glass-bento sticky top-4 z-10 flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group w-fit"
+          className="group flex w-fit items-center gap-3 text-left"
         >
-          <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <h2 className="font-display text-lg md:text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-orange-400 to-rose-500 line-clamp-1 tracking-tight">
-            {folder.name}
-          </h2>
+          <span
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-[var(--shadow-glow-primary)] transition-transform group-hover:-translate-x-1"
+            style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)' }}
+          >
+            <ArrowLeft className="h-5 w-5" strokeWidth={2.5} />
+          </span>
+          <div>
+            <p className="bento-eyebrow mb-0.5">Thư mục</p>
+            <h2 className="line-clamp-1 text-xl font-black tracking-wide text-[var(--text-strong)] md:text-2xl">
+              {folder.name}
+            </h2>
+          </div>
         </button>
 
-        {/* Grid / Card View Toggle */}
-        <div className="flex glass-card p-1 rounded-xl self-end md:self-auto theme-transition">
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'grid'
-                ? 'bg-linear-to-r from-orange-400 to-rose-500 text-white shadow-[var(--glow-primary)]'
-                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
-              }`}
-          >
-            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-            <span className="text-sm font-medium hidden sm:inline">Lưới</span>
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`p-2 md:px-4 md:py-2 rounded-lg flex items-center gap-2 transition-all duration-300 ${viewMode === 'list'
-                ? 'bg-linear-to-r from-orange-400 to-rose-500 text-white shadow-[var(--glow-primary)]'
-                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'
-              }`}
-          >
-            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-            <span className="text-sm font-medium hidden sm:inline">Danh sách</span>
-          </button>
+        {/* Grid / List view toggle */}
+        <div className="flex self-end rounded-full bg-[var(--surface-glass-alt)] p-1 md:self-auto">
+          {(
+            [
+              { mode: 'grid' as const, Icon: LayoutGrid, label: 'Lưới' },
+              { mode: 'list' as const, Icon: List, label: 'Danh sách' },
+            ]
+          ).map(({ mode, Icon, label }) => {
+            const active = viewMode === mode;
+            return (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black tracking-widest uppercase transition-all ${
+                  active
+                    ? 'text-white shadow-[var(--shadow-glow-primary)]'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-strong)]'
+                }`}
+                style={
+                  active
+                    ? {
+                        background:
+                          'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+                      }
+                    : undefined
+                }
+              >
+                <Icon className="h-4 w-4" strokeWidth={2.5} />
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Templates */}
       {folder.templates.length === 0 ? (
-        <NoData message={I18n.noData} />
+        <div className="glass-bento flex min-h-[40vh] items-center justify-center">
+          <NoData message={I18n.noData} />
+        </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-2 md:px-0">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 lg:grid-cols-4">
           {folder.templates.map((template) => (
             <SearchResultCard
               key={template.id}
@@ -100,8 +121,7 @@ export default function FolderDetailPage() {
           ))}
         </div>
       ) : (
-        /* List View */
-        <div className="flex flex-col gap-4 md:gap-6 px-2 md:px-0">
+        <div className="flex flex-col gap-4 md:gap-6">
           {folder.templates.map((template) => (
             <TemplateListItem
               key={template.id}

@@ -1,12 +1,16 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { type FormEvent, useState } from 'react';
+
+import { AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react';
+
 import { I18n } from '@/i18n';
-import { httpService } from '@/lib/http.service';
 import { URL_ALIAS } from '@/lib/constants';
+import { httpService } from '@/lib/http.service';
 
 const VN_PHONE_REGEX = /^(0[2-9]|84[2-9])\d{7,8}$/;
 const NAME_MAX_LENGTH = 200;
+const brandGradient = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
 
 interface SalesPageProps {
   params: Promise<{ aliasId: string }>;
@@ -23,7 +27,7 @@ export default function SalesLandingPage({ params }: SalesPageProps) {
 
   // Resolve params
   if (aliasId === null) {
-    params.then(p => setAliasId(p.aliasId)).catch(() => setInvalidLink(true));
+    params.then((p) => setAliasId(p.aliasId)).catch(() => setInvalidLink(true));
   }
 
   const validate = (): boolean => {
@@ -71,23 +75,25 @@ export default function SalesLandingPage({ params }: SalesPageProps) {
   // Invalid / expired link state
   if (invalidLink) {
     return (
-      <div className="relative min-h-screen overflow-hidden flex items-center justify-center p-4" style={{ background: 'linear-gradient(180deg, #fff5ef 0%, #faf7f4 100%)' }}>
-        <div className="pointer-events-none absolute -top-24 -left-20 w-[420px] h-[420px] rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle, rgba(250,135,91,0.55), transparent 70%)' }} />
-        <div className="pointer-events-none absolute -bottom-32 -right-16 w-[460px] h-[460px] rounded-full blur-3xl opacity-50" style={{ background: 'radial-gradient(circle, rgba(255,140,120,0.55), transparent 70%)' }} />
-        <div className="relative w-full max-w-md text-center">
-          <div className="glass-card rounded-2xl p-8">
-            <div className="w-16 h-16 bg-[var(--accent-rose)]/15 border border-[var(--accent-rose)]/40 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[var(--glow-rose)]">
-              <svg className="w-8 h-8 text-[var(--accent-rose)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="animate-bento-fade-up w-full max-w-md text-center">
+          <div className="glass-bento glass-shine">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--danger)_15%,transparent)] text-[var(--danger)]">
+              <AlertTriangle className="h-8 w-8" strokeWidth={2.25} />
             </div>
-            <h2 className="font-display text-lg font-bold text-[var(--text-primary)] mb-2 tracking-tight">{I18n.scanQrPage.invalidLink}</h2>
-            <p className="text-sm text-[var(--text-muted)] mb-6">{I18n.scanQrPage.invalidLinkDesc}</p>
+            <p className="bento-eyebrow mb-1">Lỗi</p>
+            <h2 className="mb-2 text-xl font-black tracking-wide text-[var(--text-strong)]">
+              {I18n.scanQrPage.invalidLink}
+            </h2>
+            <p className="mb-6 text-sm font-medium text-[var(--text-secondary)]">
+              {I18n.scanQrPage.invalidLinkDesc}
+            </p>
             <a
               href="https://zalo.me"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-linear-to-r from-orange-400 to-rose-500 text-white px-6 py-3 rounded-xl font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all"
+              className="btn-brand-glow inline-flex items-center gap-2 rounded-full px-6 py-3 text-[10px] font-black tracking-widest text-white uppercase"
+              style={{ background: brandGradient }}
             >
               {I18n.scanQrPage.contactZalo}
             </a>
@@ -100,18 +106,19 @@ export default function SalesLandingPage({ params }: SalesPageProps) {
   // Success state
   if (success) {
     return (
-      <div className="relative min-h-screen overflow-hidden flex items-center justify-center p-4" style={{ background: 'linear-gradient(180deg, #fff5ef 0%, #faf7f4 100%)' }}>
-        <div className="pointer-events-none absolute -top-24 -left-20 w-[420px] h-[420px] rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle, rgba(250,135,91,0.55), transparent 70%)' }} />
-        <div className="pointer-events-none absolute -bottom-32 -right-16 w-[460px] h-[460px] rounded-full blur-3xl opacity-50" style={{ background: 'radial-gradient(circle, rgba(255,140,120,0.55), transparent 70%)' }} />
-        <div className="relative w-full max-w-md text-center">
-          <div className="glass-card rounded-2xl p-8">
-            <div className="w-16 h-16 bg-emerald-500/15 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_24px_rgba(16,185,129,0.35)]">
-              <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="animate-bento-fade-up w-full max-w-md text-center">
+          <div className="glass-bento glass-shine">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--success)_15%,transparent)] text-[var(--success)]">
+              <CheckCircle2 className="h-8 w-8" strokeWidth={2.25} />
             </div>
-            <h2 className="font-display text-lg font-bold text-[var(--text-primary)] mb-2 tracking-tight">{I18n.scanQrPage.submitSuccess}</h2>
-            <p className="text-sm text-[var(--text-muted)]">{I18n.scanQrPage.submitSuccessDesc}</p>
+            <p className="bento-eyebrow mb-1">Cảm ơn</p>
+            <h2 className="mb-2 text-xl font-black tracking-wide text-[var(--text-strong)]">
+              {I18n.scanQrPage.submitSuccess}
+            </h2>
+            <p className="text-sm font-medium text-[var(--text-secondary)]">
+              {I18n.scanQrPage.submitSuccessDesc}
+            </p>
           </div>
         </div>
       </div>
@@ -120,63 +127,72 @@ export default function SalesLandingPage({ params }: SalesPageProps) {
 
   // Form state
   return (
-    <div className="relative min-h-screen overflow-hidden flex items-center justify-center p-4" style={{ background: 'linear-gradient(180deg, #fff5ef 0%, #faf7f4 100%)' }}>
-      <div className="pointer-events-none absolute -top-24 -left-20 w-[420px] h-[420px] rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle, rgba(250,135,91,0.55), transparent 70%)' }} />
-      <div className="pointer-events-none absolute -bottom-32 -right-16 w-[460px] h-[460px] rounded-full blur-3xl opacity-50" style={{ background: 'radial-gradient(circle, rgba(255,140,120,0.55), transparent 70%)' }} />
-      <div className="relative w-full max-w-md">
-        <div className="glass-card rounded-2xl p-8">
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="animate-bento-fade-up w-full max-w-md">
+        <div className="glass-bento glass-shine">
           {/* Header */}
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-linear-to-br from-orange-400 to-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[var(--glow-primary)]">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+          <div className="mb-6 text-center">
+            <div
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-bento-sm)] text-white shadow-[var(--shadow-glow-primary-strong)]"
+              style={{ background: brandGradient }}
+            >
+              <Sparkles className="h-8 w-8" strokeWidth={2.25} />
             </div>
-            <h1 className="font-display text-xl font-bold text-[var(--text-primary)] tracking-tight">{I18n.scanQrPage.salesTitle}</h1>
-            <p className="text-sm text-[var(--text-muted)] mt-1">{I18n.scanQrPage.salesDesc}</p>
+            <p className="bento-eyebrow mb-2">Đăng ký tư vấn</p>
+            <h1 className="text-xl font-black tracking-wide text-[var(--text-strong)]">
+              {I18n.scanQrPage.salesTitle}
+            </h1>
+            <p className="mt-1 text-sm font-medium text-[var(--text-secondary)]">
+              {I18n.scanQrPage.salesDesc}
+            </p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">
-                {I18n.scanQrPage.name} <span className="text-[var(--accent-rose)]">*</span>
+              <label className="mb-2 block text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
+                {I18n.scanQrPage.name} <span className="text-[var(--danger)]">*</span>
               </label>
               <input
                 type="text"
                 value={name}
-                onChange={e => {
+                onChange={(e) => {
                   setName(e.target.value);
-                  if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+                  if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
                 }}
                 maxLength={NAME_MAX_LENGTH}
-                className={`w-full px-4 py-3 rounded-xl bg-[var(--surface-hover)] border ${errors.name ? 'border-[var(--accent-rose)]/60 shadow-[var(--glow-rose)]' : 'border-[var(--glass-border)]'} text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] focus:shadow-[var(--glow-primary)] transition-all`}
+                className={`glass-input w-full px-4 py-3 ${errors.name ? 'border-[var(--danger)]' : ''}`}
                 placeholder={I18n.scanQrPage.name}
               />
-              {errors.name && <p className="text-[var(--accent-rose)] text-xs mt-1">{errors.name}</p>}
+              {errors.name && (
+                <p className="mt-1 text-xs font-medium text-[var(--danger)]">{errors.name}</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">
-                {I18n.scanQrPage.phone} <span className="text-[var(--accent-rose)]">*</span>
+              <label className="mb-2 block text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
+                {I18n.scanQrPage.phone} <span className="text-[var(--danger)]">*</span>
               </label>
               <input
                 type="tel"
                 value={phone}
-                onChange={e => {
+                onChange={(e) => {
                   setPhone(e.target.value);
-                  if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
+                  if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }));
                 }}
-                className={`w-full px-4 py-3 rounded-xl bg-[var(--surface-hover)] border ${errors.phone ? 'border-[var(--accent-rose)]/60 shadow-[var(--glow-rose)]' : 'border-[var(--glass-border)]'} text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] focus:shadow-[var(--glow-primary)] transition-all`}
+                className={`glass-input w-full px-4 py-3 ${errors.phone ? 'border-[var(--danger)]' : ''}`}
                 placeholder="0912 345 678"
               />
-              {errors.phone && <p className="text-[var(--accent-rose)] text-xs mt-1">{errors.phone}</p>}
+              {errors.phone && (
+                <p className="mt-1 text-xs font-medium text-[var(--danger)]">{errors.phone}</p>
+              )}
             </div>
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-linear-to-r from-orange-400 to-rose-500 text-white py-3 rounded-xl font-bold shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="btn-brand-glow w-full rounded-full py-3 text-[10px] font-black tracking-widest text-white uppercase disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: brandGradient }}
             >
               {submitting ? I18n.loading : I18n.submit}
             </button>
@@ -184,7 +200,7 @@ export default function SalesLandingPage({ params }: SalesPageProps) {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-[var(--text-muted)] mt-4">
+        <p className="mt-4 text-center text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
           Powered by Marketing Kit
         </p>
       </div>

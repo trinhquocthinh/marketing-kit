@@ -1,29 +1,32 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { I18n } from '@/i18n';
-import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
-import { FolderModel } from '@/types';
-import { StatusEnum, TypeEnum } from '@/types/enums';
-import { Modal, Button, Input, Dropdown, Skeleton, NoData, Toast } from '@/components/ui';
-import { CDN_URL } from '@/lib/api.config';
+import { useCallback, useEffect, useState } from 'react';
+
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
   useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { GripVertical, Info, Pencil, Plus } from 'lucide-react';
+
+import { Button, DropdownV2, Input, Modal, NoData, Skeleton, Toast } from '@/components/ui';
+import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
+import { I18n } from '@/i18n';
+import { CDN_URL } from '@/lib/api.config';
+import { type FolderModel } from '@/types';
+import { StatusEnum, TypeEnum } from '@/types/enums';
 
 function SortableFolderRow({
   folder,
@@ -42,49 +45,60 @@ function SortableFolderRow({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const isSale = folder.type === TypeEnum.SALE || folder.type === StatusEnum.SALE;
+
   return (
-    <tr ref={setNodeRef} style={style} className="border-b border-[var(--glass-border)] hover:bg-[var(--surface-hover)] transition-colors">
-      <td className="px-4 py-3 w-10">
-        <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-          </svg>
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className="border-b border-[var(--surface-glass-border)] transition-colors hover:bg-[var(--surface-glass-alt)]"
+    >
+      <td className="w-10 px-4 py-3">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab text-[var(--text-muted)] transition-colors hover:text-[var(--text-strong)] active:cursor-grabbing"
+          aria-label="Drag"
+        >
+          <GripVertical className="h-5 w-5" strokeWidth={2.5} />
         </button>
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           {folder.templates?.[0]?.imageLink && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={`${CDN_URL}${folder.templates[0].imageLink}`}
               alt=""
-              className="w-10 h-10 rounded object-cover"
+              className="h-10 w-10 rounded-[var(--radius-bento-sm)] object-cover"
             />
           )}
-          <span className="font-display font-bold text-[var(--text-primary)]">{folder.name}</span>
+          <span className="font-black text-[var(--text-strong)]">{folder.name}</span>
         </div>
       </td>
       <td className="px-4 py-3">
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
-            folder.type === TypeEnum.SALE || folder.type === StatusEnum.SALE
-              ? 'bg-[var(--primary)]/15 text-[var(--primary)] border-[var(--primary)]/40'
-              : 'bg-[var(--accent-violet)]/15 text-[var(--accent-violet)] border-[var(--accent-violet)]/40'
+          className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black tracking-widest uppercase ${
+            isSale
+              ? 'bg-[color-mix(in_srgb,var(--success)_15%,transparent)] text-[var(--success)]'
+              : 'bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] text-[var(--accent)]'
           }`}
         >
-          {folder.type === TypeEnum.SALE || folder.type === StatusEnum.SALE
-            ? I18n.marketingDashboard.boostSales
-            : I18n.marketingDashboard.teamDevelopment}
+          {isSale ? I18n.marketingDashboard.boostSales : I18n.marketingDashboard.teamDevelopment}
         </span>
       </td>
-      <td className="px-4 py-3 text-sm text-[var(--text-muted)]">
+      <td className="px-4 py-3 text-sm font-medium text-[var(--text-secondary)]">
         {folder.templates?.length ?? 0} {I18n.portal.posters.toLowerCase()}
       </td>
-      <td className="px-4 py-3 text-sm text-[var(--text-muted)]">{folder.order ?? '-'}</td>
+      <td className="px-4 py-3 text-sm font-medium text-[var(--text-secondary)]">
+        {folder.order ?? '-'}
+      </td>
       <td className="px-4 py-3">
         <button
           onClick={() => onEdit(folder)}
-          className="text-[var(--primary)] hover:brightness-125 text-sm font-bold"
+          className="inline-flex items-center gap-1.5 text-xs font-black tracking-widest text-[var(--primary)] uppercase transition-colors hover:text-[var(--accent)]"
         >
+          <Pencil className="h-3.5 w-3.5" strokeWidth={2.5} />
           {I18n.edit}
         </button>
       </td>
@@ -111,7 +125,7 @@ export default function PortalFoldersPage() {
   }, [getFolders]);
 
   useEffect(() => {
-    setOrderedFolders(folders);
+    Promise.resolve().then(() => setOrderedFolders(folders));
   }, [folders]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
@@ -122,7 +136,6 @@ export default function PortalFoldersPage() {
       const oldIndex = items.findIndex((i) => i.id === active.id);
       const newIndex = items.findIndex((i) => i.id === over.id);
       const reordered = arrayMove(items, oldIndex, newIndex);
-      // Persist order change would go here via API
       return reordered;
     });
 
@@ -145,7 +158,6 @@ export default function PortalFoldersPage() {
 
   const handleSave = () => {
     if (!formName.trim()) return;
-    // In a real implementation, this would call an API
     setToast({
       message: editingFolder ? 'Đã cập nhật thư mục' : 'Đã tạo thư mục',
       type: 'success',
@@ -153,27 +165,30 @@ export default function PortalFoldersPage() {
     setShowModal(false);
   };
 
-  const typeOptions = [
-    { id: TypeEnum.SALE, title: I18n.marketingDashboard.boostSales, isSelected: formType === TypeEnum.SALE },
-    { id: TypeEnum.RECRUIT, title: I18n.marketingDashboard.teamDevelopment, isSelected: formType === TypeEnum.RECRUIT },
-  ];
+  const typeLabels: Record<TypeEnum, string> = {
+    [TypeEnum.SALE]: I18n.marketingDashboard.boostSales,
+    [TypeEnum.RECRUIT]: I18n.marketingDashboard.teamDevelopment,
+  };
 
   return (
-    <div>
+    <div className="animate-bento-fade-up space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-2xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-3">
-          <span className="w-1.5 h-7 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
-          {I18n.portal.folders}
-        </h1>
-        <Button onClick={openCreateModal}>{I18n.portal.createFolder}</Button>
+      <div className="glass-bento flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="bento-eyebrow mb-1">Quản trị</p>
+          <h1 className="text-2xl font-black tracking-wide text-[var(--text-strong)] md:text-3xl">
+            {I18n.portal.folders}
+          </h1>
+        </div>
+        <Button onClick={openCreateModal}>
+          <Plus className="mr-2 h-4 w-4" strokeWidth={2.5} />
+          {I18n.portal.createFolder}
+        </Button>
       </div>
 
       {/* Hint */}
-      <p className="text-sm text-[var(--text-muted)] mb-4 flex items-center gap-2">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+      <p className="flex items-center gap-2 px-2 text-xs font-medium text-[var(--text-muted)]">
+        <Info className="h-4 w-4" strokeWidth={2} />
         {I18n.portal.dragToReorder}
       </p>
 
@@ -181,18 +196,24 @@ export default function PortalFoldersPage() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full rounded-lg" />
+            <Skeleton key={i} className="h-16 w-full" />
           ))}
         </div>
       ) : orderedFolders.length === 0 ? (
-        <NoData />
+        <div className="glass-bento flex min-h-[40vh] items-center justify-center">
+          <NoData />
+        </div>
       ) : (
-        <div className="glass-card rounded-xl overflow-hidden">
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <div className="glass-bento overflow-hidden !p-0">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[var(--glass-border)] bg-[var(--surface-hover)] text-left text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                  <th className="px-4 py-3 w-10"></th>
+                <tr className="border-b border-[var(--surface-glass-border)] bg-[var(--surface-glass-alt)] text-left text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
+                  <th className="w-10 px-4 py-3" />
                   <th className="px-4 py-3">{I18n.portal.folderName}</th>
                   <th className="px-4 py-3">{I18n.portal.folderType}</th>
                   <th className="px-4 py-3">{I18n.portal.posters}</th>
@@ -200,7 +221,10 @@ export default function PortalFoldersPage() {
                   <th className="px-4 py-3">{I18n.portal.actions}</th>
                 </tr>
               </thead>
-              <SortableContext items={orderedFolders.map((f) => f.id)} strategy={verticalListSortingStrategy}>
+              <SortableContext
+                items={orderedFolders.map((f) => f.id)}
+                strategy={verticalListSortingStrategy}
+              >
                 <tbody>
                   {orderedFolders.map((folder) => (
                     <SortableFolderRow key={folder.id} folder={folder} onEdit={openEditModal} />
@@ -213,7 +237,11 @@ export default function PortalFoldersPage() {
       )}
 
       {/* Create / Edit Modal */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingFolder ? I18n.portal.editFolder : I18n.portal.createFolder}>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingFolder ? I18n.portal.editFolder : I18n.portal.createFolder}
+      >
         <div className="space-y-4">
           <Input
             label={I18n.portal.folderName}
@@ -222,11 +250,24 @@ export default function PortalFoldersPage() {
             placeholder={I18n.portal.folderName}
           />
           <div>
-            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-1">{I18n.portal.folderType}</label>
-            <Dropdown
-              options={typeOptions}
-              onSelect={(opt) => setFormType(opt.id as TypeEnum)}
-            />
+            <label className="mb-2 block text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
+              {I18n.portal.folderType}
+            </label>
+            <DropdownV2
+              value={formType}
+              label={typeLabels[formType]}
+              onSelect={(v) => setFormType(v as TypeEnum)}
+            >
+              <DropdownV2.TriggerButton />
+              <DropdownV2.Content>
+                <DropdownV2.Item value={TypeEnum.SALE}>
+                  {I18n.marketingDashboard.boostSales}
+                </DropdownV2.Item>
+                <DropdownV2.Item value={TypeEnum.RECRUIT}>
+                  {I18n.marketingDashboard.teamDevelopment}
+                </DropdownV2.Item>
+              </DropdownV2.Content>
+            </DropdownV2>
           </div>
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="secondary" onClick={() => setShowModal(false)}>

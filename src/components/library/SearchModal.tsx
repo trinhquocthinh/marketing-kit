@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { Search, SearchX, X } from 'lucide-react';
+
+import Button from '@/components/ui/Button';
 import { I18n } from '@/i18n';
-import type { GroupTemplateModel } from '@/types';
 import { normalizeVietnamese } from '@/lib/marketing-dashboard.utils';
+import type { GroupTemplateModel } from '@/types';
+
 import SearchResultCard from './SearchResultCard';
 
 interface SearchModalProps {
@@ -19,7 +24,9 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
   const allTemplates = folders.flatMap((f) => f.templates);
 
   const results = searchText.trim()
-    ? allTemplates.filter((t) => normalizeVietnamese(t.name).includes(normalizeVietnamese(searchText)))
+    ? allTemplates.filter((t) =>
+        normalizeVietnamese(t.name).includes(normalizeVietnamese(searchText)),
+      )
     : allTemplates;
 
   const handleClose = useCallback(() => {
@@ -51,63 +58,66 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
 
   return (
     <div
-      className="fixed inset-0 z-9999 flex items-end md:items-start justify-center md:pt-20 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-9999 flex items-end justify-center bg-(--overlay-bg) p-0 backdrop-blur-md md:items-start md:p-6 md:pt-20"
       onClick={handleClose}
     >
       <div
-        className="w-full h-[90vh] md:h-auto md:max-h-[85vh] max-w-5xl glass-card md:shadow-2xl rounded-t-3xl md:rounded-3xl overflow-hidden flex flex-col theme-transition"
+        className="glass-bento flex h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-t-(--radius-bento-lg)! !p-0 md:h-auto md:max-h-[85vh] md:!rounded-[var(--radius-bento-lg)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-[var(--primary)]/60 to-transparent" />
         {/* Header */}
-        <div className="flex justify-between items-center p-5 md:p-6 border-b border-[var(--border)]">
-          <h2 className="font-display text-xl md:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
-            {I18n.search} mẫu thiết kế
-          </h2>
+        <div className="flex items-center justify-between border-b border-(--surface-glass-border) p-5 md:p-6">
+          <div>
+            <p className="bento-eyebrow mb-1.5">Tìm kiếm</p>
+            <h2 className="text-2xl font-black tracking-wide text-t-strong">
+              {I18n.search} mẫu thiết kế
+            </h2>
+          </div>
           <button
             onClick={handleClose}
-            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] rounded-full transition-colors"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-(--surface-glass-alt) text-t-muted transition-all hover:scale-105 hover:bg-surface-glass hover:text-[var(--text-strong)] active:scale-95"
+            aria-label="Close"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="h-5 w-5" strokeWidth={2.5} />
           </button>
         </div>
 
         {/* Search Input */}
-        <div className="p-5 md:p-6 border-b border-[var(--border)] bg-[var(--input-bg)]">
-          <div className="flex gap-3 flex-col sm:flex-row">
+        <div className="border-b border-(--surface-glass-border) p-5 md:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <Search
+                className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-t-muted"
+                strokeWidth={2}
+              />
               <input
                 ref={inputRef}
                 type="text"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value.slice(0, 100))}
                 placeholder="Nhập tên mẫu, ví dụ: 'sức khỏe', 'tuyển dụng'..."
-                className="w-full pl-12 pr-4 py-3.5 bg-[var(--input-bg)] border border-[var(--glass-border)] rounded-xl text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--nav-active-border)] focus:shadow-[var(--glow-primary)] transition-all text-base backdrop-blur-xl"
+                className="glass-input w-full rounded-full! py-2 pl-12! text-base"
               />
             </div>
-            <button
+            <Button
+              variant="primary"
               onClick={() => inputRef.current?.focus()}
-              className="px-8 py-3.5 bg-linear-to-r from-orange-400 to-rose-500 hover:brightness-110 text-white font-bold rounded-xl shadow-[var(--glow-primary)] hover:shadow-[var(--glow-primary-strong)] transition-all whitespace-nowrap"
+              className="shrink-0"
             >
               {I18n.search}
-            </button>
+            </Button>
           </div>
-          <div className="mt-4 text-sm font-medium text-[var(--primary)] pl-1">
+          <p className="mt-4 pl-1 text-[11px] font-black tracking-widest text-[var(--primary)] uppercase">
             {searchText.trim()
               ? `${results.length} kết quả cho "${searchText}"`
               : `${allTemplates.length} kết quả hiển thị`}
-          </div>
+          </p>
         </div>
 
         {/* Results */}
-        <div className="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar bg-[var(--surface)] backdrop-blur-md">
+        <div className="custom-scrollbar flex-1 overflow-y-auto p-5 md:p-6">
           {results.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 pb-8">
+            <div className="grid grid-cols-2 gap-4 pb-8 sm:grid-cols-3 md:grid-cols-4 md:gap-6">
               {results.map((item) => (
                 <SearchResultCard
                   key={item.id}
@@ -120,15 +130,22 @@ export default function SearchModal({ folders, isOpen, onClose, onSelect }: Sear
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full py-12 text-center opacity-80">
-              <div className="w-24 h-24 bg-[var(--surface)] border border-[var(--border)] rounded-full flex items-center justify-center mb-6">
-                <svg className="w-10 h-10 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div className="flex h-full flex-col items-center justify-center py-12 text-center">
+              <div
+                className="mb-6 flex h-20 w-20 items-center justify-center rounded-full shadow-inner-soft"
+                style={{
+                  background:
+                    'color-mix(in srgb, var(--text-muted) 15%, var(--surface-glass-alt))',
+                }}
+              >
+                <SearchX className="h-8 w-8 text-[var(--text-muted)]" strokeWidth={1.75} />
               </div>
-              <p className="text-xl text-[var(--text-primary)] font-bold mb-2">Không tìm thấy mẫu thiết kế</p>
-              <p className="text-[var(--text-muted)] max-w-sm">
-                Không có kết quả phù hợp cho &quot;{searchText}&quot;. Vui lòng thử lại với một từ khóa khác.
+              <p className="mb-2 text-xl font-black text-[var(--text-strong)]">
+                Không tìm thấy mẫu thiết kế
+              </p>
+              <p className="max-w-sm text-sm text-[var(--text-muted)]">
+                Không có kết quả phù hợp cho &quot;{searchText}&quot;. Vui lòng thử lại với một từ
+                khóa khác.
               </p>
             </div>
           )}

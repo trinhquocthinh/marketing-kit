@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface DropdownOption {
@@ -34,8 +34,10 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
-        ref.current && !ref.current.contains(e.target as Node) &&
-        menuRef.current && !menuRef.current.contains(e.target as Node)
+        ref.current &&
+        !ref.current.contains(e.target as Node) &&
+        menuRef.current &&
+        !menuRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -59,49 +61,60 @@ export default function Dropdown({ options, onSelect, label, className = '' }: D
 
   return (
     <div ref={ref} className={`relative ${className}`}>
-      {label && <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{label}</label>}
+      {label && (
+        <label className="mb-2 block pl-3 text-[10px] font-black tracking-widest text-[var(--primary)] uppercase">
+          {label}
+        </label>
+      )}
       <button
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-xl bg-[var(--input-bg)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] backdrop-blur-xl theme-transition border transition-all ${
-          isOpen
-            ? 'border-[var(--nav-active-border)] shadow-[var(--glow-primary)]'
-            : 'border-[var(--glass-border)] hover:border-[var(--border-bright)]'
-        }`}
+        className="glass-input theme-transition flex w-full items-center justify-between px-5 py-3 text-sm font-bold text-[var(--text-strong)]"
       >
         <span>{selected?.title}</span>
-        <svg className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg
+          className={`ml-2 h-4 w-4 text-[var(--primary)] transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
-      {isOpen && createPortal(
-        <div
-          ref={menuRef}
-          style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, width: menuPos.width }}
-          className="glass-card z-[9999] rounded-xl overflow-hidden theme-transition"
-        >
-          {options.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-[var(--surface-hover)] ${
-                option.isSelected
-                  ? 'text-[var(--primary)] font-semibold bg-[var(--nav-active-bg)]'
-                  : 'text-[var(--text-secondary)]'
-              }`}
-              onClick={() => {
-                onSelect(option);
-                setIsOpen(false);
-              }}
-            >
-              {option.title}
-            </button>
-          ))}
-        </div>,
-        document.body
-      )}
+      {isOpen &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{
+              position: 'fixed',
+              top: menuPos.top,
+              left: menuPos.left,
+              width: menuPos.width,
+            }}
+            className="theme-transition z-[9999] overflow-hidden rounded-[var(--radius-bento-sm)] border border-[var(--surface-glass-border)] bg-[var(--surface-glass-strong)] p-1 shadow-[var(--shadow-glass-md)] backdrop-blur-[var(--blur-glass)]"
+          >
+            {options.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`w-full rounded-[calc(var(--radius-bento-sm)-0.25rem)] px-4 py-2.5 text-left text-sm font-bold transition-colors hover:bg-[var(--surface-hover)] ${
+                  option.isSelected
+                    ? 'bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] text-[var(--primary)]'
+                    : 'text-[var(--text-secondary)]'
+                }`}
+                onClick={() => {
+                  onSelect(option);
+                  setIsOpen(false);
+                }}
+              >
+                {option.title}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

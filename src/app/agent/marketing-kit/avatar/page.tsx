@@ -2,13 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+import { ArrowLeft, Check, Clock, Loader2, Plus, Trash2, X } from 'lucide-react';
+
+import Skeleton from '@/components/ui/Skeleton';
+import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
 import { I18n } from '@/i18n';
 import { CDN_URL } from '@/lib/api.config';
-import { AvatarStatusOption } from '@/types/enums';
-import type { AvatarData } from '@/types';
-import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
 import { mapAvatarResponseToOptions } from '@/lib/marketing-dashboard.utils';
-import Skeleton from '@/components/ui/Skeleton';
+import type { AvatarData } from '@/types';
+import { AvatarStatusOption } from '@/types/enums';
+
+const brandGradient = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
 
 interface AvatarOption {
   id: number;
@@ -24,14 +29,8 @@ interface AvatarOption {
 export default function AvatarManagementPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const {
-    isLoading,
-    getAvatar,
-    createAvatar,
-    uploadAvatarImage,
-    updateAvatar,
-    avatarDeleteBatch,
-  } = useMarketingDashboard();
+  const { isLoading, getAvatar, createAvatar, uploadAvatarImage, updateAvatar, avatarDeleteBatch } =
+    useMarketingDashboard();
 
   const [patternAvatars, setPatternAvatars] = useState<AvatarOption[]>([]);
   const [yourAvatars, setYourAvatars] = useState<AvatarOption[]>([]);
@@ -51,8 +50,16 @@ export default function AvatarManagementPage() {
   }, [getAvatar]);
 
   useEffect(() => {
-    loadAvatars();
-  }, [loadAvatars]);
+    getAvatar().then((res) => {
+      const avatarData: AvatarData[] = res?.data || [];
+      if (avatarData.length > 0) {
+        const patterns = avatarData.filter((a) => a.agentCode === null);
+        const yours = avatarData.filter((a) => a.agentCode !== null);
+        setPatternAvatars(mapAvatarResponseToOptions(patterns) as AvatarOption[]);
+        setYourAvatars(mapAvatarResponseToOptions(yours) as AvatarOption[]);
+      }
+    });
+  }, [getAvatar]);
 
   const handleSelectPattern = (item: AvatarOption) => {
     setPatternAvatars((prev) => prev.map((a) => ({ ...a, isSelected: a.id === item.id })));
@@ -68,9 +75,7 @@ export default function AvatarManagementPage() {
   const handleSelectYour = (item: AvatarOption) => {
     if (isDeleteMode) {
       setYourAvatars((prev) =>
-        prev.map((a) =>
-          a.id === item.id ? { ...a, isSelectedDelete: !a.isSelectedDelete } : a,
-        ),
+        prev.map((a) => (a.id === item.id ? { ...a, isSelectedDelete: !a.isSelectedDelete } : a)),
       );
     } else {
       updateAvatar(item.id, {
@@ -132,28 +137,21 @@ export default function AvatarManagementPage() {
     switch (status) {
       case AvatarStatusOption.Reviewed:
         return (
-          <div className="absolute top-1 right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-[var(--background)] flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.6)]">
-            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-            </svg>
+          <div className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[var(--background)] text-white shadow-[var(--shadow-glow-primary)] bg-[var(--success)]">
+            <Check className="h-3 w-3" strokeWidth={3} />
           </div>
         );
       case AvatarStatusOption.Waiting:
         return (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-[var(--background)]/80 backdrop-blur-md px-2 py-0.5 rounded text-[9px] font-semibold text-amber-400 whitespace-nowrap flex items-center gap-1 border border-amber-500/30">
-            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" strokeWidth={2} />
-              <path strokeLinecap="round" strokeWidth={2} d="M12 8v4l3 3" />
-            </svg>
+          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-[var(--surface-glass-border)] bg-[var(--surface-glass)] px-2 py-0.5 text-[9px] font-black tracking-widest whitespace-nowrap text-[var(--accent)] uppercase backdrop-blur-md">
+            <Clock className="h-2.5 w-2.5" strokeWidth={2.5} />
             Chờ duyệt
           </div>
         );
       case AvatarStatusOption.Rejected:
         return (
-          <div className="absolute top-1 right-1 w-6 h-6 bg-[var(--accent-rose)] rounded-full border-2 border-[var(--background)] flex items-center justify-center shadow-[var(--glow-rose)]">
-            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+          <div className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[var(--background)] text-white shadow-[var(--shadow-glow-primary)] bg-[var(--danger)]">
+            <X className="h-3 w-3" strokeWidth={3} />
           </div>
         );
       default:
@@ -164,16 +162,16 @@ export default function AvatarManagementPage() {
   if (isLoading && patternAvatars.length === 0) {
     return (
       <div className="space-y-6 p-4 md:p-8">
-        <Skeleton className="h-8 w-48 bg-white/10 rounded-lg" />
+        <Skeleton className="h-8 w-48" />
         <div className="flex gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="w-28 h-28 rounded-full bg-white/5" />
+            <Skeleton key={i} className="h-28 w-28 rounded-full" />
           ))}
         </div>
-        <Skeleton className="h-6 w-32 bg-white/10 rounded-lg" />
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+        <Skeleton className="h-6 w-32" />
+        <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square rounded-full bg-white/5" />
+            <Skeleton key={i} className="aspect-square rounded-full" />
           ))}
         </div>
       </div>
@@ -181,32 +179,35 @@ export default function AvatarManagementPage() {
   }
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="relative flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 md:p-6 border-b border-[var(--border)] bg-[var(--sidebar-bg)] backdrop-blur-xl sticky top-0 z-20 theme-transition">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
-        >
-          <svg
-            className="w-5 h-5 mr-2 text-orange-400 group-hover:-translate-x-1 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="glass-bento sticky top-4 z-20 mx-4 mt-4 flex items-center justify-between md:mx-8">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            className="group flex h-10 w-10 items-center justify-center rounded-full text-white shadow-[var(--shadow-glow-primary)] transition-transform hover:scale-105"
+            style={{ background: brandGradient }}
+            aria-label="Back"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)]">
-            {I18n.marketingDashboard.avatarManagement}
-          </h2>
-        </button>
+            <ArrowLeft
+              className="h-5 w-5 transition-transform group-hover:-translate-x-0.5"
+              strokeWidth={2.5}
+            />
+          </button>
+          <div>
+            <p className="bento-eyebrow">Quản lý</p>
+            <h2 className="text-lg font-black tracking-wide text-[var(--text-strong)] md:text-xl">
+              {I18n.marketingDashboard.avatarManagement}
+            </h2>
+          </div>
+        </div>
         {isDeleteMode ? (
           <button
             onClick={() => {
               setIsDeleteMode(false);
               setYourAvatars((prev) => prev.map((a) => ({ ...a, isSelectedDelete: undefined })));
             }}
-            className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase transition-colors hover:text-[var(--text-strong)]"
           >
             Hủy thao tác
           </button>
@@ -215,41 +216,40 @@ export default function AvatarManagementPage() {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="max-w-5xl mx-auto space-y-10">
-
+        <div className="animate-bento-fade-up mx-auto max-w-5xl space-y-8">
           {/* Section 1: Pattern Avatars (System) */}
-          <section>
-            <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-4">
-              Mẫu đại diện
-            </h3>
-            <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 snap-x">
+          <section className="glass-bento">
+            <p className="bento-eyebrow mb-4">Mẫu đại diện</p>
+            <div className="flex snap-x gap-4 overflow-x-auto pb-2 md:gap-6">
               {patternAvatars.map((item) => {
                 const isSelected = item.isSelected && !isDeleteMode;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleSelectPattern(item)}
-                    className={`relative snap-start shrink-0 cursor-pointer group transition-all duration-300 ${isDeleteMode ? 'opacity-50 grayscale' : ''}`}
+                    className={`group relative shrink-0 cursor-pointer snap-start transition-all duration-300 ${isDeleteMode ? 'opacity-50 grayscale' : ''}`}
                   >
                     <div
-                      className={`w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-[3px] transition-all ${
+                      className={`h-28 w-28 overflow-hidden rounded-full border-[3px] transition-all md:h-36 md:w-36 ${
                         isSelected
-                          ? 'border-[var(--primary)] shadow-[var(--glow-primary)]'
-                          : 'border-transparent group-hover:border-white/30'
+                          ? 'shadow-[var(--shadow-glow-primary-strong)]'
+                          : 'border-[var(--surface-glass-border)] group-hover:border-[var(--primary)]'
                       }`}
+                      style={isSelected ? { borderColor: 'var(--primary)' } : undefined}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={`${CDN_URL}${item.imageLink}`}
                         alt="Pattern avatar"
-                        className="w-full h-full object-cover"
+                        className="h-full w-full object-cover"
                       />
                     </div>
                     {isSelected && (
-                      <div className="absolute top-1 right-1 w-6 h-6 bg-orange-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
-                        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                      <div
+                        className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[var(--background)] text-white shadow-[var(--shadow-glow-primary)]"
+                        style={{ background: brandGradient }}
+                      >
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
                       </div>
                     )}
                   </button>
@@ -259,39 +259,39 @@ export default function AvatarManagementPage() {
           </section>
 
           {/* Section 2: Your Avatars (Personal) */}
-          <section>
-            <div className="flex justify-between items-end mb-4">
-              <h3 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-                Ảnh của bạn ({yourAvatars.length}/10)
-              </h3>
-              <span className="text-xs text-[var(--text-muted)]">{I18n.marketingDashboard.maxFileSize}</span>
+          <section className="glass-bento">
+            <div className="mb-4 flex items-end justify-between">
+              <p className="bento-eyebrow">Ảnh của bạn ({yourAvatars.length}/10)</p>
+              <span className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
+                {I18n.marketingDashboard.maxFileSize}
+              </span>
             </div>
 
             {yourAvatars.length >= 10 && (
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4 text-xs text-amber-400">
+              <div className="mb-4 rounded-[var(--radius-bento-sm)] bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] p-3 text-xs font-medium text-[var(--accent)]">
                 {I18n.marketingDashboard.maxAvatars}
               </div>
             )}
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-6">
+            <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 md:gap-6 lg:grid-cols-6 xl:grid-cols-7">
               {/* Upload button */}
               {!isDeleteMode && yourAvatars.length < 10 && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="w-full aspect-square rounded-full border-2 border-dashed border-[var(--glass-border)] flex flex-col items-center justify-center cursor-pointer hover:border-[var(--primary)] hover:shadow-[var(--glow-primary)] hover:bg-[var(--primary)]/5 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group flex aspect-square w-full cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed border-[var(--surface-glass-border)] bg-[var(--surface-glass-alt)] transition-all hover:border-[var(--primary)] hover:bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isUploading ? (
-                    <svg className="w-8 h-8 text-[var(--text-muted)] animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
+                    <Loader2 className="h-8 w-8 animate-spin text-[var(--text-muted)]" />
                   ) : (
                     <>
-                      <svg className="w-8 h-8 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition-colors mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      <span className="text-[10px] text-[var(--text-muted)] group-hover:text-[var(--primary)] font-semibold">Tải lên</span>
+                      <Plus
+                        className="mb-1 h-8 w-8 text-[var(--text-muted)] transition-colors group-hover:text-[var(--primary)]"
+                        strokeWidth={2.5}
+                      />
+                      <span className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase group-hover:text-[var(--primary)]">
+                        Tải lên
+                      </span>
                     </>
                   )}
                 </button>
@@ -307,47 +307,57 @@ export default function AvatarManagementPage() {
                   <button
                     key={item.id}
                     onClick={() => handleSelectYour(item)}
-                    className={`relative w-full aspect-square rounded-full overflow-hidden cursor-pointer transition-all duration-300 ${
-                      isDeleteMode ? 'hover:scale-95' : isPending ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'
+                    className={`relative aspect-square w-full cursor-pointer overflow-hidden rounded-full transition-all duration-300 ${
+                      isDeleteMode
+                        ? 'hover:scale-95'
+                        : isPending
+                          ? 'cursor-not-allowed opacity-70'
+                          : 'hover:scale-105'
                     }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={`${CDN_URL}${item.imageLink}`}
                       alt="Your avatar"
-                      className="w-full h-full object-cover"
+                      className="h-full w-full object-cover"
                     />
 
                     {/* Overlay */}
-                    <div className={`absolute inset-0 transition-opacity duration-300 ${
-                      isSelectedForUse || isSelectedForDelete ? 'bg-black/20' : 'bg-black/0 hover:bg-black/10'
-                    }`} />
+                    <div
+                      className={`absolute inset-0 transition-opacity duration-300 ${
+                        isSelectedForUse || isSelectedForDelete
+                          ? 'bg-black/20'
+                          : 'bg-black/0 hover:bg-black/10'
+                      }`}
+                    />
 
                     {/* Border ring */}
-                    <div className={`absolute inset-0 rounded-full border-[3px] transition-colors duration-300 ${
-                      isSelectedForUse
-                        ? 'border-[var(--primary)] shadow-[var(--glow-primary)]'
-                        : isSelectedForDelete
-                          ? 'border-[var(--accent-rose)] shadow-[var(--glow-rose)]'
-                          : 'border-transparent'
-                    }`} />
+                    <div
+                      className={`absolute inset-0 rounded-full border-[3px] transition-colors duration-300 ${
+                        isSelectedForUse
+                          ? 'shadow-[var(--shadow-glow-primary-strong)]'
+                          : isSelectedForDelete
+                            ? 'border-[var(--danger)]'
+                            : 'border-transparent'
+                      }`}
+                      style={isSelectedForUse ? { borderColor: 'var(--primary)' } : undefined}
+                    />
 
                     {/* Checkmark for selected as active */}
                     {isSelectedForUse && (
-                      <div className="absolute top-2 right-2 w-6 h-6 bg-linear-to-br from-orange-400 to-rose-500 rounded-full border-2 border-[var(--background)] flex items-center justify-center shadow-[var(--glow-primary)]">
-                        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                      <div
+                        className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-[var(--background)] text-white shadow-[var(--shadow-glow-primary)]"
+                        style={{ background: brandGradient }}
+                      >
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
                       </div>
                     )}
 
                     {/* Checkmark for delete selection */}
                     {isSelectedForDelete && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--accent-rose)]/20 backdrop-blur-[2px]">
-                        <div className="w-10 h-10 bg-[var(--accent-rose)] rounded-full flex items-center justify-center shadow-[var(--glow-rose)]">
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
+                      <div className="absolute inset-0 flex items-center justify-center bg-[color-mix(in_srgb,var(--danger)_25%,transparent)] backdrop-blur-[2px]">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--danger)] text-white shadow-lg">
+                          <Check className="h-6 w-6" strokeWidth={3} />
                         </div>
                       </div>
                     )}
@@ -364,7 +374,7 @@ export default function AvatarManagementPage() {
 
       {/* Footer: Enter delete mode button */}
       {yourAvatars.length > 0 && !isDeleteMode && yourAvatars.some((a) => a.approved) && (
-        <div className="p-4 md:p-6 flex justify-center sticky bottom-0 bg-linear-to-t from-[var(--background)] to-transparent pointer-events-none">
+        <div className="pointer-events-none sticky bottom-0 flex justify-center bg-gradient-to-t from-[var(--background)] to-transparent p-4 md:p-6">
           <button
             onClick={() => {
               setIsDeleteMode(true);
@@ -376,11 +386,9 @@ export default function AvatarManagementPage() {
                 })),
               );
             }}
-            className="pointer-events-auto flex items-center px-6 py-2.5 glass-card hover:border-[var(--accent-rose)]/40 hover:text-[var(--accent-rose)] hover:shadow-[var(--glow-rose)] text-[var(--text-secondary)] rounded-full transition-all text-sm font-semibold"
+            className="glass-bento pointer-events-auto flex items-center !rounded-full !px-6 !py-2.5 text-[10px] font-black tracking-widest text-[var(--text-secondary)] uppercase transition-all hover:text-[var(--danger)]"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+            <Trash2 className="mr-2 h-4 w-4" strokeWidth={2.5} />
             Chọn ảnh để xóa
           </button>
         </div>
@@ -388,18 +396,18 @@ export default function AvatarManagementPage() {
 
       {/* Floating action bar in delete mode */}
       {isDeleteMode && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 p-2 glass-card rounded-2xl z-30">
-          <span className="text-sm font-semibold text-[var(--text-primary)] px-4">
-            Đã chọn <span className="text-[var(--accent-rose)]">{selectedDeleteCount}</span> ảnh
+        <div className="glass-bento absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-4 !p-2 shadow-2xl">
+          <span className="px-4 text-[10px] font-black tracking-widest text-[var(--text-strong)] uppercase">
+            Đã chọn <span className="text-[var(--danger)]">{selectedDeleteCount}</span> ảnh
           </span>
-          <div className="w-px h-6 bg-[var(--glass-border)]" />
+          <div className="h-6 w-px bg-[var(--surface-glass-border)]" />
           <button
             onClick={() => setDeleteConfirmOpen(true)}
             disabled={selectedDeleteCount === 0}
-            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${
+            className={`rounded-full px-6 py-2 text-[10px] font-black tracking-widest uppercase transition-all ${
               selectedDeleteCount > 0
-                ? 'bg-[var(--accent-rose)] text-white shadow-[var(--glow-rose)] hover:brightness-110 hover:-translate-y-0.5'
-                : 'bg-[var(--surface-hover)] text-[var(--text-muted)] cursor-not-allowed'
+                ? 'bg-[var(--danger)] text-white shadow-lg hover:-translate-y-0.5'
+                : 'cursor-not-allowed bg-[var(--surface-glass-alt)] text-[var(--text-muted)]'
             }`}
           >
             Xóa ngay
@@ -419,32 +427,33 @@ export default function AvatarManagementPage() {
       {/* Delete confirmation modal */}
       {deleteConfirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteConfirmOpen(false)} />
-          <div className="relative bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
-            <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeleteConfirmOpen(false)}
+          />
+          <div className="glass-bento glass-shine relative mx-4 w-full max-w-sm shadow-2xl">
+            <p className="bento-eyebrow mb-1">Xác nhận</p>
+            <h3 className="mb-2 text-lg font-black tracking-wide text-[var(--text-strong)]">
               {I18n.marketingDashboard.deleteConfirmTitle}
             </h3>
-            <p className="text-sm text-[var(--text-muted)] mb-6">
+            <p className="mb-6 text-sm font-medium text-[var(--text-secondary)]">
               {I18n.marketingDashboard.deleteConfirmMessage}
             </p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirmOpen(false)}
-                className="px-5 py-2.5 bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] font-medium hover:bg-[var(--surface)] transition-colors text-sm"
+                className="rounded-full border border-[var(--surface-glass-border)] bg-[var(--surface-glass-alt)] px-5 py-2.5 text-[10px] font-black tracking-widest text-[var(--text-strong)] uppercase transition-colors hover:bg-[var(--surface-glass)]"
               >
                 {I18n.cancel}
               </button>
               <button
                 onClick={handleDeleteSelected}
                 disabled={isLoading}
-                className="px-5 py-2.5 bg-rose-500 rounded-xl text-white font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-full bg-[var(--danger)] px-5 py-2.5 text-[10px] font-black tracking-widest text-white uppercase shadow-lg transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     {I18n.loading}
                   </span>
                 ) : (

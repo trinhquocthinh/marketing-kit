@@ -1,16 +1,16 @@
-import { httpService, httpServiceFiles } from '@/lib/http.service';
 import {
-  URL_FOLDER,
+  REPLACE_PARAMS,
   URL_ALIAS,
   URL_ALIAS_UPLOAD,
   URL_AVATAR,
-  URL_AVATAR_UPLOAD,
   URL_AVATAR_BATCH_DELETE,
+  URL_AVATAR_UPLOAD,
+  URL_FOLDER,
   URL_PERFORMANCE,
-  URL_PERFORMANCE_FOLDER,
   URL_PERFORMANCE_ALIAS,
-  REPLACE_PARAMS,
+  URL_PERFORMANCE_FOLDER,
 } from '@/lib/constants';
+import { httpService, httpServiceFiles } from '@/lib/http.service';
 import type {
   AliasCreateData,
   AliasData,
@@ -30,9 +30,11 @@ import type {
   UploadAvatarImageRequest,
 } from '@/types';
 
-function sortTemplatesByCreatedDesc<T extends { templates?: { created: string }[] }>(data: T[]): T[] {
+function sortTemplatesByCreatedDesc<T extends { templates?: { created: string }[] }>(
+  data: T[],
+): T[] {
   if (!Array.isArray(data)) return data ?? [];
-  return data.map(item => {
+  return data.map((item) => {
     if (!Array.isArray(item.templates)) return item;
     const sortedTemplates = [...item.templates].sort(
       (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime(),
@@ -50,11 +52,11 @@ export const marketingDashboardService = {
     }
 
     let folders = sortTemplatesByCreatedDesc(result.data.data);
-    const hasOrder = folders.some(item => item.order !== null);
+    const hasOrder = folders.some((item) => item.order !== null);
 
     if (hasOrder) {
       folders = folders
-        .map(item => ({ ...item, order: item.order ?? item.id }))
+        .map((item) => ({ ...item, order: item.order ?? item.id }))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     } else {
       folders = [...folders].reverse();
@@ -77,13 +79,19 @@ export const marketingDashboardService = {
   },
 
   async createAlias(request: AliasCreateData): Promise<ApiResponse<AliasData>> {
-    const result = await httpService.post<AliasCreateData, ApiResponse<AliasData>>(URL_ALIAS, request);
+    const result = await httpService.post<AliasCreateData, ApiResponse<AliasData>>(
+      URL_ALIAS,
+      request,
+    );
     if (!result.isSuccess) return { error: result.error };
     return { data: result.data?.data ?? null };
   },
 
   async updateAlias(aliasId: number, request: AliasUpdateData): Promise<ApiResponse<AliasData>> {
-    const result = await httpService.post<AliasUpdateData, ApiResponse<AliasData>>(`${URL_ALIAS}/${aliasId}`, request);
+    const result = await httpService.post<AliasUpdateData, ApiResponse<AliasData>>(
+      `${URL_ALIAS}/${aliasId}`,
+      request,
+    );
     if (!result.isSuccess) return { error: result.error };
     return { data: result.data?.data ?? null };
   },
@@ -94,9 +102,13 @@ export const marketingDashboardService = {
     formData.append('category', 'POSTER');
     formData.append('name', req.fileName ?? 'poster' + Date.now());
 
-    const result = await httpServiceFiles.put<FormData, ApiResponse<string>>(URL_ALIAS_UPLOAD, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const result = await httpServiceFiles.put<FormData, ApiResponse<string>>(
+      URL_ALIAS_UPLOAD,
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      },
+    );
     if (!result.isSuccess) return { error: result.error };
     return { data: result.data?.data ?? null };
   },
@@ -109,13 +121,22 @@ export const marketingDashboardService = {
   },
 
   async createAvatar(request: AvatarCreateData): Promise<ApiResponse<AvatarData>> {
-    const result = await httpService.post<AvatarCreateData, ApiResponse<AvatarData>>(URL_AVATAR, request);
+    const result = await httpService.post<AvatarCreateData, ApiResponse<AvatarData>>(
+      URL_AVATAR,
+      request,
+    );
     if (!result.isSuccess) return { error: result.error };
     return { data: result.data?.data ?? null };
   },
 
-  async updateAvatar(avatarId: number, request: AvatarUpdateData): Promise<ApiResponse<AvatarData>> {
-    const result = await httpService.post<AvatarUpdateData, ApiResponse<AvatarData>>(`${URL_AVATAR}/${avatarId}`, request);
+  async updateAvatar(
+    avatarId: number,
+    request: AvatarUpdateData,
+  ): Promise<ApiResponse<AvatarData>> {
+    const result = await httpService.post<AvatarUpdateData, ApiResponse<AvatarData>>(
+      `${URL_AVATAR}/${avatarId}`,
+      request,
+    );
     if (!result.isSuccess) return { error: result.error };
     return { data: result.data?.data ?? null };
   },
@@ -126,15 +147,22 @@ export const marketingDashboardService = {
     formData.append('category', 'AVATAR');
     formData.append('name', req.fileName ?? 'avatar' + Date.now());
 
-    const result = await httpServiceFiles.put<FormData, ApiResponse<string>>(URL_AVATAR_UPLOAD, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const result = await httpServiceFiles.put<FormData, ApiResponse<string>>(
+      URL_AVATAR_UPLOAD,
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      },
+    );
     if (!result.isSuccess) return { error: result.error };
     return { data: result.data?.data ?? null };
   },
 
   async avatarDeleteBatch(request: AvatarDeleteBatchRequest): Promise<ApiResponse<unknown>> {
-    const result = await httpService.post<AvatarDeleteBatchRequest, ApiResponse<unknown>>(URL_AVATAR_BATCH_DELETE, request);
+    const result = await httpService.post<AvatarDeleteBatchRequest, ApiResponse<unknown>>(
+      URL_AVATAR_BATCH_DELETE,
+      request,
+    );
     if (!result.isSuccess) return { error: result.error };
     return { data: result.data?.data ?? null };
   },
@@ -146,9 +174,10 @@ export const marketingDashboardService = {
     return { data: result.data?.data ?? null };
   },
 
-  async getPerformanceFolder(request: PerformanceFolderRequest): Promise<ApiResponse<PerformanceFolderData[]>> {
-    const url = URL_PERFORMANCE_FOLDER
-      .replace(REPLACE_PARAMS.FOLDER_ID, String(request.folderId))
+  async getPerformanceFolder(
+    request: PerformanceFolderRequest,
+  ): Promise<ApiResponse<PerformanceFolderData[]>> {
+    const url = URL_PERFORMANCE_FOLDER.replace(REPLACE_PARAMS.FOLDER_ID, String(request.folderId))
       .replace(REPLACE_PARAMS.FROM, request.from)
       .replace(REPLACE_PARAMS.TO, request.to);
 
@@ -157,9 +186,10 @@ export const marketingDashboardService = {
     return { data: result.data?.data ?? null };
   },
 
-  async getPerformanceAlias(request: PerformanceAliasRequest): Promise<ApiResponse<PerformanceAliasData[]>> {
-    const url = URL_PERFORMANCE_ALIAS
-      .replace(REPLACE_PARAMS.FOLDER_ID, String(request.folderId))
+  async getPerformanceAlias(
+    request: PerformanceAliasRequest,
+  ): Promise<ApiResponse<PerformanceAliasData[]>> {
+    const url = URL_PERFORMANCE_ALIAS.replace(REPLACE_PARAMS.FOLDER_ID, String(request.folderId))
       .replace(REPLACE_PARAMS.ALIAS_ID, String(request.aliasId))
       .replace(REPLACE_PARAMS.FROM, request.from)
       .replace(REPLACE_PARAMS.TO, request.to);

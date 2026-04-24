@@ -1,13 +1,7 @@
 import { format } from 'date-fns';
+
 import { MARKETING_DASHBOARD_URL } from '@/lib/api.config';
 import { NUMBER_OF_XAXIS_TICKS } from '@/lib/constants';
-import {
-  LabelEnum,
-  TimeLineEnum,
-  TypeEnum,
-  AvatarStatusOption,
-  AvatarActionOption,
-} from '@/types/enums';
 import type {
   AliasData,
   AvatarData,
@@ -19,6 +13,13 @@ import type {
   PeriodDate,
   Periods,
 } from '@/types';
+import {
+  AvatarActionOption,
+  AvatarStatusOption,
+  LabelEnum,
+  TimeLineEnum,
+  TypeEnum,
+} from '@/types/enums';
 
 export const numberWithCommasDot = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -60,9 +61,11 @@ export const normalizeVietnamese = (str: string): string => {
     .replace(/đ/g, 'd');
 };
 
-export const generateMktLink = (alias: AliasData): string => {
+export const generateMktLink = (alias: AliasData): string | null => {
+  const identifier = alias.qrEncryptedData ?? alias.id;
+  if (identifier === undefined || identifier === null) return null;
   const type = alias.type === TypeEnum.RECRUIT ? 'recruit/download' : 'sales';
-  return `${MARKETING_DASHBOARD_URL}/${type}/${alias.qrEncryptedData}`;
+  return `${MARKETING_DASHBOARD_URL}/${type}/${identifier}`;
 };
 
 export const generateUniqueAliasName = (
@@ -80,15 +83,11 @@ export const generateUniqueAliasName = (
     }
     return candidateName;
   } else {
-    return aliasList.some((alias) => alias.name.trim() === text.trim())
-      ? null
-      : text.trim();
+    return aliasList.some((alias) => alias.name.trim() === text.trim()) ? null : text.trim();
   }
 };
 
-export const mapAvatarResponseToOptions = (
-  avatarData: AvatarData[],
-): AvatarFrameOption[] => {
+export const mapAvatarResponseToOptions = (avatarData: AvatarData[]): AvatarFrameOption[] => {
   if (!avatarData || !Array.isArray(avatarData)) return [];
 
   return avatarData
@@ -142,11 +141,7 @@ export const getTimeLine = (val: TimeLineEnum): Periods => {
       return { from: fromDate.toISOString(), to: toDate.toISOString() };
     }
     case TimeLineEnum.ONE_YEAR: {
-      const startOfCurrentMonth = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1,
-      );
+      const startOfCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       const fromDate = new Date(startOfCurrentMonth);
       fromDate.setMonth(fromDate.getMonth() - 11);
       fromDate.setUTCHours(17, 0, 0, 0);
@@ -246,10 +241,7 @@ export const cookChartData = (props: ChartComponentProps) => {
     });
 
     return {
-      date: formatDateToString(
-        from,
-        timeLine === TimeLineEnum.ONE_YEAR ? 'MM/yy' : 'dd/MM',
-      ),
+      date: formatDateToString(from, timeLine === TimeLineEnum.ONE_YEAR ? 'MM/yy' : 'dd/MM'),
       value,
     };
   });

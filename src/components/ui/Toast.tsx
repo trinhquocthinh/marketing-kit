@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { AlertCircle, CheckCircle2, Info } from 'lucide-react';
+
 interface ToastProps {
   message: string;
   type?: 'success' | 'error' | 'info';
@@ -9,21 +11,18 @@ interface ToastProps {
   onClose: () => void;
 }
 
-const typeStyles: Record<NonNullable<ToastProps['type']>, { accent: string; glow: string; icon: string }> = {
+const config = {
   success: {
-    accent: 'border-l-4 border-l-emerald-400',
-    glow: 'shadow-[0_0_24px_rgba(52,211,153,0.35)]',
-    icon: '✓',
+    icon: CheckCircle2,
+    color: 'var(--success)',
   },
   error: {
-    accent: 'border-l-4 border-l-rose-400',
-    glow: 'shadow-[var(--glow-rose)]',
-    icon: '✕',
+    icon: AlertCircle,
+    color: 'var(--danger)',
   },
   info: {
-    accent: 'border-l-4 border-l-[var(--primary)]',
-    glow: 'shadow-[var(--glow-primary)]',
-    icon: 'i',
+    icon: Info,
+    color: 'var(--info)',
   },
 };
 
@@ -38,18 +37,21 @@ export default function Toast({ message, type = 'info', duration = 3000, onClose
     return () => clearTimeout(timer);
   }, [duration, onClose]);
 
-  const style = typeStyles[type];
+  const { icon: Icon, color } = config[type];
 
   return (
     <div
-      className={`glass-card fixed top-4 right-4 z-[100] flex items-center gap-3 pl-4 pr-5 py-3 rounded-xl text-[var(--text-primary)] text-sm font-medium transition-all duration-300 ${style.accent} ${style.glow} ${
-        visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+      className={`fixed top-6 right-6 z-[100] flex items-center gap-3 rounded-full border border-[var(--surface-glass-border)] bg-[var(--surface-glass-strong)] py-3 pr-6 pl-3 shadow-[var(--shadow-glass-md)] backdrop-blur-[var(--blur-glass)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+        visible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
       }`}
     >
-      <span className="inline-flex w-6 h-6 items-center justify-center rounded-full bg-[var(--surface-hover)] font-bold text-xs">
-        {style.icon}
-      </span>
-      <span>{message}</span>
+      <div
+        className="flex h-10 w-10 items-center justify-center rounded-full"
+        style={{ background: `color-mix(in srgb, ${color} 15%, transparent)`, color }}
+      >
+        <Icon className="h-5 w-5" strokeWidth={2.5} />
+      </div>
+      <span className="text-sm font-bold text-[var(--text-strong)]">{message}</span>
     </div>
   );
 }

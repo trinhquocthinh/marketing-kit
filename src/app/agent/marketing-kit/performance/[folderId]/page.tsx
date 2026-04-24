@@ -1,18 +1,24 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { I18n } from '@/i18n';
-import { CDN_URL } from '@/lib/api.config';
-import { SortEnum, StatusEnum, TimeLineEnum, TypeEnum } from '@/types/enums';
-import type { PerformanceFolderData } from '@/types';
-import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
-import { getTimeLine, numberWithCommasDot } from '@/lib/marketing-dashboard.utils';
-import { LIST_PERFORMANCE_SORT, PERFORMANCE_DETAIL_DEFAULT } from '@/lib/constants';
+import { useParams, useRouter } from 'next/navigation';
+
+import { ArrowLeft, Image as ImageIcon, Info } from 'lucide-react';
+
+import PerformanceChart from '@/components/charts/PerformanceChart.lazy';
+import TimelineFilter from '@/components/charts/TimelineFilter';
+import BentoSectionHeading from '@/components/ui/BentoSectionHeading';
 import Dropdown from '@/components/ui/Dropdown';
 import Skeleton from '@/components/ui/Skeleton';
-import PerformanceChart from '@/components/charts/PerformanceChart';
-import TimelineFilter from '@/components/charts/TimelineFilter';
+import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
+import { I18n } from '@/i18n';
+import { CDN_URL } from '@/lib/api.config';
+import { LIST_PERFORMANCE_SORT, PERFORMANCE_DETAIL_DEFAULT } from '@/lib/constants';
+import { getTimeLine, numberWithCommasDot } from '@/lib/marketing-dashboard.utils';
+import type { PerformanceFolderData } from '@/types';
+import { SortEnum, StatusEnum, TimeLineEnum, TypeEnum } from '@/types/enums';
+
+const brandGradient = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
 
 export default function FolderPerformancePage() {
   const router = useRouter();
@@ -79,16 +85,16 @@ export default function FolderPerformancePage() {
   if (isLoading && !data.name) {
     return (
       <div className="space-y-6 pb-8">
-        <Skeleton className="h-16 bg-white/5 rounded-xl" />
-        <Skeleton className="h-10 bg-white/5 rounded-xl" />
+        <Skeleton className="h-16" />
+        <Skeleton className="h-10" />
         <div className="flex flex-col gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-20 bg-white/5 rounded-xl" />
+            <Skeleton key={i} className="h-20" />
           ))}
         </div>
-        <Skeleton className="h-64 bg-white/5 rounded-2xl" />
+        <Skeleton className="h-64" />
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-40 bg-white/5 rounded-2xl" />
+          <Skeleton key={i} className="h-40" />
         ))}
       </div>
     );
@@ -97,44 +103,46 @@ export default function FolderPerformancePage() {
   const isSale = data.type === TypeEnum.SALE || (data.type as string) === StatusEnum.SALE;
 
   return (
-    <div className="pb-10 flex flex-col gap-8">
-      {/* Header: back + title + info tip */}
-      <div className="flex flex-col gap-2">
+    <div className="animate-bento-fade-up flex flex-col gap-8 pb-10">
+      {/* Header */}
+      <div className="glass-bento sticky top-4 z-10 flex flex-col gap-3">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group w-fit"
+          className="group flex w-fit items-center gap-3 text-left"
         >
-          <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] line-clamp-1">{data.name}</h2>
+          <span
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-[var(--shadow-glow-primary)] transition-transform group-hover:-translate-x-1"
+            style={{ background: brandGradient }}
+          >
+            <ArrowLeft className="h-5 w-5" strokeWidth={2.5} />
+          </span>
+          <div>
+            <p className="bento-eyebrow mb-0.5">Hiệu suất</p>
+            <h2 className="line-clamp-1 text-xl font-black tracking-wide text-[var(--text-strong)] md:text-2xl">
+              {data.name}
+            </h2>
+          </div>
         </button>
-        <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] ml-7">
-          <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
+        <div className="ml-13 flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)]">
+          <Info className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
           <span>{I18n.marketingDashboard.textHeaderPerformanceTip}</span>
         </div>
       </div>
 
-      {/* Timeline filter + Chart */}
-      <div className="flex flex-col gap-8 max-w-4xl mx-auto w-full">
-        <section>
+      {/* Timeline + Chart + List */}
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
+        <section className="glass-bento">
           <TimelineFilter selected={timeLine} onChange={handleTimelineChange} />
         </section>
 
-        <section>
+        <section className="glass-bento">
           <PerformanceChart alias={data} timeLine={timeLine} timeRange={periods} />
         </section>
 
-        {/* Alias list section */}
-        <section>
-          <h3 className="font-display text-base font-bold text-[var(--text-primary)] mb-4 tracking-tight flex items-center gap-3">
-            <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
-            {I18n.marketingDashboard.imageCatalog}
-          </h3>
+        <section className="space-y-4">
+          <BentoSectionHeading title={I18n.marketingDashboard.imageCatalog} variant="accent" />
 
-          <div className="flex flex-col gap-2 mb-4">
+          <div className="glass-bento">
             <Dropdown
               options={sortOptions.map((s) => ({ ...s, isSelected: s.id === sort }))}
               onSelect={(opt) => setSort(opt.id as SortEnum)}
@@ -146,57 +154,61 @@ export default function FolderPerformancePage() {
             {sortedAliases.map((alias) => (
               <div
                 key={alias.id}
-                className="glass-card glass-card-hover rounded-2xl p-4 flex flex-col md:flex-row gap-6 theme-transition"
+                className="glass-bento glass-bento-interactive flex flex-col gap-6 md:flex-row"
               >
-                {/* Left: image + name */}
-                <div className="w-full md:w-32 h-40 md:h-32 bg-[var(--surface-hover)] rounded-xl flex items-center justify-center overflow-hidden shrink-0 relative border border-[var(--border)]">
+                {/* Image */}
+                <div className="relative flex h-40 w-full shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-bento-sm)] bg-[var(--surface-glass-alt)] md:h-32 md:w-32">
                   {alias.imageLink ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={`${CDN_URL}${alias.imageLink}`}
                       alt={alias.name}
-                      className="w-full h-full object-contain"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
-                    <svg className="w-8 h-8 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                    <ImageIcon
+                      className="h-8 w-8 text-[var(--text-muted)]"
+                      strokeWidth={1.25}
+                    />
                   )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-[var(--background)]/70 backdrop-blur-sm p-2">
-                    <p className="text-[10px] text-[var(--text-primary)] font-semibold truncate text-center">{alias.name}</p>
+                  <div className="absolute right-0 bottom-0 left-0 bg-[var(--overlay-bg)] p-2 backdrop-blur-md">
+                    <p className="truncate text-center text-[10px] font-black tracking-wider text-white">
+                      {alias.name}
+                    </p>
                   </div>
                 </div>
 
-                {/* Right: stats + button */}
-                <div className="flex-1 flex flex-col">
-                  <div className="flex flex-col sm:flex-row gap-4 mb-4 md:mb-auto">
+                {/* Stats + button */}
+                <div className="flex flex-1 flex-col">
+                  <div className="mb-4 flex flex-col gap-4 sm:flex-row md:mb-auto">
                     <div className="flex-1">
-                      <span className="font-display text-[var(--primary)] font-bold text-xl">
+                      <span className="text-2xl font-black text-[var(--primary)]">
                         {numberWithCommasDot(alias.count)}
                       </span>
-                      <p className="text-xs text-[var(--text-muted)] font-medium">
+                      <p className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
                         {I18n.marketingDashboard.interactions}
                       </p>
                     </div>
-                    <div className="h-px w-full sm:w-px sm:h-12 bg-[var(--glass-border)]" />
+                    <div className="h-px w-full bg-[var(--surface-glass-border)] sm:h-12 sm:w-px" />
                     <div className="flex-1">
-                      <span className={`font-display font-bold text-xl ${isSale ? 'text-[var(--accent-rose)]' : 'text-[var(--accent-violet)]'}`}>
+                      <span className="text-2xl font-black text-[var(--accent)]">
                         {numberWithCommasDot(alias.sum)}
                       </span>
-                      <p className="text-xs text-[var(--text-muted)] font-medium">
+                      <p className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
                         {isSale
                           ? I18n.marketingDashboard.insuranceFee
                           : I18n.marketingDashboard.eSignCompletions}
                       </p>
                     </div>
                   </div>
-                  <div className="mt-4 border-t border-[var(--glass-border)] pt-4 flex justify-end md:border-t-0 md:pt-0 md:mt-0">
+                  <div className="mt-4 flex justify-end border-t border-[var(--surface-glass-border)] pt-4 md:mt-0 md:border-t-0 md:pt-0">
                     <button
                       onClick={() =>
                         router.push(
-                          `/agent/marketing-kit/performance/${folderId}/${alias.id}?timeLine=${timeLine}&from=${periods.from}&to=${periods.to}`
+                          `/agent/marketing-kit/performance/${folderId}/${alias.id}?timeLine=${timeLine}&from=${periods.from}&to=${periods.to}`,
                         )
                       }
-                      className="px-6 py-2 rounded-xl border border-[var(--primary)]/60 text-[var(--primary)] font-bold hover:bg-[var(--primary)]/10 hover:border-[var(--primary)] hover:shadow-[var(--glow-primary)] transition-all w-full sm:w-auto text-sm"
+                      className="btn-brand-glow w-full rounded-full px-6 py-2.5 text-[10px] font-black tracking-widest text-white uppercase active:scale-[0.98] sm:w-auto"
                     >
                       {I18n.marketingDashboard.imagePerformance}
                     </button>

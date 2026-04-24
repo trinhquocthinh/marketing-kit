@@ -1,78 +1,91 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { GroupTemplateModel } from '@/types';
-import { CDN_URL } from '@/lib/api.config';
+
+import { ImageIcon } from 'lucide-react';
+
 import BannerWithFooter from '@/components/posters/BannerWithFooter';
+import { CDN_URL } from '@/lib/api.config';
+import type { GroupTemplateModel } from '@/types';
 
 interface SearchResultCardProps {
-    item: GroupTemplateModel;
-    onClick: () => void;
+  item: GroupTemplateModel;
+  onClick: () => void;
 }
 
 export default function SearchResultCard({ item, onClick }: SearchResultCardProps) {
-    const containerRef = useRef<HTMLButtonElement>(null);
-    const [containerWidth, setContainerWidth] = useState(0);
-    const [orientation, setOrientation] = useState<'portrait' | 'landscape' | null>(null);
+  const containerRef = useRef<HTMLButtonElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape' | null>(null);
 
-    // Measure card width
-    useEffect(() => {
-        const el = containerRef.current;
-        if (!el) return;
-        const ro = new ResizeObserver(([entry]) => {
-            setContainerWidth(entry.contentRect.width);
-        });
-        ro.observe(el);
-        return () => ro.disconnect();
-    }, []);
+  // Measure card width
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
-    // Detect image orientation
-    useEffect(() => {
-        if (!item.imageLink) return;
-        const img = new window.Image();
-        img.onload = () => {
-            setOrientation(img.naturalWidth > img.naturalHeight ? 'landscape' : 'portrait');
-        };
-        img.src = `${CDN_URL}${item.imageLink}`;
-    }, [item.imageLink]);
+  // Detect image orientation
+  useEffect(() => {
+    if (!item.imageLink) return;
+    const img = new window.Image();
+    img.onload = () => {
+      setOrientation(img.naturalWidth > img.naturalHeight ? 'landscape' : 'portrait');
+    };
+    img.src = `${CDN_URL}${item.imageLink}`;
+  }, [item.imageLink]);
 
-    // Portrait: aspect 3/4, Landscape: aspect 4/3
-    const aspectRatio = orientation === 'landscape' ? 4 / 3 : 3 / 4;
-    const frameHeight = containerWidth > 0 ? containerWidth / aspectRatio : 0;
+  // Portrait: aspect 3/4, Landscape: aspect 4/3
+  const aspectRatio = orientation === 'landscape' ? 4 / 3 : 3 / 4;
+  const frameHeight = containerWidth > 0 ? containerWidth / aspectRatio : 0;
 
-    return (
-        <button
-            ref={containerRef}
-            onClick={onClick}
-            className="glass-card glass-card-hover text-left rounded-2xl p-4 cursor-pointer group flex flex-col h-full theme-transition"
-        >
-            <div
-                className="bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl mb-3 overflow-hidden relative flex items-center justify-center"
-                style={{ height: frameHeight > 0 ? frameHeight : undefined, aspectRatio: frameHeight > 0 ? undefined : '3/4' }}
-            >
-                {item.imageLink && containerWidth > 0 ? (
-                    <BannerWithFooter
-                        url={`${CDN_URL}${item.imageLink}`}
-                        containerWidth={orientation === 'landscape' ? containerWidth : containerWidth}
-                        containerHeight={frameHeight}
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-10 h-10 text-[var(--text-muted)] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                )}
-                <div className="absolute inset-0 bg-linear-to-tr from-[var(--primary)]/0 via-transparent to-[var(--accent-violet)]/0 group-hover:from-[var(--primary)]/10 group-hover:to-[var(--accent-violet)]/10 transition-colors pointer-events-none" />
-                {item.labels?.[0] && (
-                    <div className="absolute top-2 left-2 bg-linear-to-r from-orange-400 to-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-[var(--glow-primary)] z-10">
-                        {item.labels[0].value}
-                    </div>
-                )}
-            </div>
-            <div className='mt-auto bg-[var(--surface-hover)] backdrop-blur-sm p-3 rounded-xl border border-[var(--glass-border)] group-hover:border-[var(--border-bright)] transition-colors'>
-                <h3 className="font-display text-[14px] text-[var(--text-primary)] font-bold truncate group-hover:text-[var(--primary)] transition-colors">{item.name}</h3>
-            </div>
-        </button>
-    );
+  return (
+    <button
+      ref={containerRef}
+      onClick={onClick}
+      className="glass-bento glass-bento-interactive glass-shine group flex h-full cursor-pointer flex-col !p-4 text-left"
+    >
+      <div
+        className="relative mb-3 flex items-center justify-center overflow-hidden rounded-[var(--radius-bento-sm)] bg-[var(--surface-glass-alt)]"
+        style={{
+          height: frameHeight > 0 ? frameHeight : undefined,
+          aspectRatio: frameHeight > 0 ? undefined : '3/4',
+        }}
+      >
+        {item.imageLink && containerWidth > 0 ? (
+          <BannerWithFooter
+            url={`${CDN_URL}${item.imageLink}`}
+            containerWidth={orientation === 'landscape' ? containerWidth : containerWidth}
+            containerHeight={frameHeight}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <ImageIcon
+              className="h-10 w-10 text-[var(--text-muted)] transition-transform group-hover:scale-110"
+              strokeWidth={1.5}
+            />
+          </div>
+        )}
+        {item.labels?.[0] && (
+          <div
+            className="absolute top-2 left-2 z-10 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-widest text-white uppercase shadow-[var(--shadow-glow-primary)]"
+            style={{
+              background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+            }}
+          >
+            {item.labels[0].value}
+          </div>
+        )}
+      </div>
+      <div className="mt-auto rounded-[var(--radius-bento-sm)] bg-[var(--surface-glass-alt)] p-3">
+        <h3 className="truncate text-sm font-black tracking-wide text-[var(--text-strong)] transition-colors group-hover:text-[var(--primary)]">
+          {item.name}
+        </h3>
+      </div>
+    </button>
+  );
 }

@@ -1,82 +1,73 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
-  LineChart,
+  CheckCircle2,
+  ClipboardList,
+  FileSignature,
+  FileText,
+  type LucideIcon,
+  MousePointerClick,
+  UserPlus,
+} from 'lucide-react';
+import {
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
 } from 'recharts';
+
+import { useBrandColors } from '@/hooks/useBrandColors';
+import { I18n } from '@/i18n';
 import {
   cookChartData,
   getYaxisMaxValue,
   numberWithCommasDot,
 } from '@/lib/marketing-dashboard.utils';
-import { TypeEnum } from '@/types/enums';
 import type { ChartComponentProps } from '@/types';
-import { I18n } from '@/i18n';
-import { useTheme } from '@/components/providers/ThemeProvider';
+import { TypeEnum } from '@/types/enums';
 
-// ── Summary cards use token-based palette: primary / rose / violet ──
-type SummaryCardTone = 'primary' | 'rose' | 'violet';
-
-const toneStyles: Record<SummaryCardTone, { iconWrap: string; value: string; icon: string; glow: string }> = {
-  primary: {
-    iconWrap: 'bg-[var(--primary)]/15 border-[var(--primary)]/40',
-    value: 'text-[var(--primary)]',
-    icon: 'text-[var(--primary)]',
-    glow: 'shadow-[var(--glow-primary)]',
-  },
-  rose: {
-    iconWrap: 'bg-[var(--accent-rose)]/15 border-[var(--accent-rose)]/40',
-    value: 'text-[var(--accent-rose)]',
-    icon: 'text-[var(--accent-rose)]',
-    glow: 'shadow-[var(--glow-rose)]',
-  },
-  violet: {
-    iconWrap: 'bg-[var(--accent-violet)]/15 border-[var(--accent-violet)]/40',
-    value: 'text-[var(--accent-violet)]',
-    icon: 'text-[var(--accent-violet)]',
-    glow: 'shadow-[var(--glow-violet)]',
-  },
+type CardConfig = {
+  key: string;
+  Icon: LucideIcon;
+  tone: 'primary' | 'accent' | 'success';
 };
 
-const SALE_TONES: SummaryCardTone[] = ['primary', 'rose', 'violet'];
-const RECRUIT_TONES: SummaryCardTone[] = ['primary', 'rose', 'violet'];
-const SALE_ICONS = ['👆', '📋', '📄'];
-const RECRUIT_ICONS = ['👆', '✅', '✍️'];
+const SALE_CARDS: readonly CardConfig[] = [
+  { key: 'click', Icon: MousePointerClick, tone: 'primary' },
+  { key: 'allocate', Icon: ClipboardList, tone: 'accent' },
+  { key: 'submited', Icon: FileText, tone: 'success' },
+] as const;
+
+const RECRUIT_CARDS: readonly CardConfig[] = [
+  { key: 'click', Icon: MousePointerClick, tone: 'primary' },
+  { key: 'register', Icon: UserPlus, tone: 'accent' },
+  { key: 'esign', Icon: FileSignature, tone: 'success' },
+] as const;
+
+const TONE_STYLES: Record<CardConfig['tone'], { value: string; chipBg: string; chipText: string }> =
+  {
+    primary: {
+      value: 'text-[var(--primary)]',
+      chipBg: 'bg-[color-mix(in_srgb,var(--primary)_15%,transparent)]',
+      chipText: 'text-[var(--primary)]',
+    },
+    accent: {
+      value: 'text-[var(--accent)]',
+      chipBg: 'bg-[color-mix(in_srgb,var(--accent)_15%,transparent)]',
+      chipText: 'text-[var(--accent)]',
+    },
+    success: {
+      value: 'text-[var(--success)]',
+      chipBg: 'bg-[color-mix(in_srgb,var(--success)_15%,transparent)]',
+      chipText: 'text-[var(--success)]',
+    },
+  };
 
 interface PerformanceChartProps extends ChartComponentProps {
   className?: string;
-}
-
-interface ThemeColors {
-  primary: string;
-  violet: string;
-  rose: string;
-  textMuted: string;
-  border: string;
-  textPrimary: string;
-}
-
-function readThemeColors(): ThemeColors {
-  const root = document.documentElement;
-  const cs = getComputedStyle(root);
-  const read = (name: string, fallback: string) => {
-    const v = cs.getPropertyValue(name).trim();
-    return v || fallback;
-  };
-  return {
-    primary: read('--primary', '#FA875B'),
-    violet: read('--accent-violet', '#8B5CF6'),
-    rose: read('--accent-rose', '#F43F5E'),
-    textMuted: read('--text-muted', '#8a94a6'),
-    border: read('--border', 'rgba(255,255,255,0.08)'),
-    textPrimary: read('--text-primary', '#ffffff'),
-  };
 }
 
 export default function PerformanceChart({
@@ -85,13 +76,6 @@ export default function PerformanceChart({
   timeRange,
   className = '',
 }: PerformanceChartProps) {
-  const { effectiveTheme } = useTheme();
-  const [colors, setColors] = useState<ThemeColors | null>(null);
-
-  useEffect(() => {
-    setColors(readThemeColors());
-  }, [effectiveTheme]);
-
   const {
     totalClicked,
     totalAllocate,
@@ -106,45 +90,71 @@ export default function PerformanceChart({
   const yMax = getYaxisMaxValue(maxValue);
 
   const isSale = alias.type === TypeEnum.SALE;
-  const lineColor = colors ? (isSale ? colors.primary : colors.violet) : '#FA875B';
+
+  const chartColors = useBrandColors();
 
   const summaryCards = isSale
     ? [
-        { tone: SALE_TONES[0], icon: SALE_ICONS[0], label: I18n.marketingDashboard.performances.clickOrScan, value: totalClicked },
-        { tone: SALE_TONES[1], icon: SALE_ICONS[1], label: I18n.marketingDashboard.performances.allocate, value: totalAllocate },
-        { tone: SALE_TONES[2], icon: SALE_ICONS[2], label: I18n.marketingDashboard.performances.submited, value: totalSubmited },
+        {
+          ...SALE_CARDS[0],
+          label: I18n.marketingDashboard.performances.clickOrScan,
+          value: totalClicked,
+        },
+        {
+          ...SALE_CARDS[1],
+          label: I18n.marketingDashboard.performances.allocate,
+          value: totalAllocate,
+        },
+        {
+          ...SALE_CARDS[2],
+          label: I18n.marketingDashboard.performances.submited,
+          value: totalSubmited,
+        },
       ]
     : [
-        { tone: RECRUIT_TONES[0], icon: RECRUIT_ICONS[0], label: I18n.marketingDashboard.performances.clickOrScan, value: totalClicked },
-        { tone: RECRUIT_TONES[1], icon: RECRUIT_ICONS[1], label: I18n.marketingDashboard.performances.register, value: totalRegister },
-        { tone: RECRUIT_TONES[2], icon: RECRUIT_ICONS[2], label: I18n.marketingDashboard.performances.esign, value: totalEsign },
+        {
+          ...RECRUIT_CARDS[0],
+          label: I18n.marketingDashboard.performances.clickOrScan,
+          value: totalClicked,
+        },
+        {
+          ...RECRUIT_CARDS[1],
+          label: I18n.marketingDashboard.performances.register,
+          value: totalRegister,
+        },
+        {
+          ...RECRUIT_CARDS[2],
+          label: I18n.marketingDashboard.performances.esign,
+          value: totalEsign,
+        },
       ];
 
   return (
     <div className={className}>
-      {/* Section title */}
-      <h3 className="font-display text-base font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2 tracking-tight">
-        <span className="w-1 h-4 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
+      <h3 className="mb-4 text-base font-black tracking-wide text-[var(--text-strong)]">
         {I18n.marketingDashboard.performances.statistics}
       </h3>
 
       {/* Report summary cards */}
-      <div className="flex flex-col gap-3 mt-4">
+      <div className="flex flex-col gap-3">
         {summaryCards.map((card) => {
-          const s = toneStyles[card.tone];
+          const tone = TONE_STYLES[card.tone];
+          const Icon = card.Icon;
           return (
             <div
-              key={card.label}
-              className="glass-card glass-card-hover rounded-2xl p-4 flex items-center gap-4"
+              key={card.key}
+              className="flex items-center gap-4 rounded-[var(--radius-bento-sm)] bg-[var(--surface-glass-alt)] p-4 transition-all hover:bg-[var(--surface-glass)]"
             >
-              <div className={`w-10 h-10 rounded-full ${s.iconWrap} ${s.glow} flex items-center justify-center border shrink-0`}>
-                <span className={`text-lg ${s.icon}`}>{card.icon}</span>
+              <div
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${tone.chipBg} ${tone.chipText}`}
+              >
+                <Icon className="h-5 w-5" strokeWidth={2.5} />
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className={`font-display text-xl font-bold ${s.value}`}>
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <span className={`text-2xl font-black ${tone.value}`}>
                   {numberWithCommasDot(card.value)}
                 </span>
-                <span className="text-sm font-medium text-[var(--text-secondary)]">
+                <span className="text-xs font-black tracking-wide text-[var(--text-secondary)]">
                   {card.label}
                 </span>
               </div>
@@ -153,16 +163,16 @@ export default function PerformanceChart({
         })}
       </div>
 
-      {/* Chart header: title + total */}
+      {/* Chart header */}
       <div className="mt-8">
-        <h3 className="font-display text-base font-bold text-[var(--text-primary)] mb-1 tracking-tight">
+        <h3 className="mb-1 text-base font-black tracking-wide text-[var(--text-strong)]">
           {isSale
             ? I18n.marketingDashboard.performances.sale.title
             : I18n.marketingDashboard.performances.recruit.title}
         </h3>
-        <p className="font-display text-sm font-bold mb-6 text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-500">
+        <p className="mb-6 text-sm font-black text-[var(--success)]">
           {numberWithCommasDot(isSale ? totalPaid : totalEsign)}{' '}
-          <span className="text-[var(--text-muted)] font-medium">
+          <span className="font-medium text-[var(--text-muted)]">
             {isSale
               ? I18n.marketingDashboard.performances.sale.unitOfTotal
               : I18n.marketingDashboard.performances.recruit.unitOfTotal}
@@ -171,56 +181,51 @@ export default function PerformanceChart({
       </div>
 
       {/* Line chart */}
-      <div className="glass-card w-full rounded-2xl p-4 md:p-6 theme-transition">
+      <div className="w-full rounded-[var(--radius-bento-sm)] bg-[var(--surface-glass-alt)] p-4 md:p-6">
         <ResponsiveContainer width="100%" height={250}>
           <LineChart data={chartData}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={colors?.border ?? 'rgba(255,255,255,0.08)'}
-              strokeWidth={1}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} strokeWidth={1} />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 12, fill: colors?.textMuted ?? '#8a94a6' }}
+              tick={{ fontSize: 12, fill: chartColors.tick }}
               tickLine={false}
-              axisLine={{ stroke: colors?.border ?? 'rgba(255,255,255,0.15)', strokeWidth: 1 }}
+              axisLine={{ stroke: chartColors.axis, strokeWidth: 1 }}
             />
             <YAxis
               domain={[0, yMax]}
               tickCount={7}
-              tick={{ fontSize: 12, fill: colors?.textMuted ?? '#8a94a6' }}
+              tick={{ fontSize: 12, fill: chartColors.tick }}
               tickLine={false}
-              axisLine={{ stroke: colors?.border ?? 'rgba(255,255,255,0.15)' }}
+              axisLine={{ stroke: chartColors.axisStrong }}
             />
             <RechartsTooltip
               contentStyle={{
                 borderRadius: '12px',
-                backgroundColor: effectiveTheme === 'dark' ? 'rgba(10,10,16,0.85)' : 'rgba(255,255,255,0.9)',
-                border: `1px solid ${colors?.border ?? 'rgba(255,255,255,0.12)'}`,
-                backdropFilter: 'blur(24px) saturate(140%)',
-                color: colors?.textPrimary ?? '#fff',
+                backgroundColor: chartColors.tooltipBg,
+                border: `1px solid ${chartColors.grid}`,
+                backdropFilter: 'blur(8px)',
+                color: chartColors.tooltipText,
                 fontSize: '12px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
               }}
-              itemStyle={{ color: colors?.textPrimary ?? '#fff' }}
-              labelStyle={{ color: colors?.textMuted ?? '#94a3b8', fontSize: '11px' }}
-              cursor={{ stroke: lineColor, strokeDasharray: '4 4', strokeOpacity: 0.5 }}
+              itemStyle={{ color: chartColors.tooltipText }}
+              labelStyle={{ color: chartColors.tick, fontSize: '11px' }}
+              cursor={{ stroke: chartColors.axis, strokeDasharray: '4 4' }}
             />
             <Line
               type="monotone"
               dataKey="value"
-              stroke={lineColor}
-              strokeWidth={2.5}
+              stroke={chartColors.line}
+              strokeWidth={2}
               dot={{
                 r: 4,
-                fill: effectiveTheme === 'dark' ? '#07060a' : '#ffffff',
-                stroke: lineColor,
+                fill: chartColors.dotFill,
+                stroke: chartColors.line,
                 strokeWidth: 2,
               }}
               activeDot={{
                 r: 6,
-                fill: effectiveTheme === 'dark' ? '#07060a' : '#ffffff',
-                stroke: lineColor,
+                fill: chartColors.dotFill,
+                stroke: chartColors.line,
                 strokeWidth: 2,
               }}
             />
@@ -229,8 +234,8 @@ export default function PerformanceChart({
       </div>
 
       {/* Chart note */}
-      <div className="flex items-start gap-2 mt-4 text-xs text-[var(--text-muted)] font-medium italic pl-1">
-        <div className="w-1.5 h-1.5 rounded-sm bg-[var(--primary)] mt-1 shrink-0 rotate-45 shadow-[var(--glow-primary)]" />
+      <div className="mt-4 flex items-start gap-2 pl-1 text-xs font-medium text-[var(--text-muted)] italic">
+        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--accent)]" strokeWidth={2.5} />
         <p>
           {isSale
             ? I18n.marketingDashboard.performances.sale.chartNote.text

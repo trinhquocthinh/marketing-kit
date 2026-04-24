@@ -1,3 +1,5 @@
+import { Inbox } from 'lucide-react';
+
 import { I18n } from '@/i18n';
 
 interface NoDataProps {
@@ -7,11 +9,15 @@ interface NoDataProps {
 
 export default function NoData({ message, className = '' }: NoDataProps) {
   return (
-    <div className={`flex flex-col items-center justify-center py-12 ${className}`}>
-      <svg className="w-16 h-16 text-[var(--text-muted)] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-      </svg>
-      <p className="text-[var(--text-muted)] text-sm">{message || I18n.noData}</p>
+    <div
+      className={`flex flex-col items-center justify-center gap-4 py-16 text-center ${className}`}
+    >
+      <div className="shadow-inner-soft flex h-20 w-20 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-[var(--primary)]">
+        <Inbox className="h-9 w-9" strokeWidth={2} />
+      </div>
+      <p className="text-[11px] font-black tracking-widest text-[var(--text-muted)] uppercase">
+        {message || I18n.noData}
+      </p>
     </div>
   );
 }

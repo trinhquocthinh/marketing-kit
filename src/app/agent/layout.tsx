@@ -1,167 +1,188 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { I18n } from '@/i18n';
-import { useAppDispatch, useAppSelector } from '@/hooks/useStore';
-import { authActions } from '@/lib/slices/auth.slice';
-import { httpService } from '@/lib/http.service';
+
+import { BarChart3, ImageIcon, Images, LogOut } from 'lucide-react';
+
+import { useTheme } from '@/components/providers/ThemeProvider';
+import BrandSwitcher from '@/components/ui/BrandSwitcher';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import { I18n } from '@/i18n';
+import { httpService } from '@/lib/http.service';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const tabs = [
-  { href: '/agent/marketing-kit/library', label: I18n.marketingDashboard.libraries, icon: LibraryIcon },
-  { href: '/agent/marketing-kit/my-images', label: I18n.marketingDashboard.myImages, icon: MyImagesIcon },
-  { href: '/agent/marketing-kit/performance', label: I18n.marketingDashboard.performance, icon: PerformanceIcon },
+  {
+    href: '/agent/marketing-kit/library',
+    label: I18n.marketingDashboard.libraries,
+    icon: Images,
+  },
+  {
+    href: '/agent/marketing-kit/my-images',
+    label: I18n.marketingDashboard.myImages,
+    icon: ImageIcon,
+  },
+  {
+    href: '/agent/marketing-kit/performance',
+    label: I18n.marketingDashboard.performance,
+    icon: BarChart3,
+  },
 ];
 
-function LibraryIcon({ active }: { active: boolean }) {
-  return (
-    <svg className={`w-5 h-5 ${active ? 'text-white' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-    </svg>
-  );
-}
-
-function MyImagesIcon({ active }: { active: boolean }) {
-  return (
-    <svg className={`w-5 h-5 ${active ? 'text-white' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-    </svg>
-  );
-}
-
-function PerformanceIcon({ active }: { active: boolean }) {
-  return (
-    <svg className={`w-5 h-5 ${active ? 'text-white' : 'text-[var(--text-muted)]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-    </svg>
-  );
-}
+const brandGradient = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
 
 export default function AgentLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const agentCode = useAppSelector((state) => state.authentication.agentCode);
-  const phone = useAppSelector((state) => state.authentication.phone);
+  const agentCode = useAuthStore((s) => s.agentCode);
+  const phone = useAuthStore((s) => s.phone);
+  const logout = useAuthStore((s) => s.logout);
   const displayName = agentCode || phone || 'Agent';
   const initials = displayName.slice(0, 2).toUpperCase();
+  const { brand } = useTheme();
 
   const handleLogout = () => {
-    dispatch(authActions.logout());
+    logout();
     httpService.clearToken();
     document.cookie = 'auth_token=; path=/; max-age=0';
     router.push('/login');
   };
 
+  const brandBadge =
+    brand === 'fecredit' ? (
+      <>
+        <span style={{ color: '#E82629' }}>FE</span>{' '}
+        <span style={{ color: '#00994F' }}>CREDIT</span>
+      </>
+    ) : (
+      <span className="text-t-strong">
+        IZIon<span className="text-primary">24</span>
+      </span>
+    );
+
   return (
-    <div className="min-h-screen flex text-[var(--text-secondary)] theme-transition">
-      {/* Aurora background — orbs + film-grain noise */}
-      <div className="fixed inset-0 z-0 overflow-hidden bg-[var(--background)]">
-        <div className="absolute top-[-15%] left-[-10%] w-[60%] h-[60%] rounded-full bg-[var(--blob-1)] blur-[140px] gradient-blob animate-aurora-1" />
-        <div className="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] rounded-full bg-[var(--blob-2)] blur-[160px] gradient-blob animate-aurora-2" />
-        <div className="absolute top-[15%] right-[15%] w-[40%] h-[40%] rounded-full bg-[var(--blob-3)] blur-[120px] gradient-blob animate-aurora-3" />
-        <div className="noise-overlay" />
-      </div>
-
-      {/* Desktop Sidebar */}
-      <aside className="w-[280px] shrink-0 flex-col bg-[var(--sidebar-bg)] backdrop-blur-[40px] border-r border-[var(--border)] hidden md:flex z-10 fixed inset-y-0 left-0 theme-transition shadow-[8px_0_40px_var(--shadow-color)]">
-        {/* Logo */}
-        <div className="h-24 flex items-center px-8 border-b border-[var(--border)]">
-          <div className="font-display text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            IZIon<span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-400 drop-shadow-[0_0_12px_rgba(250,135,91,0.45)]">24</span>
-          </div>
-          <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--badge-bg)] text-[var(--text-secondary)] border border-[var(--border)]">AGENT</span>
+    <div className="theme-transition relative flex min-h-screen text-t-secondary">
+      {/* ───── Desktop Spatial Dock (left) ───── */}
+      <aside className="fixed top-1/2 left-6 z-30 hidden w-24 -translate-y-1/2 flex-col items-center gap-4 rounded-[3rem] border border-(--surface-glass-border) bg-surface-glass-strong px-3 py-5 shadow-(--shadow-glass-lg) backdrop-blur-(--blur-glass) lg:flex">
+        {/* Logo chip */}
+        <div
+          className="flex h-14 w-14 items-center justify-center rounded-[1.75rem] text-white shadow-(--shadow-glow-primary)"
+          style={{ background: brandGradient }}
+        >
+          <span className="text-lg font-black tracking-tight">
+            {brand === 'fecredit' ? 'FE' : 'IZ'}
+          </span>
         </div>
 
-        {/* Nav tabs */}
-        <div className="flex-1 py-4 px-6 space-y-3">
+        {/* Nav icons */}
+        <nav className="flex flex-col items-center gap-2">
           {tabs.map((tab) => {
             const isActive = pathname.startsWith(tab.href);
+            const Icon = tab.icon;
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`w-full flex items-center px-5 py-4 rounded-2xl transition-all font-bold text-sm ${
+                aria-label={tab.label}
+                title={tab.label}
+                className={`group relative flex h-14 w-14 items-center justify-center rounded-3xl transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${
                   isActive
-                    ? 'bg-[var(--nav-active-bg)] border border-[var(--nav-active-border)] text-[var(--text-primary)] shadow-[var(--glow-primary)]'
-                    : 'text-[var(--text-muted)] hover:bg-[var(--nav-hover-bg)] hover:text-[var(--text-primary)] border border-transparent'
+                    ? 'text-white shadow-(--shadow-glow-primary)'
+                    : 'text-t-muted hover:bg-(--surface-glass-alt) hover:text-t-strong'
                 }`}
+                style={isActive ? { background: brandGradient } : undefined}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 transition-colors ${isActive ? 'bg-linear-to-tr from-orange-500 to-rose-400 text-white shadow-md' : 'bg-[var(--badge-bg)] text-[var(--text-muted)]'}`}>
-                  <tab.icon active={isActive} />
-                </div>
-                <span>{tab.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* User section */}
-        <div className="p-6 flex flex-col gap-4">
-          <ThemeToggle />
-          <div className="glass-card flex items-center gap-3 p-4 rounded-2xl theme-transition cursor-pointer hover:border-[var(--border-bright)] transition-all">
-            <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-400 to-rose-400 flex items-center justify-center text-white font-bold text-sm shadow-[var(--glow-primary)]">
-              {initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-extrabold text-[var(--text-primary)] truncate">{displayName}</p>
-            </div>
-            <button onClick={handleLogout} className="p-2 text-[var(--text-muted)] hover:text-rose-400 bg-[var(--badge-bg)] hover:bg-rose-500/10 rounded-xl transition-colors" title={I18n.logout}>
-              <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden md:ml-[280px] z-10">
-        {/* Mobile Header */}
-        <header className="md:hidden h-16 flex items-center justify-between px-4 bg-[var(--sidebar-bg)] backdrop-blur-lg border-b border-[var(--border)] sticky top-0 z-20 theme-transition">
-          <div className="font-display font-black tracking-tight text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-rose-400 drop-shadow-[0_0_10px_rgba(250,135,91,0.45)]">
-            IZIon24 MKT
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle compact />
-            <button onClick={handleLogout} className="p-2 text-[var(--text-muted)] hover:text-rose-400 transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            </button>
-          </div>
-        </header>
-
-        {/* Mobile Tab Navigation */}
-        <div className="md:hidden flex overflow-x-auto bg-[var(--sidebar-bg)] backdrop-blur-md border-b border-[var(--border)] sticky top-16 z-20 hide-scrollbar theme-transition">
-          {tabs.map((tab) => {
-            const isActive = pathname.startsWith(tab.href);
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`flex-1 py-4 text-sm font-medium text-center whitespace-nowrap transition-colors relative ${
-                  isActive ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'
-                }`}
-              >
-                {tab.label}
+                <Icon className="h-5 w-5" strokeWidth={2.2} />
                 {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-orange-400 to-rose-400" />
+                  <span
+                    aria-hidden
+                    className="absolute -right-3 h-6 w-1 rounded-full"
+                    style={{ background: 'var(--primary)' }}
+                  />
                 )}
               </Link>
             );
           })}
+        </nav>
+
+        <div className="my-1 h-px w-8 bg-(--surface-glass-border)" />
+
+        {/* Brand + theme switches */}
+        <div className="flex flex-col items-center gap-2">
+          <BrandSwitcher compact />
+          <ThemeToggle compact />
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-          <div className="max-w-1xl mx-auto">
-            {children}
+        <div className="my-1 h-px w-8 bg-(--surface-glass-border)" />
+
+        {/* User avatar + logout */}
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-black text-white shadow-(--shadow-glass-sm)"
+          style={{ background: brandGradient }}
+          title={displayName}
+        >
+          {initials}
+        </div>
+        <button
+          onClick={handleLogout}
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-(--surface-glass-border) bg-(--surface-glass-alt) text-danger transition-colors hover:bg-[color-mix(in_srgb,var(--danger)_15%,transparent)]"
+          title={I18n.logout}
+          aria-label={I18n.logout}
+        >
+          <LogOut className="h-5 w-5" strokeWidth={2.2} />
+        </button>
+      </aside>
+
+      {/* ───── Main Content ───── */}
+      <main className="z-10 flex h-screen flex-1 flex-col overflow-hidden lg:pl-32">
+        {/* Mobile top header (brand + switches) */}
+        <header className="sticky top-0 z-20 glass-bento flex h-16 rounded-none! shrink-0 items-center justify-between gap-3 px-4 backdrop-blur-(--blur-glass) lg:hidden">
+          <div className="flex items-center gap-3 px-4! py-2! text-sm font-black tracking-tight">
+            {brandBadge}
           </div>
+          <div className="flex items-center gap-2 px-2! py-1.5!">
+            <ThemeToggle compact />
+            <BrandSwitcher compact />
+            <button
+              onClick={handleLogout}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-danger transition-colors hover:bg-[color-mix(in_srgb,var(--danger)_15%,transparent)]"
+              aria-label={I18n.logout}
+            >
+              <LogOut className="h-4 w-4" strokeWidth={2.2} />
+            </button>
+          </div>
+        </header>
+
+        {/* Content scroll area */}
+        <div className="custom-scrollbar flex-1 overflow-y-auto px-4 pt-4 pb-32 md:px-8 lg:pb-8">
+          <div className="mx-auto max-w-1xl">{children}</div>
         </div>
       </main>
+
+      {/* ───── Mobile Floating Bottom Nav ───── */}
+      <nav className="fixed right-4 bottom-6 left-4 z-30 mx-auto flex max-w-95 items-center justify-around rounded-full border border-(--surface-glass-border) bg-surface-glass-strong px-3 py-2 shadow-(--shadow-glass-lg) backdrop-blur-(--blur-glass) lg:hidden">
+        {tabs.map((tab) => {
+          const isActive = pathname.startsWith(tab.href);
+          const Icon = tab.icon;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              aria-label={tab.label}
+              className={`relative flex h-12 w-12 items-center justify-center rounded-full transition-all ${
+                isActive
+                  ? 'text-white shadow-(--shadow-glow-primary)'
+                  : 'text-t-muted'
+              }`}
+              style={isActive ? { background: brandGradient } : undefined}
+            >
+              <Icon className="h-5 w-5" strokeWidth={2.2} />
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }

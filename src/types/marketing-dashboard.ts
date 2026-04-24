@@ -1,4 +1,10 @@
-import { LabelEnum, StatusEnum, TypeEnum, AvatarStatusOption, AvatarActionOption } from './enums';
+import {
+  type AvatarActionOption,
+  type AvatarStatusOption,
+  type LabelEnum,
+  type StatusEnum,
+  type TypeEnum,
+} from './enums';
 
 // #region Internal interfaces
 export interface GroupModel {
@@ -55,7 +61,7 @@ export interface FolderModel {
   order: number | null;
 }
 
-export interface MyImageModel {}
+export type MyImageModel = object;
 
 export interface PerformanceFolderData {
   name: string;
@@ -161,7 +167,7 @@ export interface AliasData {
   labels: LabelModel[] | null;
   modified: string;
   name: string;
-  qrEncryptedData: string;
+  qrEncryptedData: string | null;
   templateId: number;
   type: 'SALE' | 'RECRUIT';
   validFrom: string;

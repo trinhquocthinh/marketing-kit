@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import QRCode from 'qrcode';
+
 import { I18n } from '@/i18n';
 import type { ImageMeta } from '@/types';
 
@@ -62,15 +64,11 @@ export default function BannerWithFooter({
   }, [qr]);
 
   const imageAspectRatio = originalSize.width / originalSize.height;
-  const originalTotalHeight =
-    ORIGINAL_WIDTH / imageAspectRatio + ORIGINAL_FOOTER_HEIGHT;
+  const originalTotalHeight = ORIGINAL_WIDTH / imageAspectRatio + ORIGINAL_FOOTER_HEIGHT;
 
   const scale =
     containerWidth && containerHeight
-      ? Math.min(
-          containerWidth / ORIGINAL_WIDTH,
-          containerHeight / originalTotalHeight,
-        )
+      ? Math.min(containerWidth / ORIGINAL_WIDTH, containerHeight / originalTotalHeight)
       : containerWidth / ORIGINAL_WIDTH;
 
   const scaledWidth = ORIGINAL_WIDTH * scale;
@@ -106,16 +104,18 @@ export default function BannerWithFooter({
         />
       ) : (
         <div
+          className="bg-[var(--surface-glass-alt)]"
           style={{
             width: scaledWidth,
             height: scaledWidth,
-            backgroundColor: '#eee',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <span className="text-xs text-gray-400">{I18n.loading}</span>
+          <span className="text-[10px] font-black tracking-widest text-[var(--text-muted)] uppercase">
+            {I18n.loading}
+          </span>
         </div>
       )}
 
@@ -134,21 +134,21 @@ export default function BannerWithFooter({
         <div className="flex items-center" style={{ marginLeft: 16 * scale }}>
           {/* Avatar */}
           <div
-            className="rounded-full overflow-hidden flex-shrink-0"
+            className="flex-shrink-0 overflow-hidden rounded-full"
             style={{ width: 32 * scale, height: 32 * scale }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={avatarUrl || '/images/default-avatar.svg'}
               alt="Avatar"
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
           </div>
 
           {/* Name + Phone */}
           <div style={{ marginLeft: 7 * scale }}>
             <p
-              className="font-[Montserrat,sans-serif] font-semibold leading-tight"
+              className="font-[Montserrat,sans-serif] leading-tight font-semibold"
               style={{ fontSize: 9 * scale, color: textColor }}
             >
               {name && name.length > 0

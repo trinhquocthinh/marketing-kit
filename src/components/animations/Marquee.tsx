@@ -30,7 +30,7 @@ export default function Marquee({
   return (
     <div className={`overflow-hidden whitespace-nowrap ${className}`}>
       <span
-        className={`inline-block animate-marquee ${textClassName}`}
+        className={`animate-marquee inline-block ${textClassName}`}
         style={{ animationDuration: `${speed}s` }}
       >
         {displayText}

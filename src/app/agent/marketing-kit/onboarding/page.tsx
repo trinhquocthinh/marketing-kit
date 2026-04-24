@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/ui';
 import { I18n } from '@/i18n';
 import { LIST_TUTORIALS } from '@/lib/constants';
 import { marketingDashboardService } from '@/lib/services/marketing-dashboard.service';
-import { Button } from '@/components/ui';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -34,22 +35,16 @@ export default function OnboardingPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4 relative overflow-hidden theme-transition">
-      {/* Aurora decoration */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/3 -left-1/4 w-[60%] aspect-square rounded-full bg-[var(--aurora-blob-a)] blur-3xl opacity-70 animate-aurora-1" />
-        <div className="absolute -bottom-1/3 -right-1/4 w-[55%] aspect-square rounded-full bg-[var(--aurora-blob-b)] blur-3xl opacity-60 animate-aurora-2" />
-      </div>
-      <div className="noise-overlay" />
-
-      <div className="w-full max-w-lg relative z-10">
-        <div className="glass-card rounded-2xl overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="animate-bento-fade-up w-full max-w-lg">
+        <div className="glass-bento glass-shine overflow-hidden !p-0">
           {/* Image area */}
-          <div className="aspect-[4/3] bg-[var(--surface-hover)] flex items-center justify-center">
+          <div className="flex aspect-[4/3] items-center justify-center bg-[var(--surface-glass-alt)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={tutorial.image}
               alt={tutorial.title}
-              className="w-full h-full object-contain"
+              className="h-full w-full object-contain"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
@@ -58,33 +53,51 @@ export default function OnboardingPage() {
 
           {/* Content */}
           <div className="p-8 text-center">
-            <h2 className="font-display text-xl font-bold text-[var(--text-primary)] mb-2 tracking-tight">{tutorial.title}</h2>
-            <p className="text-sm text-[var(--text-muted)] mb-8">{tutorial.desc}</p>
+            <p className="bento-eyebrow mb-3 justify-center">
+              Bước {currentIndex + 1} / {LIST_TUTORIALS.length}
+            </p>
+            <h2 className="mb-3 text-2xl font-black tracking-wide text-[var(--text-strong)]">
+              {tutorial.title}
+            </h2>
+            <p className="mb-8 text-sm text-[var(--text-secondary)]">{tutorial.desc}</p>
 
             {/* Dots */}
-            <div className="flex items-center justify-center gap-2 mb-8">
+            <div className="mb-8 flex items-center justify-center gap-2">
               {LIST_TUTORIALS.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrentIndex(i)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    i === currentIndex ? 'w-6 bg-linear-to-r from-orange-400 to-rose-500 shadow-[var(--glow-primary)]' : 'w-2.5 bg-[var(--surface-hover)]'
+                  aria-label={`Slide ${i + 1}`}
+                  className={`h-2 rounded-full transition-all ${
+                    i === currentIndex
+                      ? 'w-8 shadow-[var(--shadow-glow-primary)]'
+                      : 'w-2 bg-[var(--surface-glass-alt)]'
                   }`}
+                  style={
+                    i === currentIndex
+                      ? {
+                          background:
+                            'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+                        }
+                      : undefined
+                  }
                 />
               ))}
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               {!isLast ? (
                 <>
-                  <button onClick={handleSkip} className="text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors">
+                  <Button variant="ghost" onClick={handleSkip}>
                     Bỏ qua
-                  </button>
-                  <Button onClick={handleNext}>Tiếp theo</Button>
+                  </Button>
+                  <Button variant="primary" onClick={handleNext}>
+                    Tiếp theo
+                  </Button>
                 </>
               ) : (
-                <Button onClick={handleNext} className="w-full">
+                <Button variant="primary" onClick={handleNext} className="w-full">
                   {I18n.marketingDashboard.startNow}
                 </Button>
               )}

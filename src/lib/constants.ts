@@ -1,15 +1,15 @@
 import { I18n } from '@/i18n';
 import { SortEnum, StatusEnum, TabEnum, TimeLineEnum, TypeEnum } from '@/types/enums';
-import { ListTutorialModel, PerformanceAliasData, PerformanceFolderData } from '@/types/marketing-dashboard';
+import {
+  type ListTutorialModel,
+  type PerformanceAliasData,
+  type PerformanceFolderData,
+} from '@/types/marketing-dashboard';
 
 export const MAX_CHARACTER_SHOW_ANIMATION = 12;
 export const NUMBER_OF_XAXIS_TICKS = 6;
 
-export const TABS_DATA: string[] = [
-  TabEnum.Libraries,
-  TabEnum.MyImages,
-  TabEnum.Performance,
-];
+export const TABS_DATA: string[] = [TabEnum.Libraries, TabEnum.MyImages, TabEnum.Performance];
 
 export const LIST_FILTER = [
   { id: StatusEnum.ALL, title: I18n.all, isSelected: true },
@@ -31,7 +31,11 @@ export const LIST_ALIAS_SORT = [
 ];
 
 export const LIST_PERFORMANCE_SORT = [
-  { id: SortEnum.MostInteractions, title: I18n.marketingDashboard.mostInteractions, isSelected: true },
+  {
+    id: SortEnum.MostInteractions,
+    title: I18n.marketingDashboard.mostInteractions,
+    isSelected: true,
+  },
   { id: SortEnum.MostFee, title: I18n.marketingDashboard.mostFee, isSelected: false },
   { id: SortEnum.MostESign, title: I18n.marketingDashboard.mostESign, isSelected: false },
   { id: SortEnum.FromAToZ, title: I18n.sortFromAToZ, isSelected: false },

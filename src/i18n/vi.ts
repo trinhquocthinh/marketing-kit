@@ -21,7 +21,8 @@ const vi = {
   agreeTo: 'Tôi đồng ý với',
   termsAndCondition: 'Điều khoản và Điều kiện',
   yourAccountIsPending: 'Tài khoản đang chờ xử lý',
-  izionWillCheckInformationAndContactSoon: 'Izion sẽ kiểm tra thông tin và liên hệ bạn sớm nhất có thể.',
+  izionWillCheckInformationAndContactSoon:
+    'Izion sẽ kiểm tra thông tin và liên hệ bạn sớm nhất có thể.',
   gotItAndTurnBack: 'Đã hiểu, quay lại',
   logIn: 'Đăng nhập',
   logout: 'Đăng xuất',
@@ -43,7 +44,8 @@ const vi = {
 
   // Marketing Dashboard
   marketingDashboard: {
-    marquee: 'Poster bắt mắt, mã QR sẵn sàng, mỗi một cú quét là lead bay thẳng về tay để bạn chăm sóc!',
+    marquee:
+      'Poster bắt mắt, mã QR sẵn sàng, mỗi một cú quét là lead bay thẳng về tay để bạn chăm sóc!',
     title: 'Marketing Kit',
     boostSales: 'Tăng trưởng doanh số',
     teamDevelopment: 'Phát triển đội nhóm',
@@ -62,9 +64,9 @@ const vi = {
     oneYear: '12 tháng',
 
     // Library
-    topUsedPosters: '✨ Dùng nhiều nhất',
-    featuredEvents: '🔥 Sự kiện nổi bật',
-    publicFolders: '📁 Thư mục chung',
+    topUsedPosters: 'Dùng nhiều nhất',
+    featuredEvents: 'Sự kiện nổi bật',
+    publicFolders: 'Thư mục chung',
     folderTitle: 'Mẫu thiết kế',
     topic: 'Chủ đề',
     searchPlaceholder: 'Nhập tên mẫu thiết kế',

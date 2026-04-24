@@ -2,19 +2,24 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { I18n } from '@/i18n';
-import { LabelEnum, SortEnum, StatusEnum } from '@/types/enums';
-import type { FolderModel, GroupTemplateModel } from '@/types';
-import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
-import { listTopUsed } from '@/lib/marketing-dashboard.utils';
-import { LIST_FILTER, LIST_SORT } from '@/lib/constants';
-import Dropdown from '@/components/ui/Dropdown';
-import Skeleton from '@/components/ui/Skeleton';
-import NoData from '@/components/ui/NoData';
-import ImageSlider from '@/components/library/ImageSlider';
+
+import { Flame, Search } from 'lucide-react';
+
 import FeaturedEvents from '@/components/library/FeaturedEvents';
+import ImageSlider from '@/components/library/ImageSlider';
 import PublicFolders from '@/components/library/PublicFolders';
 import SearchModal from '@/components/library/SearchModal';
+import BentoSectionHeading from '@/components/ui/BentoSectionHeading';
+import Button from '@/components/ui/Button';
+import Dropdown from '@/components/ui/Dropdown';
+import NoData from '@/components/ui/NoData';
+import Skeleton from '@/components/ui/Skeleton';
+import { useMarketingDashboard } from '@/hooks/useMarketingDashboard';
+import { I18n } from '@/i18n';
+import { LIST_FILTER, LIST_SORT } from '@/lib/constants';
+import { listTopUsed } from '@/lib/marketing-dashboard.utils';
+import type { FolderModel, GroupTemplateModel } from '@/types';
+import { LabelEnum, SortEnum, StatusEnum } from '@/types/enums';
 
 export default function LibraryPage() {
   const router = useRouter();
@@ -91,12 +96,12 @@ export default function LibraryPage() {
   // ── Loading skeleton ──
   if (isLoading && folders.length === 0) {
     return (
-      <div className="min-h-screen p-4 space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
-        <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-6">
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-64 w-full" />
+        <div className="grid grid-cols-2 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-2xl" />
+            <Skeleton key={i} className="h-32" />
           ))}
         </div>
       </div>
@@ -106,7 +111,7 @@ export default function LibraryPage() {
   // ── Empty state ──
   if (folders.length === 0 && !isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="glass-bento flex min-h-[60vh] items-center justify-center">
         <NoData message={I18n.marketingDashboard.libraryEmpty} />
       </div>
     );
@@ -114,43 +119,41 @@ export default function LibraryPage() {
 
   return (
     <>
-      {/* Main container */}
-      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {/* Marquee effect for Marketing Kit label (from BRD rule 3.2.1) */}
-
-        <div className="mb-8 relative glass-card rounded-2xl h-12 flex items-center overflow-hidden theme-transition">
-          <div className="absolute left-0 top-0 bottom-0 w-36 bg-linear-to-r from-[var(--background)] via-[var(--background)]/80 to-transparent z-10 flex items-center pl-3">
-            <span className="bg-linear-to-r from-orange-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-[var(--glow-primary)] whitespace-nowrap flex items-center gap-1.5">
-              <span className="animate-pulse">🔥</span> THÔNG BÁO
+      <div className="animate-bento-fade-up space-y-8">
+        {/* Marquee announcement strip */}
+        <div className="glass-bento relative flex h-14 items-center overflow-hidden !p-0">
+          <div className="absolute top-0 bottom-0 left-0 z-10 flex items-center pl-3">
+            <span
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-black tracking-widest whitespace-nowrap text-white uppercase shadow-[var(--shadow-glow-primary)]"
+              style={{
+                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+              }}
+            >
+              <Flame className="h-3 w-3 animate-pulse" strokeWidth={2.5} />
+              Thông báo
             </span>
           </div>
-          <div className="flex-1 overflow-hidden ml-32 relative h-full flex items-center">
-            <div className="absolute whitespace-nowrap animate-marquee flex items-center">
-              <p className="text-sm text-[var(--text-secondary)] font-medium tracking-wide">
+          <div className="relative ml-32 flex h-full flex-1 items-center overflow-hidden">
+            <div className="animate-marquee absolute flex items-center whitespace-nowrap">
+              <p className="text-sm font-bold tracking-wide text-t-secondary">
                 {I18n.marketingDashboard.marquee}
               </p>
             </div>
           </div>
-          <div className="absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l from-[var(--background)] to-transparent z-10 pointer-events-none"></div>
         </div>
 
-        {/* Top Used Image Carousel – "Dùng nhiều nhất" */}
+        {/* Top Used Image Carousel */}
         {topUsed.length > 0 && (
           <section>
             <ImageSlider mostUsedImages={topUsed} onSelect={handleNavigatePoster} />
           </section>
         )}
 
-        {/* Filter & Sort + Search */}
-        <section className="flex flex-col md:flex-row gap-4 justify-between items-center glass-card p-4 rounded-2xl overflow-visible theme-transition">
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <h2 className="font-display text-xl font-bold text-[var(--text-primary)] tracking-tight flex items-center gap-3">
-              <span className="w-1.5 h-6 rounded-full bg-linear-to-b from-orange-400 to-rose-500 shadow-[var(--glow-primary)]" />
-              {I18n.marketingDashboard.folderTitle}
-            </h2>
-          </div>
-          <div className="flex flex-wrap gap-3 w-full md:w-auto items-end">
-            <div className="w-full md:w-50">
+        {/* Filter & Sort + Search toolbar */}
+        <section className="glass-bento flex flex-col items-stretch justify-between gap-4 md:flex-row md:items-end">
+          <BentoSectionHeading title={I18n.marketingDashboard.folderTitle} className="mb-0" />
+          <div className="flex w-full flex-wrap items-end gap-3 md:w-auto">
+            <div className="w-full md:w-52">
               <Dropdown
                 options={LIST_FILTER.map((f) => ({
                   ...f,
@@ -160,7 +163,7 @@ export default function LibraryPage() {
                 label={I18n.filterBy}
               />
             </div>
-            <div className="w-full md:w-40">
+            <div className="w-full md:w-44">
               <Dropdown
                 options={LIST_SORT.map((s) => ({
                   ...s,
@@ -170,26 +173,26 @@ export default function LibraryPage() {
                 label={I18n.arrangeBy}
               />
             </div>
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center justify-center p-1.5 px-4 bg-[var(--input-bg)] border border-[var(--glass-border)] hover:border-[var(--border-bright)] rounded-lg text-[var(--text-primary)] hover:shadow-[var(--glow-primary)] transition-all"
+              className="gap-2"
             >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <Search className="h-4 w-4" strokeWidth={2.5} />
               {I18n.search}
-            </button>
+            </Button>
           </div>
         </section>
 
-        {/* Featured Events – "Sự kiện nổi bật" */}
+        {/* Featured Events */}
         {featuredEvents.length > 0 && (
           <section>
             <FeaturedEvents data={featuredEvents} onPress={handleNavigateFolder} />
           </section>
         )}
 
-        {/* Public Folders – "Thư mục chung" */}
+        {/* Public Folders */}
         <section>
           <PublicFolders data={generalFolders} onPress={handleNavigateFolder} />
         </section>
@@ -202,19 +205,6 @@ export default function LibraryPage() {
         onClose={() => setIsSearchOpen(false)}
         onSelect={handleNavigatePoster}
       />
-
-      {/* Loading overlay */}
-      {isLoading && (
-        <div className="fixed inset-0 bg-[var(--overlay-bg)] backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="glass-card rounded-2xl p-6 flex items-center gap-3">
-            <svg className="animate-spin h-6 w-6 text-orange-400" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
-            <span className="text-sm text-[var(--text-secondary)]">{I18n.loading}</span>
-          </div>
-        </div>
-      )}
     </>
   );
 }
